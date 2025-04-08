@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PreLaunchTaskr.Launcher.NET8": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\_temp\\ProcessStartInfoViewer.exe"
+    }
+  }
+}

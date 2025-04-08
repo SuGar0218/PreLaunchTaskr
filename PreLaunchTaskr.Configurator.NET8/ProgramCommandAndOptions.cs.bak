@@ -1,0 +1,432 @@
+﻿using PreLaunchTaskr.Configurator.NET8.Extensions;
+
+using System;
+using System.Collections.Generic;
+using System.CommandLine;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PreLaunchTaskr.Configurator.NET8;
+
+internal partial class ProgramBak
+{
+    static ProgramBak()
+    {
+        RootCommand = new RootCommand();
+        RootCommand.AddCommands(
+            listCommand.AddAliases("ls").AddCommands(
+                listProgramCommand
+                    .HandleNoOption(ListPrograms)),
+                listArgumentCommand
+                    .AddOptions(
+                        programIdArrayOption, programPathArrayOption,
+                        attachedFlag, blockedFlag)
+                    .HandleOption(ListArgumentByProgramId, programIdArrayOption, attachedFlag, blockedFlag)
+                    .HandleOption(ListArgumentByProgramPath, programPathArrayOption, attachedFlag, blockedFlag),
+                listPreLaunchCommand
+                    .AddOptions(programIdArrayOption)
+                    .HandleOption(ListPreLaunchTasksByProgramId, programIdArrayOption)
+                    .HandleOption(ListPreLaunchTasksByProgramPath, programPathArrayOption),
+                listEnvVarCommand
+                    .AddOptions(programIdArrayOption, programPathArrayOption)
+                    .HandleOption(ListEnvironmentVariablesByProgramId, programIdArrayOption)
+                    .HandleOption(ListEnvironmentVariablesByProgramPath, programPathArrayOption),
+
+            //showCommand.AddCommands(
+            //    showProgramCommand
+            //        .AddOptions(
+            //            idOption,
+            //            pathOption,
+            //            allFlag),
+            //    showArgumentCommand
+            //        .AddOptions(
+            //            programIdOption, programPathOption,
+            //            argumentIdOption,
+            //            attachedFlag, blockedFlag,
+            //            allFlag),
+            //    showPreLaunchCommand
+            //        .AddOptions(
+            //            programIdOption, programPathOption,
+            //            prelaunchIdOption,
+            //            allFlag),
+            //    showEnvVarCommand
+            //        .AddOptions(
+            //            programIdOption, programPathOption,
+            //            envvarIdOption,
+            //            allFlag)),
+
+            addCommand.AddCommands(
+                addProgramCommand
+                    .AddOptions(
+                        pathArrayOption,
+                        enableFlag)
+                    .HandleOption(AddProgram, pathArrayOption, enableFlag),
+
+                addArgumentCommand
+                    .AddOptions(
+                        attachedFlag, blockedFlag,
+                        programIdArrayOption, programPathArrayOption,
+                        argumentOption,
+                        enableFlag,
+                        regexFlag)
+                    .HandleOption(AddArgument, programIdArrayOption, argumentOption, attachedFlag, blockedFlag, enableFlag, regexFlag)
+                    .HandleOption(AddArgument, programPathArrayOption, argumentOption, attachedFlag, blockedFlag, enableFlag, regexFlag),
+
+                addPreLaunchCommand
+                    .AddOptions(
+                        programIdArrayOption, programPathArrayOption,
+                        batchFileOption,
+                        enableFlag)
+                    .HandleOption(AddPreLaunchTask, programIdArrayOption, batchFileOption, acceptProgramArgsOption, includeAttachedArgsOption, enableFlag)
+                    .HandleOption(AddPreLaunchTask, programPathArrayOption, batchFileOption, acceptProgramArgsOption, includeAttachedArgsOption, enableFlag),
+
+                addEnvVarCommand
+                    .AddOptions(
+                        programIdArrayOption, programPathArrayOption,
+                        envvarKeyOption,
+                        envvarValueOption,
+                        enableFlag))
+                    .HandleOption(AddEnvironmentVariables, programIdArrayOption, envvarKeyOption, envvarValueOption, enableFlag)
+                    .HandleOption(AddEnvironmentVariables, programPathArrayOption, envvarKeyOption, envvarValueOption, enableFlag),
+
+            removeCommand.AddAliases("rm").AddCommands(
+                editProgramCommand
+                    .AddOptions(
+                        idArrayOption,
+                        pathArrayOption)
+                    .HandleOption(RemoveProgram, idArrayOption)
+                    .HandleOption(RemoveProgram, pathArrayOption),
+
+                editArgumentCommand
+                    .AddOptions(
+                        attachedFlag, blockedFlag,
+                        idArrayOption)
+                    .HandleOption(RemoveArgument, idArrayOption, attachedFlag, blockedFlag),
+
+                editPreLaunchCommand
+                    .AddOptions(idArrayOption)
+                    .HandleOption(RemovePreLaunchTask, idArrayOption),
+
+                editEnvVarCommand
+                    .AddOptions(idArrayOption)
+                    .HandleOption(RemoveEnvironmentVariable, idArrayOption)),
+
+            enableCommand.AddAliases("en").AddCommands(
+                editProgramCommand
+                    .AddOptions(idArrayOption, pathArrayOption)
+                    .HandleOption(EnableProgram, idArrayOption)
+                    .HandleOption(EnableProgram, pathArrayOption),
+
+                editArgumentCommand
+                    .AddOptions(
+                        attachedFlag, blockedFlag,
+                        idArrayOption)
+                    .HandleOption(EnableArgument, idArrayOption, attachedFlag, blockedFlag),
+
+                editPreLaunchCommand
+                    .AddOptions(idArrayOption)
+                    .HandleOption(EnablePreLaunchTask, idArrayOption),
+
+                editEnvVarCommand
+                    .AddOptions(idArrayOption)
+                    .HandleOption(EnableEnvironmentVariable, idArrayOption)),
+
+            disableCommand.AddAliases("dis").AddCommands(
+                editProgramCommand
+                    .AddOptions(idArrayOption, pathArrayOption)
+                    .HandleOption(DisableProgram, idArrayOption)
+                    .HandleOption(DisableProgram, pathArrayOption),
+                editArgumentCommand
+                    .AddOptions(
+                        attachedFlag, blockedFlag,
+                        idArrayOption)
+                    .HandleOption(DisableArgument, idArrayOption, attachedFlag, blockedFlag),
+                editPreLaunchCommand
+                    .AddOptions(idArrayOption)
+                    .HandleOption(DisablePreLaunchTask, idArrayOption),
+                editEnvVarCommand
+                    .AddOptions(idArrayOption)
+                    .HandleOption(DisableEnvironmentVariable, idArrayOption))
+        );
+    }
+
+    public static RootCommand RootCommand { get; }
+
+    #region common options
+
+    /// <summary>
+    /// --length, -l
+    /// </summary>
+    public static readonly Option<int> listLengthOption = new(
+        ["--length", "-l"],
+        "列出几条数据")
+    {
+        Arity = ArgumentArity.ExactlyOne
+    };
+
+    /// <summary>
+    /// --skip, -s
+    /// </summary>
+    public static readonly Option<int> listSkipOption = new(
+        ["--skip", "-s"],
+        "跳过前几条数据")
+    {
+        Arity = ArgumentArity.ExactlyOne
+    };
+
+    /// <summary>
+    /// --id, -i
+    /// </summary>
+    //public static readonly Option<int> idOption = new(
+    //    ["--id", "-i"],
+    //    "ID")
+    //{
+    //    Arity = ArgumentArity.ExactlyOne
+    //};
+
+    /// <summary>
+    /// --id, -i
+    /// </summary>
+    public static readonly Option<int[]> idArrayOption = new(
+        ["--id", "-i"],
+        "ID")
+    {
+        Arity = ArgumentArity.OneOrMore
+    };
+
+    //public static readonly Option<string> pathOption = new(
+    //    ["--path", "-p"],
+    //    "所在路径")
+    //{
+    //    Arity = ArgumentArity.ExactlyOne
+    //};
+
+    public static readonly Option<string[]> pathArrayOption = new(
+        ["--path", "-p"],
+        "所在路径")
+    {
+        Arity = ArgumentArity.OneOrMore
+    };
+
+    //public static readonly Option<string> programPathOption = new(
+    //    ["--program-path", "--prog-path"],
+    //    "存储的已配置的程序 ID")
+    //{
+    //    Arity = ArgumentArity.ExactlyOne
+    //};
+
+    public static readonly Option<string[]> programPathArrayOption = new(
+        ["--program-path", "--prog-path"],
+        "存储的已配置的程序 ID")
+    {
+        Arity = ArgumentArity.OneOrMore
+    };
+
+    //public static readonly Option<int> programIdOption = new(
+    //    ["--program-id", "--prog-id"],
+    //    "存储的已配置的程序 ID")
+    //{
+    //    Arity = ArgumentArity.ExactlyOne
+    //};
+
+    public static readonly Option<int[]> programIdArrayOption = new(
+        ["--program-id", "--prog-id"],
+        "存储的已配置的程序 ID")
+    {
+        Arity = ArgumentArity.OneOrMore
+    };
+
+    //public static readonly Option<int> argumentIdOption = new(
+    //    ["--argument-id", "--arg-id"],
+    //    "附加或屏蔽的参数 ID")
+    //{
+    //    Arity = ArgumentArity.ExactlyOne
+    //};
+
+    public static readonly Option<int[]> argumentIdArrayOption = new(
+        ["--argument-id", "--arg-id"],
+        "附加或屏蔽的参数 ID")
+    {
+        Arity = ArgumentArity.OneOrMore
+    };
+
+    //public static readonly Option<int> prelaunchIdOption = new(
+    //    ["--prelaunch-id", "--task-id"],
+    //    "程序启动前任务的 ID")
+    //{
+    //    Arity = ArgumentArity.ExactlyOne
+    //};
+
+    public static readonly Option<int[]> prelaunchIdArrayOption = new(
+        ["--prelaunch-id", "--task-id"],
+        "程序启动前任务的 ID")
+    {
+        Arity = ArgumentArity.OneOrMore
+    };
+
+    //public static readonly Option<int> envvarIdOption = new(
+    //    ["--envvar-id"],
+    //    "程序专属环境变量的 ID")
+    //{
+    //    Arity = ArgumentArity.ExactlyOne
+    //};
+
+    public static readonly Option<int[]> envvarIdArrayOption = new(
+        ["--envvar-id"],
+        "程序专属环境变量的 ID")
+    {
+        Arity = ArgumentArity.OneOrMore
+    };
+
+    public static readonly Option<bool> allFlag = new(
+        ["--all", "-a"],
+        "对所有执行操作")
+    {
+        Arity = ArgumentArity.ZeroOrOne
+    };
+
+    public static readonly Option<bool> attachedFlag = new(
+        ["--attached"],
+        "");
+
+    public static readonly Option<bool> blockedFlag = new(
+        ["--blocked"],
+        "");
+
+    #endregion
+
+    #region list
+
+    public static readonly Command listCommand = new(
+        "list",
+        "列出所有相关项");
+
+    public static readonly Command listProgramCommand = new(
+        "program",
+        "列出已配置的程序");
+
+    public static readonly Command listArgumentCommand = new(
+        "argument",
+        "列出为某个程序的附加或屏蔽的参数");
+
+    public static readonly Command listPreLaunchCommand = new(
+        "prelaunch",
+        "列出为某个程序的配置的启动前任务");
+
+    public static readonly Command listEnvVarCommand = new(
+        "envvar",
+        "列出为某个程序的配置的启动前任务");
+
+    #endregion
+
+    #region show
+
+    public static readonly Command showCommand = new(
+        "show",
+        "查询并显示相关项");
+
+    public static readonly Command showProgramCommand = new(
+        "program",
+        "显示已配置的程序基本信息");
+
+    public static readonly Command showArgumentCommand = new(
+        "argument",
+        "显示程序附加或屏蔽的参数");
+
+    public static readonly Command showPreLaunchCommand = new(
+        "prelaunch",
+        "显示程序启动前任务");
+
+    public static readonly Command showEnvVarCommand = new(
+        "envvar",
+        "显示程序环境变量");
+
+    #endregion
+
+    #region add
+
+    public static readonly Command addCommand = new(
+        "add",
+        "添加：程序、附加参数、屏蔽参数、启动前任务、环境变量");
+
+    public static readonly Command addProgramCommand = new(
+        "program",
+        "根据路径添加程序");
+
+    public static readonly Command addArgumentCommand = new(
+        "argument",
+        "为程序附加或屏蔽参数");
+
+    public static readonly Command addPreLaunchCommand = new(
+        "prelaunch",
+        "为程序添加启动前任务");
+
+    public static readonly Command addEnvVarCommand = new(
+        "envvar",
+        "为程序添加专属于它的环境变量");
+
+    public static readonly Option<string> argumentOption = new Option<string>(
+        ["--argument", "-arg"]);
+
+    public static readonly Option<bool> enableFlag = new Option<bool>(
+        ["--enable", "-e"]);
+
+    public static readonly Option<bool> regexFlag = new Option<bool>(
+        ["--is-regex", "-r"],
+        "屏蔽参数是否以正则表达式来表示");
+
+    public static readonly Option<string> envvarKeyOption = new Option<string>(
+        ["--key", "-k"]);
+
+    public static readonly Option<string> envvarValueOption = new Option<string>(
+        ["--value", "-v"]);
+
+    public static readonly Option<string> batchFileOption = new Option<string>(
+        ["--batch-path", "-p"],
+        "启动前执行的批处理文件的路径");
+
+    public static readonly Option<bool> acceptProgramArgsOption = new Option<bool>(
+        ["--accept-program-args"],
+        "批处理脚本包含传给要启动的程序的参数");
+
+    public static readonly Option<bool> includeAttachedArgsOption = new Option<bool>(
+        ["--include-attached-args"],
+        "接受参数时包含您附加的参数");
+
+    #endregion
+
+    #region edit (remove, enable, disable)
+
+    public static readonly Command removeCommand = new(
+        "remove",
+        "移除：程序、附加参数、屏蔽参数、启动前任务、环境变量");
+    public static readonly Command enableCommand = new(
+        "enable",
+        "启用设置：程序、附加参数、屏蔽参数、启动前任务、环境变量");
+    public static readonly Command disableCommand = new(
+        "disable",
+        "禁用设置：程序、附加参数、屏蔽参数、启动前任务、环境变量");
+
+    public static readonly Command editProgramCommand = new(
+        "program",
+        "对程序设置");
+    public static readonly Command editArgumentCommand = new(
+        "argument",
+        "对程序附加或屏蔽的参数设置");
+    public static readonly Command editPreLaunchCommand = new(
+        "prelaunch",
+        "对程序启动前任务设置");
+    public static readonly Command editEnvVarCommand = new(
+        "envvar",
+        "对程序专属的环境变量设置");
+
+    #endregion
+
+    public static readonly Command attachCommand = new(
+        "attach",
+        "为程序附加参数，等同于 add argument --attach");
+    public static readonly Command blockCommand = new(
+        "block",
+        "为程序屏蔽参数，等同于 remove argument --block");
+}

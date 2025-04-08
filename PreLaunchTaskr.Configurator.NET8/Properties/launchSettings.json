@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PreLaunchTaskr.Configurator.NET8": {
+      "commandName": "Project",
+      "commandLineArgs": "en-prog -i 2 -i 1"
+    }
+  }
+}

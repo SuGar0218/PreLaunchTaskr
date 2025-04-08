@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PreLaunchTaskr.GUI.WinUI3 (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "PreLaunchTaskr.GUI.WinUI3 (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

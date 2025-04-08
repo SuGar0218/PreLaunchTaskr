@@ -1,0 +1,94 @@
+﻿list
+	program
+		--length <length>
+		--skip <skip>
+	argument
+		--program-id <id>
+		--length <length>
+		--skip <skip>
+	prelaunch
+		--program-id <id>
+		--attach 或 --block
+		--length <length>
+		--skip <skip>
+	envvar
+		--program-id <id>
+		--length <length>
+		--skip <skip>
+show
+	program
+		--id <id>
+		--path <path>
+		--all
+	argument
+		--program-id <id>
+		--program-path <path>
+		--attach 或 --block
+		--argument-id <id>
+		--all
+	prelaunch
+		--program-id <id>
+		--task-id <id>
+		--all
+	envvar
+		--program-id <id>
+		--envvar-id <id>
+		--all
+add
+	program
+		--path
+	argument
+		--attached 或 --blocked
+		--program-id <id> --argument <arg>
+		--program-path <path> --argument <arg>
+	prelaunch
+		--program-id <id> --task <*.bat>
+		--program-path <path> --task <*.bat>
+	envvar
+		--program-id <id> --key <key> --value <value>
+		--program-path <path> --key <key> --value <value>
+remove
+	program
+		--id <id>
+		--path <path>
+		--all
+	argument
+		--attach 或 --block
+		--argument-id <id>
+		--all
+	prelaunch
+		--task-id <id>
+		--all
+	envvar
+		--envvar-id <id>
+		--all
+enable
+	program
+		--id <id>
+		--path <path>
+		--all
+	argument
+		--attach 或 --block
+		--argument-id <id>
+		--all
+	prelaunch
+		--task-id <id>
+		--all
+	envvar
+		--envvar-id <id>
+		--all
+disable
+	program
+		--id <id>
+		--path <path>
+		--all
+	argument
+		--attach 或 --block
+		--argument-id <id>
+		--all
+	prelaunch
+		--task-id <id>
+		--all
+	envvar
+		--envvar-id <id>
+		--all

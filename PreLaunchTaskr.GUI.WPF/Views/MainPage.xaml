@@ -1,0 +1,136 @@
+﻿<Page
+    x:Class="PreLaunchTaskr.GUI.WPF.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PreLaunchTaskr.GUI.WPF.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:u="clr-namespace:PreLaunchTaskr.GUI.WPF.Utils"
+    xmlns:vm="clr-namespace:PreLaunchTaskr.GUI.WPF.ViewModels"
+    Title="MainPage"
+    d:DataContext="{d:DesignInstance vm:MainViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button" />
+        <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" />
+        <Style BasedOn="{StaticResource BaseListViewStyle}" TargetType="ListView" />
+
+        <DataTemplate x:Key="ProgramListItemDataTemplate" DataType="vm:ProgramListItem">
+            <Border Padding="0,4">
+                <Grid
+                    MaxWidth="240"
+                    HorizontalAlignment="Stretch"
+                    DataContext="{Binding}">
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="移除" />
+                            <MenuItem Header="打开程序所在位置" />
+                            <MenuItem Header="复制程序所在路径" />
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+
+                    <!--  MaxWidth 匹配 ListView 宽度  -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Image
+                        Grid.Column="0"
+                        Width="32"
+                        VerticalAlignment="Center"
+                        Source="{Binding Icon}" />
+
+                    <StackPanel
+                        Grid.Column="1"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center">
+                        <TextBlock
+                            HorizontalAlignment="Stretch"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="{Binding Name}" />
+                        <TextBlock
+                            HorizontalAlignment="Stretch"
+                            Opacity="0.5"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="{Binding Path}"
+                            TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+
+                    <CheckBox
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Content="启用" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <!--  标题栏区域  -->
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Height="30" />
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <!--  左侧程序列表  -->
+                <ColumnDefinition Width="auto" />
+                <!--  右侧程序配置信息面板  -->
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  左侧程序列表  -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    Margin="16,0"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Text="已配置的程序" />
+
+                <Menu
+                    Grid.Row="1"
+                    Margin="8,0"
+                    Background="Transparent">
+                    <MenuItem Header="添加程序">
+                        <MenuItem Header="从此电脑选取" />
+                        <MenuItem Header="输入或粘贴程序所在路径" />
+                    </MenuItem>
+                    <MenuItem Header="移除程序">
+                        <MenuItem Header="在列表项上右键以显示更多操作" />
+                    </MenuItem>
+                </Menu>
+
+                <ListView
+                    Margin="8,0"
+                    Grid.Row="2"
+                    Width="256"
+                    HorizontalContentAlignment="Stretch"
+                    Background="Transparent"
+                    ItemTemplate="{StaticResource ProgramListItemDataTemplate}"
+                    ItemsSource="{Binding Programs}" />
+            </Grid>
+
+            <!--  右侧程序配置信息面板  -->
+            <Border
+                Grid.Column="1"
+                Background="{StaticResource LayerOnAeroAltFillColorDefaultBrush}"
+                CornerRadius="4">
+                <Frame x:Name="ContentFrame" />
+            </Border>
+        </Grid>
+    </Grid>
+</Page>
