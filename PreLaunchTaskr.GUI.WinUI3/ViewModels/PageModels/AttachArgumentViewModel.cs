@@ -18,11 +18,10 @@ public partial class AttachArgumentViewModel : ObservableObject, IProgramConfigC
     public AttachArgumentViewModel(ProgramListItem programListItem)
     {
         this.programListItem = programListItem;
-        Arguments = null!;
     }
 
     [ObservableProperty]
-    public partial ObservableCollection<AttachedArgumentListItem> Arguments { get; private set; }
+    public partial ObservableCollection<AttachedArgumentListItem>? Arguments { get; private set; }
 
     public void Init()
     {
@@ -63,19 +62,22 @@ public partial class AttachArgumentViewModel : ObservableObject, IProgramConfigC
 
     public void AddArgument()
     {
-        Arguments.Add(new AttachedArgumentListItem(new AttachedArgument(programListItem.ProgramInfo, string.Empty, false)));
+        Arguments!.Add(new AttachedArgumentListItem(new AttachedArgument(programListItem.ProgramInfo, string.Empty, false)));
         //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public void RemoveArgument(AttachedArgumentListItem item)
     {
-        Arguments.Remove(item);
+        Arguments!.Remove(item);
         removed.Add(item);
         //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public bool SaveChanges()
     {
+        if (Arguments is null)
+            return true;
+
         foreach (AttachedArgumentListItem item in Arguments)
         {
             item.SaveChanges();
@@ -88,7 +90,7 @@ public partial class AttachArgumentViewModel : ObservableObject, IProgramConfigC
         return true;
     }
 
-    public bool IsListEmpty => Arguments.Count == 0;
+    public bool IsListEmpty => Arguments is null || Arguments.Count == 0;
 
     private ProgramListItem programListItem;
 

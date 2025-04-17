@@ -17,11 +17,10 @@ public partial class PreLaunchTaskViewModel : ObservableObject, IProgramConfigCa
     public PreLaunchTaskViewModel(ProgramListItem programListItem)
     {
         this.programListItem = programListItem;
-        Tasks = null!;
     }
 
     [ObservableProperty]
-    public partial ObservableCollection<PreLaunchTaskListItem> Tasks { get; private set; }
+    public partial ObservableCollection<PreLaunchTaskListItem>? Tasks { get; private set; }
 
     public void Init()
     {
@@ -62,19 +61,22 @@ public partial class PreLaunchTaskViewModel : ObservableObject, IProgramConfigCa
 
     public void AddTask()
     {
-        Tasks.Add(new PreLaunchTaskListItem(new PreLaunchTask(programListItem.ProgramInfo, string.Empty, false, false, false)));
+        Tasks!.Add(new PreLaunchTaskListItem(new PreLaunchTask(programListItem.ProgramInfo, string.Empty, false, false, false)));
         //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public void RemoveTask(PreLaunchTaskListItem item)
     {
-        Tasks.Remove(item);
+        Tasks!.Remove(item);
         removed.Add(item);
         //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public bool SaveChanges()
     {
+        if (Tasks is null)
+            return true;
+
         foreach (PreLaunchTaskListItem item in Tasks)
         {
             item.SaveChanges();

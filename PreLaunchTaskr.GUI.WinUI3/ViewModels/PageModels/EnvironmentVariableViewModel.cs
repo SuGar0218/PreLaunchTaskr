@@ -18,11 +18,10 @@ public partial class EnvironmentVariableViewModel : ObservableObject, IProgramCo
     public EnvironmentVariableViewModel(ProgramListItem programListItem)
     {
         this.programListItem = programListItem;
-        EnvironmentVariables = null!;
     }
 
     [ObservableProperty]
-    public partial ObservableCollection<EnvironmentVariableListItem> EnvironmentVariables { get; private set; }
+    public partial ObservableCollection<EnvironmentVariableListItem>? EnvironmentVariables { get; private set; }
 
     public void Init()
     {
@@ -59,19 +58,22 @@ public partial class EnvironmentVariableViewModel : ObservableObject, IProgramCo
 
     public void AddEnvironmentVariable()
     {
-        EnvironmentVariables.Add(new EnvironmentVariableListItem(new EnvironmentVariable(programListItem.ProgramInfo, string.Empty, string.Empty, false)));
+        EnvironmentVariables!.Add(new EnvironmentVariableListItem(new EnvironmentVariable(programListItem.ProgramInfo, string.Empty, string.Empty, false)));
         //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public void RemoveEnvironmentVariable(EnvironmentVariableListItem item)
     {
-        EnvironmentVariables.Remove(item);
+        EnvironmentVariables!.Remove(item);
         removed.Add(item);
         //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public bool SaveChanges()
     {
+        if (EnvironmentVariables is null)
+            return true;
+
         foreach (EnvironmentVariableListItem item in EnvironmentVariables)
         {
             item.SaveChanges();
