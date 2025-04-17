@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace PreLaunchTaskr.Core.Dao.Abstract;
+﻿namespace PreLaunchTaskr.Core.Dao.Abstract;
 
 public interface IDaoWithUniqueKey<TUniqueKey, TData>
 {

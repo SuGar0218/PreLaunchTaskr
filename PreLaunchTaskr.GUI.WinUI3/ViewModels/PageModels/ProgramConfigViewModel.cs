@@ -1,20 +1,18 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// WinUI3
+
+using CommunityToolkit.Mvvm.ComponentModel;
 
 using Microsoft.UI.Xaml.Media.Imaging;
 
-using PreLaunchTaskr.Core.Entities;
+using PreLaunchTaskr.GUI.Common.AbstractViewModels.PageModels;
 using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 using PreLaunchTaskr.GUI.WinUI3.Views;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
-public class ProgramConfigViewModel : ObservableObject
+public partial class ProgramConfigViewModel : ObservableObject, IProgramConfigViewModel<BitmapImage, ProgramConfigCategoryItem>
 {
     public ProgramConfigViewModel(ProgramListItem programListItem)
     {

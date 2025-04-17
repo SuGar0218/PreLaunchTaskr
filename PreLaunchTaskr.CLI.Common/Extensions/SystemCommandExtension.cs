@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.CommandLine;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.CommandLine;
 
 namespace PreLaunchTaskr.CLI.Common.Extensions;
 
@@ -81,7 +76,7 @@ public static class SystemCommandExtension
         return command;
     }
 
-    public static Command HandleNoOption(this Command command,  Action action)
+    public static Command HandleNoOption(this Command command, Action action)
     {
         command.SetHandler(action);
         return command;

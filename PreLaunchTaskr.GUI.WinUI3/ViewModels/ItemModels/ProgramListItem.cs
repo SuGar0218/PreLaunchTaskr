@@ -2,23 +2,26 @@
 
 using Microsoft.UI.Xaml.Media.Imaging;
 
+using PreLaunchTaskr.Common;
 using PreLaunchTaskr.Core;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.GUI.Common.AbstractViewModels.ItemModels;
 using PreLaunchTaskr.GUI.WinUI3.Utils;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Windows.Win32.Foundation;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 
-public class ProgramListItem : ObservableObject, IProgramListItem<BitmapImage>
+public partial class ProgramListItem : ObservableObject, IProgramListItem<BitmapImage>
 {
+    public ProgramListItem(ProgramInfo programInfo)
+    {
+        ProgramInfo = programInfo;
+        Name = System.IO.Path.GetFileName(programInfo.Path)!;
+        Icon = IconBitmapImageReader.ReadAssociated(programInfo.Path) ?? defaultProgramIcon;
+        changed = false;
+    }
+
     public int Id => ProgramInfo.Id;
 
     public string Name { get; init; }
@@ -42,15 +45,7 @@ public class ProgramListItem : ObservableObject, IProgramListItem<BitmapImage>
         }
     }
 
-    public ProgramListItem(ProgramInfo programInfo)
-    {
-        ProgramInfo = programInfo;
-        Name = System.IO.Path.GetFileName(programInfo.Path)!;
-        Icon = IconBitmapImageReader.ReadFromExe(programInfo.Path) ?? defaultProgramIcon;
-        changed = false;
-    }
-
-    private bool SaveChanges()
+    public bool SaveChanges()
     {
         // 不调用配置器的方法是因为本程序通常不会在管理员模式下运行，
         // 也不能在管理员模式下运行，因为会导致 FilePicker 无法打开。
@@ -61,7 +56,7 @@ public class ProgramListItem : ObservableObject, IProgramListItem<BitmapImage>
         string commandArgs = Enabled ? $"-s enable-program --id {Id}" : $"-s disable-program --id {Id}";
         try
         {
-            return ProcessStarter.StartSilentAsAdminAndWait(Properties.ConfiguratorNet8Location, commandArgs) is not null;
+            return ProcessStarter.StartSilentAsAdminAndWait(System.IO.Path.GetFullPath(GlobalProperties.ConfiguratorNet8Location), commandArgs) is not null;
         }
         catch
         {
@@ -82,5 +77,5 @@ public class ProgramListItem : ObservableObject, IProgramListItem<BitmapImage>
 
     private bool changed;
 
-    private static readonly BitmapImage defaultProgramIcon = new(new Uri(System.IO.Path.Combine(App.BaseUri, @"Assets\DefaultProgramIcon.png")));
+    private static readonly BitmapImage defaultProgramIcon = new(new Uri(System.IO.Path.Combine(App.BaseDirectory, @"Assets\DefaultProgramIcon.png")));
 }

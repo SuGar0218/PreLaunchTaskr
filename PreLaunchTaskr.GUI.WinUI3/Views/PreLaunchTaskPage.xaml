@@ -9,8 +9,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:my="using:PreLaunchTaskr.GUI.WinUI3.Controls"
     xmlns:vm="using:PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels"
-    mc:Ignorable="d"
-    Unloaded="Page_Unloaded">
+    Unloaded="Page_Unloaded"
+    mc:Ignorable="d">
 
     <Page.Resources>
         <DataTemplate x:Key="PreLaunchTaskListItemDataTemplate" x:DataType="vm:PreLaunchTaskListItem">
@@ -57,7 +57,10 @@
                             <SymbolIcon Symbol="More" />
                             <Button.Flyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem Text="复制参数文本" />
+                                    <MenuFlyoutItem
+                                        Click="CopyPath_Click"
+                                        DataContext="{x:Bind}"
+                                        Text="复制路径" />
                                     <MenuFlyoutSeparator />
                                     <ToggleMenuFlyoutItem IsChecked="{x:Bind AcceptProgramArgs, Mode=TwoWay}" Text="接收启动程序的原参数" />
                                     <ToggleMenuFlyoutItem IsChecked="{x:Bind IncludeAttachedArgs, Mode=TwoWay}" Text="也包含自行附加的参数" />
@@ -108,7 +111,7 @@
                     </HyperlinkButton>
                 </Border>
 
-                <ItemsRepeater ItemTemplate="{StaticResource PreLaunchTaskListItemDataTemplate}" ItemsSource="{x:Bind viewModel.Tasks}">
+                <ItemsRepeater ItemTemplate="{StaticResource PreLaunchTaskListItemDataTemplate}" ItemsSource="{x:Bind viewModel.Tasks, Mode=OneWay}">
                     <ItemsRepeater.Layout>
                         <StackLayout Spacing="8" />
                     </ItemsRepeater.Layout>

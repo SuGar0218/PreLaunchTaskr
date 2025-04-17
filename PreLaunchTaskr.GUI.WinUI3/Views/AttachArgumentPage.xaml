@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!--  WinUI3  -->
 <Page
     x:Class="PreLaunchTaskr.GUI.WinUI3.Views.AttachArgumentPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -9,8 +10,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:my="using:PreLaunchTaskr.GUI.WinUI3.Controls"
     xmlns:vm="using:PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels"
-    mc:Ignorable="d"
-    Unloaded="Page_Unloaded">
+    Unloaded="Page_Unloaded"
+    mc:Ignorable="d">
 
     <Page.Resources>
         <DataTemplate x:Key="ArgumentListItemDataTemplate" x:DataType="vm:AttachedArgumentListItem">
@@ -57,7 +58,10 @@
                             <SymbolIcon Symbol="More" />
                             <Button.Flyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem Text="复制参数文本" />
+                                    <MenuFlyoutItem
+                                        Click="CopyArgument_Click"
+                                        DataContext="{x:Bind}"
+                                        Text="复制参数文本" />
                                 </MenuFlyout>
                             </Button.Flyout>
                         </Button>

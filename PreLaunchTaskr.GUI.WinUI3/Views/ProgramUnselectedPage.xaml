@@ -14,15 +14,18 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             ContentHorizontalAlignment="Center">
-            
-            <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="PreLaunchTaskr" Opacity="0.5" />
-            
+
+            <TextBlock
+                Opacity="0.5"
+                Style="{ThemeResource HeaderTextBlockStyle}"
+                Text="PreLaunchTaskr" />
+
             <TextBlock
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Opacity="0.5"
                 Text="配置应用程序启用前的行为：处理启动参数、执行某些任务、设置环境变量" />
-            
+
             <TextBlock
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"

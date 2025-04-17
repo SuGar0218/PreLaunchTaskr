@@ -1,11 +1,8 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 using System;
 using System.Threading.Tasks;
-
-using Windows.UI;
 
 namespace PreLaunchTaskr.GUI.WinUI3.Extensions;
 
@@ -40,6 +37,7 @@ public static class MessageBoxExtension
             Title = title,
             Content = content,
             XamlRoot = xamlRoot,
+            Style = defaultStyle
             //Style = new Style
             //{
             //    TargetType = typeof(ContentDialog),

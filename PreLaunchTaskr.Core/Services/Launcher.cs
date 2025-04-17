@@ -1,11 +1,10 @@
 ﻿using Microsoft.Data.Sqlite;
-using PreLaunchTaskr.Core.Dao;
+
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Extensions;
 using PreLaunchTaskr.Core.Repositories.Implementations;
 using PreLaunchTaskr.Core.Repositories.Interfaces;
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -43,7 +42,7 @@ public class Launcher
     {
         SqliteConnection connection = new(new SqliteConnectionStringBuilder
         {
-            DataSource = Path.GetFullPath(Path.Combine(baseDirectory, Properties.SettingsLocation))
+            DataSource = Path.GetFullPath(Path.Combine(baseDirectory, GlobalProperties.SettingsLocation))
         }.ToString());
         return new Launcher(
             baseDirectory,
@@ -79,7 +78,7 @@ public class Launcher
     /// <returns></returns>
     public async Task<bool> Launch(ProgramInfo programInfo, string[] originArgs, bool asAdmin = false)
     {
-        string symlinkPath = Properties.SymbolicLinkPath(programInfo.Path);
+        string symlinkPath = GlobalProperties.SymbolicLinkPath(programInfo.Path);
         if (!File.Exists(symlinkPath))
         {
             File.CreateSymbolicLink(symlinkPath, programInfo.Path);
@@ -91,8 +90,9 @@ public class Launcher
 
         // 处理参数：先屏蔽后附加，防止把自己附加的给屏蔽了
 
-        List<string> processedArgs = new();
-
+        // 对原参数剔除后先不加入 StartInfo 启动参数，要在所有参数前附加我们自己的参数，避免造成其他影响。
+        // 例如：Edge 浏览器，--single-argument 后的参数不会再被空格分成多个参数。
+        List<string> afterBlock = new();  // 如果没有设置屏蔽参数，则这个列表为空。
         IList<BlockedArgument> blockedArguments = argumentRepository.ListEnabledBlockedArgumentsByProgram(programInfo.Id, true);
         foreach (BlockedArgument blockedArgument in blockedArguments)
         {
@@ -103,7 +103,7 @@ public class Launcher
                 {
                     if (!regex.IsMatch(originArgs[i]))
                     {
-                        processedArgs.Add(originArgs[i]);
+                        afterBlock.Add(originArgs[i]);
                     }
                 }
             }
@@ -113,7 +113,7 @@ public class Launcher
                 {
                     if (blockedArgument.Argument != originArgs[i])
                     {
-                        processedArgs.Add(originArgs[i]);
+                        afterBlock.Add(originArgs[i]);
                     }
                 }
             }
@@ -122,12 +122,19 @@ public class Launcher
         IList<AttachedArgument> attachedArguments = argumentRepository.ListEnabledAttachedArgumentsByProgram(programInfo.Id, true);
         foreach (AttachedArgument attachedArgument in attachedArguments)
         {
-            processedArgs.Add(attachedArgument.Argument);
+            programStartInfo.ArgumentList.Add(attachedArgument.Argument);
         }
 
-        foreach (string arg in processedArgs)
+        if (afterBlock.Count == 0)
         {
-            programStartInfo.ArgumentList.Add(arg);
+            programStartInfo.ArgumentList.AddAll(originArgs);
+        }
+        else
+        {
+            foreach (string arg in afterBlock)
+            {
+                programStartInfo.ArgumentList.Add(arg);
+            }
         }
 
         // 处理环境变量
@@ -204,9 +211,9 @@ public class Launcher
         };
         programProcessAdmin.StartInfo.UseShellExecute = true;
         programProcessAdmin.StartInfo.Verb = "runas";
-        if (programProcessAdmin.Start())
-            await programProcessAdmin.WaitForExitAsync();
-        else
+        if (!programProcessAdmin.Start())
+            //await programProcessAdmin.WaitForExitAsync();
+            //else
             return false;
         return true;
     }

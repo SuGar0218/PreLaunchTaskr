@@ -13,7 +13,7 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <DataTemplate x:Key="ArgumentListItemDataTemplate" x:DataType="vm:EnvironmentVariableListItem">
+        <DataTemplate x:Key="EnvironmentVariableListItemDataTemplate" x:DataType="vm:EnvironmentVariableListItem">
             <Border Padding="16" Style="{StaticResource CardBorderStyle}">
                 <Border.ContextFlyout>
                     <MenuFlyout>
@@ -42,14 +42,14 @@
                         IsChecked="{x:Bind Enabled, Mode=TwoWay}"
                         Style="{StaticResource SingleChechBoxStyle}" />
 
-                    <StackPanel
+                    <my:MyStackPanel
                         Grid.Column="1"
                         HorizontalAlignment="Stretch"
+                        ContentHorizontalAlignment="Stretch"
+                        ContentVerticalAlignment="Center"
                         TabFocusNavigation="Cycle">
 
                         <TextBox
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
                             Background="Transparent"
                             BorderThickness="0"
                             DataContext="{x:Bind}"
@@ -58,22 +58,27 @@
                             Text="{x:Bind Key, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBox
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
                             Background="Transparent"
                             BorderThickness="0"
                             DataContext="{x:Bind}"
                             IsTabStop="True"
                             PlaceholderText="变量值"
                             Text="{x:Bind Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
+                    </my:MyStackPanel>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button Background="Transparent" BorderThickness="0">
                             <SymbolIcon Symbol="More" />
                             <Button.Flyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem Text="复制参数文本" />
+                                    <MenuFlyoutItem
+                                        Click="CopyName_Click"
+                                        DataContext="{x:Bind}"
+                                        Text="复制变量名" />
+                                    <MenuFlyoutItem
+                                        Click="CopyValue_Click"
+                                        DataContext="{x:Bind}"
+                                        Text="复制变量值" />
                                 </MenuFlyout>
                             </Button.Flyout>
                         </Button>
@@ -121,7 +126,7 @@
                     </HyperlinkButton>
                 </Border>
 
-                <ItemsRepeater ItemTemplate="{StaticResource ArgumentListItemDataTemplate}" ItemsSource="{x:Bind viewModel.EnvironmentVariables}">
+                <ItemsRepeater ItemTemplate="{StaticResource EnvironmentVariableListItemDataTemplate}" ItemsSource="{x:Bind viewModel.EnvironmentVariables, Mode=OneWay}">
                     <ItemsRepeater.Layout>
                         <StackLayout Spacing="8" />
                     </ItemsRepeater.Layout>

@@ -1,6 +1,0 @@
-﻿MessageBox
-ILCreateFromPathW
-SHOpenFolderAndSelectItems
-CoInitialize
-CoUninitialize
-ILFree

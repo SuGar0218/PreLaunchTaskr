@@ -1,15 +1,11 @@
 ﻿using Microsoft.Data.Sqlite;
 
+using PreLaunchTaskr.Common.Utils;
 using PreLaunchTaskr.Core.Dao;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Repositories.Interfaces;
-using PreLaunchTaskr.Core.Utils;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PreLaunchTaskr.Core.Repositories.Implementations;
 

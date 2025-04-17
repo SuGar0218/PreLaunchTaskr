@@ -1,4 +1,4 @@
-﻿using PreLaunchTaskr.Configurator.NET8.Helpers;
+﻿using PreLaunchTaskr.CLI.Common.Helpers;
 using PreLaunchTaskr.Core.Entities;
 
 using System.Security;
@@ -216,7 +216,7 @@ internal partial class Program
             }
         }
     }
-    
+
     private static void AddEnvironmentVariable(int[] programId, string key, string[] value, bool enable)
     {
         for (int i = 0; i < programId.Length; i++)

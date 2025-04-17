@@ -9,8 +9,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:my="using:PreLaunchTaskr.GUI.WinUI3.Controls"
     xmlns:vm="using:PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels"
-    mc:Ignorable="d"
-    Unloaded="Page_Unloaded">
+    Unloaded="Page_Unloaded"
+    mc:Ignorable="d">
 
     <Page.Resources>
         <DataTemplate x:Key="ArgumentListItemDataTemplate" x:DataType="vm:BlockedArgumentListItem">
@@ -57,7 +57,10 @@
                             <SymbolIcon Symbol="More" />
                             <Button.Flyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem Text="复制参数文本" />
+                                    <MenuFlyoutItem
+                                        Click="CopyArgument_Click"
+                                        DataContext="{x:Bind}"
+                                        Text="复制参数文本" />
                                     <MenuFlyoutSeparator />
                                     <ToggleMenuFlyoutItem IsChecked="{x:Bind IsRegex, Mode=TwoWay}" Text="启用正则表达式" />
                                 </MenuFlyout>
@@ -105,7 +108,7 @@
                     </HyperlinkButton>
                 </Border>
 
-                <ItemsRepeater ItemTemplate="{StaticResource ArgumentListItemDataTemplate}" ItemsSource="{x:Bind viewModel.Arguments}">
+                <ItemsRepeater ItemTemplate="{StaticResource ArgumentListItemDataTemplate}" ItemsSource="{x:Bind viewModel.Arguments, Mode=OneWay}">
                     <ItemsRepeater.Layout>
                         <StackLayout Spacing="8" />
                     </ItemsRepeater.Layout>

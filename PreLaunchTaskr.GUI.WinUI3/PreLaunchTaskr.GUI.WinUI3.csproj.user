@@ -10,6 +10,18 @@
     <None Update="App.xaml">
       <SubType>Designer</SubType>
     </None>
+    <Page Update="Views\InstalledProgramListPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\InstalledPackagedProgramListPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\InputTextPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\InstalledTraditionalProgramListPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\ProgramUnselectedPage.xaml">
       <SubType>Designer</SubType>
     </Page>

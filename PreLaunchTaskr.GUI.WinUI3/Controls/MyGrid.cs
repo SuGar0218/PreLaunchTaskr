@@ -1,12 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace PreLaunchTaskr.GUI.WinUI3.Controls;
 
 public partial class MyGrid : Grid
@@ -44,12 +38,12 @@ public partial class MyGrid : Grid
     public static readonly DependencyProperty ContentHorizontalAlignmentProperty = DependencyProperty.Register(
         nameof(ContentHorizontalAlignment),
         typeof(HorizontalAlignment),
-        typeof(MyStackPanel),
+        typeof(MyGrid),
         new PropertyMetadata(default));
 
     public static readonly DependencyProperty ContentVerticalAlignmentProperty = DependencyProperty.Register(
         nameof(ContentHorizontalAlignment),
         typeof(VerticalAlignment),
-        typeof(MyStackPanel),
+        typeof(MyGrid),
         new PropertyMetadata(default));
 }

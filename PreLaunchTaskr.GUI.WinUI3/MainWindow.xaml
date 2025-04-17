@@ -9,11 +9,13 @@
     xmlns:my="using:PreLaunchTaskr.GUI.WinUI3.Controls"
     xmlns:vm="using:PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels"
     Title="PreLaunchTaskr.GUI.WinUI3"
+    Closed="Window_Closed"
     mc:Ignorable="d">
 
-    <Window.SystemBackdrop>
+    <!--  Windows 10 不支持 Mica，将会在 MainWindow 代码中判断并使用不同材质。  -->
+    <!--<Window.SystemBackdrop>
         <MicaBackdrop />
-    </Window.SystemBackdrop>
-    
-    <Frame Loaded="Frame_Loaded" />
+    </Window.SystemBackdrop>-->
+
+    <Frame IsNavigationStackEnabled="False" Loaded="Frame_Loaded" />
 </Window>

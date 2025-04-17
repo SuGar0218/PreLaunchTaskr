@@ -1,15 +1,13 @@
 ﻿using Microsoft.Data.Sqlite;
 
+using PreLaunchTaskr.Common.Helpers;
 using PreLaunchTaskr.Core.Dao;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Repositories.Implementations;
 using PreLaunchTaskr.Core.Repositories.Interfaces;
-using PreLaunchTaskr.Core.Utils;
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace PreLaunchTaskr.Core.Services;
 
@@ -86,7 +84,7 @@ public class Configurator
 
         if (programInfo.Enabled)
         {
-            ImageFileExecutionOptions.SetDebugger(
+            WindowsHelper.ImageFileExecutionOptions.SetDebugger(
                 Path.GetFileName(programInfo.Path),
                 $"{Path.GetFullPath(pathToLauncher)} {Launcher.CommandLineArgumentWithId(programInfo.Id)}");
         }
@@ -120,13 +118,13 @@ public class Configurator
             return true;
 
         programInfo.Enabled = enable;
-        string symlinkPath = Properties.SymbolicLinkPath(programInfo.Path);
+        string symlinkPath = GlobalProperties.SymbolicLinkPath(programInfo.Path);
         if (enable)
         {
             if (File.Exists(symlinkPath))
                 File.Delete(symlinkPath);
             File.CreateSymbolicLink(symlinkPath, programInfo.Path);
-            ImageFileExecutionOptions.SetDebugger(
+            WindowsHelper.ImageFileExecutionOptions.SetDebugger(
                 Path.GetFileName(programInfo.Path),
                 $"{Path.GetFullPath(pathToLauncher)}");
         }
@@ -134,7 +132,7 @@ public class Configurator
         {
             if (File.Exists(symlinkPath))
                 File.Delete(symlinkPath);
-            ImageFileExecutionOptions.UnsetDebugger(Path.GetFileName(programInfo.Path));
+            WindowsHelper.ImageFileExecutionOptions.UnsetDebugger(Path.GetFileName(programInfo.Path));
         }
         return UpdateProgram(programInfo);
     }

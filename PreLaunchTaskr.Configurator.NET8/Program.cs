@@ -1,14 +1,9 @@
 ﻿namespace PreLaunchTaskr.Configurator.NET8;
 
-using PreLaunchTaskr.Configurator.NET8;
 using PreLaunchTaskr.Core;
-using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Services;
 
 using System.CommandLine;
-using System.Runtime.InteropServices;
-
-using Windows.Win32.Foundation;
 
 internal partial class Program
 {
@@ -21,5 +16,5 @@ internal partial class Program
         return await rootCommand.InvokeAsync(csArgs);
     }
 
-    static readonly Configurator configurator = Configurator.Init(Properties.SettingsLocation, Properties.LauncherNet8Location);
+    static readonly Configurator configurator = Configurator.Init(GlobalProperties.SettingsLocation, GlobalProperties.LauncherNet8Location);
 }

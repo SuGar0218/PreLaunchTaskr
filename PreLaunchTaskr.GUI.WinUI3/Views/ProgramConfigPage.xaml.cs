@@ -1,24 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
-using PreLaunchTaskr.Core.Entities;
-using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
-using PreLaunchTaskr.GUI.WinUI3.Controls;
+
+using PreLaunchTaskr.GUI.WinUI3.Extensions;
 using PreLaunchTaskr.GUI.WinUI3.Helpers;
-using System.Threading.Tasks;
+using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
+using PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
+
+using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace PreLaunchTaskr.GUI.WinUI3.Views;
 
@@ -44,7 +35,7 @@ public sealed partial class ProgramConfigPage : Page
     private void CategoryNavigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         ProgramConfigCategoryItem selectedItem = (ProgramConfigCategoryItem) args.SelectedItem;
-        ContentFrame.Navigate(selectedItem.PageType, selectedItem.ViewModel, args.RecommendedNavigationTransitionInfo);
+        ContentFrame.Navigate(selectedItem.PageType, selectedItem.PageViewModel, args.RecommendedNavigationTransitionInfo);
     }
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -54,18 +45,47 @@ public sealed partial class ProgramConfigPage : Page
 
     private ProgramConfigViewModel viewModel = null!;
 
-    private void Launch_Click(object sender, RoutedEventArgs e)
+    private async void Launch_Click(object sender, RoutedEventArgs e)
     {
-        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
-        Process.Start(viewModel.ProgramListItem.Path);
+        try
+        {
+            Process.Start(viewModel.ProgramListItem.Path);
+        }
+        catch (Exception exception)
+        {
+            await this.MessageBox(exception.Message, exception.GetType().Name);
+        }
     }
 
-    private void LaunchAsAdmin_Click(object sender, RoutedEventArgs e)
+    private async void LaunchAsAdmin_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Process process = new();
+            process.StartInfo.FileName = viewModel.ProgramListItem.Path;
+            process.StartInfo.Verb = "runas";
+            process.Start();
+        }
+        catch (Exception exception)
+        {
+            await this.MessageBox(exception.Message, exception.GetType().Name);
+        }
+    }
+
+    private void CopyFileName_Click(object sender, RoutedEventArgs e)
     {
         ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
-        Process process = new();
-        process.StartInfo.FileName = viewModel.ProgramListItem.Path;
-        process.StartInfo.Verb = "runas";
-        process.Start();
+        ClipboardHelper.Copy(item.Name);
+    }
+
+    private void CopyFilePath_Click(object sender, RoutedEventArgs e)
+    {
+        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
+        ClipboardHelper.Copy(item.Path);
+    }
+
+    private void SaveIcon_Click(object sender, RoutedEventArgs e)
+    {
+        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
     }
 }

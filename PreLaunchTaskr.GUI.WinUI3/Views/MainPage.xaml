@@ -90,9 +90,15 @@
         </DataTemplate>
 
         <MenuFlyout x:Key="AddProgramMenu" x:Name="AddProgramMenu">
-            <MenuFlyoutItem Click="OpenProgramFile_Click" Text="从文件管理器选取">
+            <MenuFlyoutItem Click="SelectProgramFile_Click" Text="从文件管理器选取">
                 <MenuFlyoutItem.Icon>
                     <SymbolIcon Symbol="OpenFile" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+
+            <MenuFlyoutItem Click="SelectInstalledProgram_Click" Text="从已安装的应用程序中选取">
+                <MenuFlyoutItem.Icon>
+                    <SymbolIcon Symbol="List" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
 
@@ -115,6 +121,7 @@
             Grid.Row="0"
             HorizontalAlignment="Stretch"
             x:FieldModifier="private">
+
             <my:MyStackPanel ContentVerticalAlignment="Center" Orientation="Horizontal">
                 <Button
                     x:Name="TitleBarToggleButton"
@@ -122,6 +129,7 @@
                     x:FieldModifier="private"
                     Click="TitleBarToggleButton_Click"
                     Style="{ThemeResource TitleBarPaneToggleButtonStyle}" />
+
                 <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="PreLaunchTaskr" />
             </my:MyStackPanel>
         </Border>

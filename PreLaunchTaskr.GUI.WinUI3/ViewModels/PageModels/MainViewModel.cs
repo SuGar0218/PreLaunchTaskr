@@ -1,22 +1,19 @@
 ﻿using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
 
+using PreLaunchTaskr.Common;
 using PreLaunchTaskr.Core;
 using PreLaunchTaskr.Core.Entities;
-using PreLaunchTaskr.GUI.WinUI3.Utils;
+using PreLaunchTaskr.GUI.Common.AbstractViewModels.PageModels;
 using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
-public class MainViewModel
+public class MainViewModel : IMainViewModel<DispatcherQueue, ProgramListItem, BitmapImage>
 {
     public ObservableCollection<ProgramListItem> Programs { get; private set; } = [];
 
@@ -70,6 +67,7 @@ public class MainViewModel
         ProgramListItem newProgramListItem = new(newProgramInfo);
         Programs.Add(newProgramListItem);
         idCache.Add(newProgramInfo.Id, newProgramListItem);
+        nameCache.Add(newProgramListItem.Name, newProgramListItem);
         return true;
     }
 
@@ -78,8 +76,7 @@ public class MainViewModel
         Programs.Remove(item);
         idCache.Remove(item.Id);
         nameCache.Remove(item.Name);
-        item.Remove();
-        return true;
+        return item.Remove();
     }
 
     public bool EnableProgram(int id)
@@ -87,7 +84,7 @@ public class MainViewModel
         if (!idCache.ContainsKey(id))
             return false;
 
-        return ProcessStarter.StartSilentAsAdminAndWait(Properties.ConfiguratorNet8Location, $" enable-program --id {id}") is not null;
+        return ProcessStarter.StartSilentAsAdminAndWait(GlobalProperties.ConfiguratorNet8Location, $" enable-program --id {id}") is not null;
     }
 
     public bool DisableProgram(int id)
@@ -95,7 +92,7 @@ public class MainViewModel
         if (!idCache.ContainsKey(id))
             return false;
 
-        return ProcessStarter.StartSilentAsAdminAndWait(Properties.ConfiguratorNet8Location, $" disable-program --id {id}") is not null;
+        return ProcessStarter.StartSilentAsAdminAndWait(GlobalProperties.ConfiguratorNet8Location, $" disable-program --id {id}") is not null;
     }
 
     private readonly Dictionary<int, ProgramListItem> idCache = new();

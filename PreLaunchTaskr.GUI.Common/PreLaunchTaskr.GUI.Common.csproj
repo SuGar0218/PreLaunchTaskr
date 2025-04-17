@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="NativeMethods.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
       <PrivateAssets>all</PrivateAssets>
@@ -20,7 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AbstractViewModels\PageModels\" />
+    <ProjectReference Include="..\PreLaunchTaskr.Core\PreLaunchTaskr.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>

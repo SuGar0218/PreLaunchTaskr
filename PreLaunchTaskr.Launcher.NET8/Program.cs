@@ -1,7 +1,4 @@
-﻿using PreLaunchTaskr.Core;
-using PreLaunchTaskr.Core.Services;
-
-namespace PreLaunchTaskr.Launcher.NET8;
+﻿namespace PreLaunchTaskr.Launcher.NET8;
 
 /// <summary>
 /// 此程序可能因为映像劫持而运行

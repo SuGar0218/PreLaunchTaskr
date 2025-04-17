@@ -3,57 +3,74 @@
 using Microsoft.UI.Dispatching;
 
 using PreLaunchTaskr.Core.Entities;
+using PreLaunchTaskr.GUI.Common.AbstractViewModels.PageModels;
 using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
-public class PreLaunchTaskViewModel : ObservableObject, IProgramConfigCategoryViewModel
+public partial class PreLaunchTaskViewModel : ObservableObject, IProgramConfigCategoryViewModel, IPreLaunchTaskViewModel<DispatcherQueue, PreLaunchTaskListItem>
 {
     public PreLaunchTaskViewModel(ProgramListItem programListItem)
     {
         this.programListItem = programListItem;
-        Tasks.CollectionChanged += (o, e) => OnPropertyChanged(nameof(IsListEmpty));
+        Tasks = null!;
     }
 
-    public ObservableCollection<PreLaunchTaskListItem> Tasks { get; } = [];
+    [ObservableProperty]
+    public partial ObservableCollection<PreLaunchTaskListItem> Tasks { get; private set; }
 
     public void Init()
     {
-        Tasks.Clear();
+        //Tasks.Clear();
+        Tasks = [];
+        Tasks.CollectionChanged += (o, e) => OnPropertyChanged(nameof(IsListEmpty));
         removed.Clear();
         foreach (PreLaunchTask task in App.Current.Configurator.ListPreLaunchTaskForProgram(programListItem.Id))
         {
             Tasks.Add(new PreLaunchTaskListItem(task));
         }
+        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public async Task InitAsync(DispatcherQueue dispatcherQueue)
     {
+        Tasks = [];
+        Tasks.CollectionChanged += (o, e) => OnPropertyChanged(nameof(IsListEmpty));
+        removed.Clear();
         await Task.Run(() =>
         {
             dispatcherQueue.TryEnqueue(Tasks.Clear);
-            foreach (PreLaunchTask task in App.Current.Configurator.ListPreLaunchTaskForProgram(programListItem.Id))
+            //foreach (PreLaunchTask task in App.Current.Configurator.ListPreLaunchTaskForProgram(programListItem.Id))
+            //{
+            //    dispatcherQueue.TryEnqueue(() => Tasks.Add(new PreLaunchTaskListItem(task)));
+            //}
+            IList<PreLaunchTask> preLaunchTasks = App.Current.Configurator.ListPreLaunchTaskForProgram(programListItem.Id);
+            dispatcherQueue.TryEnqueue(() =>
             {
-                dispatcherQueue.TryEnqueue(() => Tasks.Add(new PreLaunchTaskListItem(task)));
-            }
+                foreach (PreLaunchTask preLaunchTask in preLaunchTasks)
+                {
+                    Tasks.Add(new PreLaunchTaskListItem(preLaunchTask));
+                }
+            });
         });
+        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public void AddTask()
     {
         Tasks.Add(new PreLaunchTaskListItem(new PreLaunchTask(programListItem.ProgramInfo, string.Empty, false, false, false)));
+        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public void RemoveTask(PreLaunchTaskListItem item)
     {
         Tasks.Remove(item);
+        removed.Add(item);
+        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public bool SaveChanges()

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PreLaunchTaskr.Core.Entities;
+﻿namespace PreLaunchTaskr.Core.Entities;
 
 public class EnvironmentVariable : AbstractEntity
 {
@@ -20,6 +14,6 @@ public class EnvironmentVariable : AbstractEntity
 
     public ProgramInfo ProgramInfo { get; set; }
     public string Key { get; set; }
-    public string Value{ get; set; }
+    public string Value { get; set; }
     public bool Enabled { get; set; }
 }

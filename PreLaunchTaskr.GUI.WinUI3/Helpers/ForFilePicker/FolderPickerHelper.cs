@@ -8,7 +8,7 @@ using Windows.Storage.Pickers;
 
 namespace PreLaunchTaskr.GUI.WinUI3.Helpers.ForFilePicker;
 
-public class FolderPickerHelper : DirectoryOpenPickerHelper
+public class FolderPickerHelper : PathOpenPickerHelper
 {
     public FolderPickerHelper(Window window) : base(window)
     {

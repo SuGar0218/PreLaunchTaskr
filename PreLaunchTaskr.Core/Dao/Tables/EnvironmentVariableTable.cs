@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace PreLaunchTaskr.Core.Dao.Tables;
+﻿namespace PreLaunchTaskr.Core.Dao.Tables;
 
 /// <summary>
 /// 保存每个程序的专属环境变量

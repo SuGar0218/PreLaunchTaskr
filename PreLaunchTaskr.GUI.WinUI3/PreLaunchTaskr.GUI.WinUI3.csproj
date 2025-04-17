@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.18362.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>PreLaunchTaskr.GUI.WinUI3</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -12,6 +12,7 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
 	  <WindowsPackageType>None</WindowsPackageType>
+	  <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\DefaultProgramIcon.png" />
@@ -21,6 +22,8 @@
     <None Remove="Views\AttachArgumentPage.xaml" />
     <None Remove="Views\BlockArgumentPage.xaml" />
     <None Remove="Views\EnvironmentVariablePage.xaml" />
+    <None Remove="Views\InstalledPackagedProgramListPage.xaml" />
+    <None Remove="Views\InstalledProgramListPage.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\PreLaunchTaskPage.xaml" />
     <None Remove="Views\ProgramConfigPage.xaml" />
@@ -54,13 +57,36 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PreLaunchTaskr.Common\PreLaunchTaskr.Common.csproj" />
     <ProjectReference Include="..\PreLaunchTaskr.Core\PreLaunchTaskr.Core.csproj" />
     <ProjectReference Include="..\PreLaunchTaskr.GUI.Common\PreLaunchTaskr.GUI.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Assets\DefaultProgramIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Page Update="Views\InstalledProgramListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\InstalledPackagedProgramListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\InputTextPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\InstalledTraditionalProgramListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\ProgramUnselectedPage.xaml">
@@ -102,6 +128,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ObjectModel\" />
+  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -120,5 +149,6 @@
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
     <PublishAot>True</PublishAot>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ApplicationIcon>Assets\PreLaunchTaskr.ico</ApplicationIcon>
   </PropertyGroup>
 </Project>

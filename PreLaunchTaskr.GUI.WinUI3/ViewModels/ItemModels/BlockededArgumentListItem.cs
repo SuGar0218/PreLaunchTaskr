@@ -1,14 +1,9 @@
 ﻿using PreLaunchTaskr.Core.Entities;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PreLaunchTaskr.GUI.Common.AbstractViewModels.ItemModels;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 
-public class BlockedArgumentListItem
+public class BlockedArgumentListItem : IBlockedArgumentListItem
 {
     public BlockedArgumentListItem(BlockedArgument argument)
     {
