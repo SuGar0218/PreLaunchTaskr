@@ -12,7 +12,10 @@ using System.Threading.Tasks;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
-public partial class BlockArgumentViewModel : ObservableObject, IProgramConfigCategoryViewModel, IBlockArgumentViewModel<DispatcherQueue, BlockedArgumentListItem>
+public partial class BlockArgumentViewModel :
+    ObservableObject,
+    IProgramConfigCategoryViewModel,
+    IBlockArgumentViewModel<BlockedArgumentListItem>
 {
     public BlockArgumentViewModel(ProgramListItem programListItem)
     {
@@ -24,52 +27,37 @@ public partial class BlockArgumentViewModel : ObservableObject, IProgramConfigCa
 
     public void Init()
     {
-        //Arguments.Clear();
         Arguments = [];
         Arguments.CollectionChanged += (o, e) => OnPropertyChanged(nameof(IsListEmpty));
         removed.Clear();
-        foreach (BlockedArgument argument in App.Current.Configurator.ListBlockedArgumentsForProgram(programListItem.Id))
+        IList<BlockedArgument> blockedArguments = App.Current.Configurator.ListBlockedArgumentsForProgram(programListItem.Id);
+        foreach (BlockedArgument blockedArgument in blockedArguments)
         {
-            Arguments.Add(new BlockedArgumentListItem(argument));
+            Arguments.Add(new BlockedArgumentListItem(blockedArgument));
         }
-        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
-    public async Task InitAsync(DispatcherQueue dispatcherQueue)
+    public async Task InitAsync()
     {
         Arguments = [];
         Arguments.CollectionChanged += (o, e) => OnPropertyChanged(nameof(IsListEmpty));
         removed.Clear();
-        await Task.Run(() =>
+        IList<BlockedArgument> blockedArguments = await Task.Run(() => App.Current.Configurator.ListBlockedArgumentsForProgram(programListItem.Id));
+        foreach (BlockedArgument blockedArgument in blockedArguments)
         {
-            //dispatcherQueue.TryEnqueue(Arguments.Clear);
-            //foreach (BlockedArgument argument in App.Current.Configurator.ListBlockedArgumentsForProgram(programListItem.Id))
-            //{
-            //    dispatcherQueue.TryEnqueue(() => Arguments.Add(new BlockedArgumentListItem(argument)));
-            //}
-            IList<BlockedArgument> blockedArguments = App.Current.Configurator.ListBlockedArgumentsForProgram(programListItem.Id);
-            dispatcherQueue.TryEnqueue(() =>
-            {
-                foreach (BlockedArgument blockedArgument in blockedArguments)
-                {
-                    Arguments.Add(new BlockedArgumentListItem(blockedArgument));
-                }
-            });
-        });
-        //OnPropertyChanged(nameof(IsListEmpty));
+            Arguments.Add(new BlockedArgumentListItem(blockedArgument));
+        }
     }
 
     public void AddArgument()
     {
         Arguments!.Add(new BlockedArgumentListItem(new BlockedArgument(programListItem.ProgramInfo, string.Empty, false, false)));
-        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public void RemoveArgument(BlockedArgumentListItem item)
     {
         Arguments!.Remove(item);
         removed.Add(item);
-        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public bool SaveChanges()

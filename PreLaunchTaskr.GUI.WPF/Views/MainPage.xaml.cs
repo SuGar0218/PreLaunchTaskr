@@ -24,7 +24,7 @@ public partial class MainPage : Page
     {
         TitleBarArea.Visibility = App.Current.MainWindow.ExtendsContentIntoTitleBar ? Visibility.Visible : Visibility.Collapsed;
         ContentFrame.Navigate(ProgramUnselectedPage.StaticPage);
-        await viewModel.InitAsync(Dispatcher);
+        await viewModel.InitAsync();
     }
 
     private void ProgramList_SelectionChanged(object sender, SelectionChangedEventArgs e)

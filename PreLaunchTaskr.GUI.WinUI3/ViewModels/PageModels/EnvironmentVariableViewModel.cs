@@ -13,7 +13,10 @@ using System.Threading.Tasks;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
-public partial class EnvironmentVariableViewModel : ObservableObject, IProgramConfigCategoryViewModel, IEnvironmentVariableViewModel<DispatcherQueue, EnvironmentVariableListItem>
+public partial class EnvironmentVariableViewModel :
+    ObservableObject,
+    IProgramConfigCategoryViewModel,
+    IEnvironmentVariableViewModel<EnvironmentVariableListItem>
 {
     public EnvironmentVariableViewModel(ProgramListItem programListItem)
     {
@@ -25,35 +28,26 @@ public partial class EnvironmentVariableViewModel : ObservableObject, IProgramCo
 
     public void Init()
     {
-        //EnvironmentVariables.Clear();
         EnvironmentVariables = [];
         EnvironmentVariables.CollectionChanged += (o, e) => OnPropertyChanged(nameof(IsListEmpty));
         removed.Clear();
-        foreach (EnvironmentVariable variable in App.Current.Configurator.ListEnvironmentVariablesForProgram(programListItem.Id))
+        IList<EnvironmentVariable> environmentVariables = App.Current.Configurator.ListEnvironmentVariablesForProgram(programListItem.Id);
+        foreach (EnvironmentVariable environmentVariable in environmentVariables)
         {
-            EnvironmentVariables.Add(new EnvironmentVariableListItem(variable));
+            EnvironmentVariables.Add(new EnvironmentVariableListItem(environmentVariable));
         }
-        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
-    public async Task InitAsync(DispatcherQueue dispatcherQueue)
+    public async Task InitAsync()
     {
         EnvironmentVariables = [];
         EnvironmentVariables.CollectionChanged += (o, e) => OnPropertyChanged(nameof(IsListEmpty));
         removed.Clear();
-        await Task.Run(() =>
+        IList<EnvironmentVariable> environmentVariables = await Task.Run(() => App.Current.Configurator.ListEnvironmentVariablesForProgram(programListItem.Id));
+        foreach (EnvironmentVariable environmentVariable in environmentVariables)
         {
-            //dispatcherQueue.TryEnqueue(EnvironmentVariables.Clear);
-            IList<EnvironmentVariable> environmentVariables = App.Current.Configurator.ListEnvironmentVariablesForProgram(programListItem.Id);
-            dispatcherQueue.TryEnqueue(() =>
-            {
-                foreach (EnvironmentVariable environmentVariable in environmentVariables)
-                {
-                    EnvironmentVariables.Add(new EnvironmentVariableListItem(environmentVariable));
-                }
-            });
-        });
-        //OnPropertyChanged(nameof(IsListEmpty));
+            EnvironmentVariables.Add(new EnvironmentVariableListItem(environmentVariable));
+        }
     }
 
     public void AddEnvironmentVariable()
@@ -66,7 +60,6 @@ public partial class EnvironmentVariableViewModel : ObservableObject, IProgramCo
     {
         EnvironmentVariables!.Remove(item);
         removed.Add(item);
-        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public bool SaveChanges()
@@ -86,7 +79,7 @@ public partial class EnvironmentVariableViewModel : ObservableObject, IProgramCo
         return true;
     }
 
-    public bool IsListEmpty => EnvironmentVariables.Count == 0;
+    public bool IsListEmpty => EnvironmentVariables is null || EnvironmentVariables.Count == 0;
 
     private readonly ProgramListItem programListItem;
 

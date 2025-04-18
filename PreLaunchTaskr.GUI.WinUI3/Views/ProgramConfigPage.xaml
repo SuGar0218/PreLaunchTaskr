@@ -141,7 +141,8 @@
             IsSettingsVisible="False"
             MenuItemsSource="{x:Bind viewModel.Categories}"
             PaneDisplayMode="Top"
-            SelectionChanged="CategoryNavigation_SelectionChanged">
+            SelectionChanged="CategoryNavigation_SelectionChanged"
+            SelectionFollowsFocus="Enabled">
 
             <NavigationView.PaneHeader>
                 <Border Width="18" />

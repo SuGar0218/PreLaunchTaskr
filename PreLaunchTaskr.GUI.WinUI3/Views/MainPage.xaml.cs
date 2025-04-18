@@ -141,7 +141,7 @@ public sealed partial class MainPage : Page
         Navigation.IsPaneOpen = true;
 
         ProgramListProgressBar.Visibility = Visibility.Visible;
-        await viewModel.InitAsync(DispatcherQueue);
+        await viewModel.InitAsync();
         ProgramListProgressBar.Visibility = Visibility.Collapsed;
         App.Current.MainWindow.ExtendsContentIntoTitleBar = true;
         App.Current.MainWindow.SetTitleBar(TitleBarBorder);

@@ -24,7 +24,7 @@ public sealed partial class AttachArgumentPage : Page
     {
         viewModel = (AttachArgumentViewModel) e.Parameter;
         ListLoadingProgressBar.Visibility = Visibility.Visible;
-        await viewModel.InitAsync(DispatcherQueue);
+        await viewModel.InitAsync();
         //viewModel.Init();
         ListLoadingProgressBar.Visibility = Visibility.Collapsed;
         base.OnNavigatedTo(e);

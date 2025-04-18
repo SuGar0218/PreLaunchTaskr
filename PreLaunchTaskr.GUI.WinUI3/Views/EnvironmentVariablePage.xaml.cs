@@ -22,8 +22,7 @@ public sealed partial class EnvironmentVariablePage : Page
     {
         viewModel = (EnvironmentVariableViewModel) e.Parameter;
         ListLoadingProgressBar.Visibility = Visibility.Visible;
-        await viewModel.InitAsync(DispatcherQueue);
-        //viewModel.Init();
+        await viewModel.InitAsync();
         ListLoadingProgressBar.Visibility = Visibility.Collapsed;
         base.OnNavigatedTo(e);
     }

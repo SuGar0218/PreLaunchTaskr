@@ -1,5 +1,4 @@
 ﻿using PreLaunchTaskr.Core.Entities;
-using PreLaunchTaskr.GUI.Common.AbstractViewModels.ItemModels.Base;
 
 namespace PreLaunchTaskr.GUI.Common.AbstractViewModels.ItemModels;
 

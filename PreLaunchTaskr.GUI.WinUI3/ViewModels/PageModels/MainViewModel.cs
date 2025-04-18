@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
-public class MainViewModel : IMainViewModel<DispatcherQueue, ProgramListItem, BitmapImage>
+public class MainViewModel : IMainViewModel<ProgramListItem, BitmapImage>
 {
     public ObservableCollection<ProgramListItem> Programs { get; private set; } = [];
 
@@ -22,36 +22,29 @@ public class MainViewModel : IMainViewModel<DispatcherQueue, ProgramListItem, Bi
         Programs.Clear();
         idCache.Clear();
         nameCache.Clear();
+        IList<ProgramInfo> programInfos = App.Current.Configurator.ListPrograms();
         foreach (ProgramInfo programInfo in App.Current.Configurator.ListPrograms())
         {
             ProgramListItem newProgramListItem = new(programInfo);
             Programs.Add(newProgramListItem);
-            idCache.Add(newProgramListItem.Id, newProgramListItem);
+            idCache.Add(programInfo.Id, newProgramListItem);
             nameCache.Add(newProgramListItem.Name, newProgramListItem);
         }
     }
 
-    public async Task InitAsync(DispatcherQueue dispatcherQueue)
+    public async Task InitAsync()
     {
-        await Task.Run(() =>
+        Programs.Clear();
+        idCache.Clear();
+        nameCache.Clear();
+        IList<ProgramInfo> programInfos = await Task.Run(() => App.Current.Configurator.ListPrograms());
+        foreach (ProgramInfo programInfo in App.Current.Configurator.ListPrograms())
         {
-            dispatcherQueue.TryEnqueue(() =>
-            {
-                Programs.Clear();
-                idCache.Clear();
-                nameCache.Clear();
-            });
-            foreach (ProgramInfo programInfo in App.Current.Configurator.ListPrograms())
-            {
-                dispatcherQueue.TryEnqueue(() =>
-                {
-                    ProgramListItem newProgramListItem = new(programInfo);
-                    Programs.Add(newProgramListItem);
-                    idCache.Add(programInfo.Id, newProgramListItem);
-                    nameCache.Add(newProgramListItem.Name, newProgramListItem);
-                });
-            }
-        });
+            ProgramListItem newProgramListItem = new(programInfo);
+            Programs.Add(newProgramListItem);
+            idCache.Add(programInfo.Id, newProgramListItem);
+            nameCache.Add(newProgramListItem.Name, newProgramListItem);
+        }
     }
 
     public bool AddProgram(string name, string path)

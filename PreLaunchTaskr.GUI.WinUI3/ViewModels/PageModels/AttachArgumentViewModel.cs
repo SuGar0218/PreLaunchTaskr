@@ -13,7 +13,10 @@ using System.Threading.Tasks;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
-public partial class AttachArgumentViewModel : ObservableObject, IProgramConfigCategoryViewModel, IAttachArgumentViewModel<DispatcherQueue, AttachedArgumentListItem>
+public partial class AttachArgumentViewModel :
+    ObservableObject,
+    IProgramConfigCategoryViewModel,
+    IAttachArgumentViewModel<AttachedArgumentListItem>
 {
     public AttachArgumentViewModel(ProgramListItem programListItem)
     {
@@ -25,52 +28,37 @@ public partial class AttachArgumentViewModel : ObservableObject, IProgramConfigC
 
     public void Init()
     {
-        //Arguments.Clear();
         Arguments = [];
         Arguments.CollectionChanged += (o, e) => OnPropertyChanged(nameof(IsListEmpty));
         removed.Clear();
-        foreach (AttachedArgument argument in App.Current.Configurator.ListAttachedArgumentsForProgram(programListItem.Id))
+        IList<AttachedArgument> attachedArguments = App.Current.Configurator.ListAttachedArgumentsForProgram(programListItem.Id);
+        foreach (AttachedArgument argument in attachedArguments)
         {
             Arguments.Add(new AttachedArgumentListItem(argument));
         }
-        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
-    public async Task InitAsync(DispatcherQueue dispatcherQueue)
+    public async Task InitAsync()
     {
         Arguments = [];
         Arguments.CollectionChanged += (o, e) => OnPropertyChanged(nameof(IsListEmpty));
         removed.Clear();
-        await Task.Run(() =>
+        IList<AttachedArgument> attachedArguments = await Task.Run(() => App.Current.Configurator.ListAttachedArgumentsForProgram(programListItem.Id));
+        foreach (AttachedArgument attachedArgument in attachedArguments)
         {
-            //dispatcherQueue.TryEnqueue(Arguments.Clear);
-            //foreach (AttachedArgument argument in App.Current.Configurator.ListAttachedArgumentsForProgram(programListItem.Id))
-            //{
-            //    dispatcherQueue.TryEnqueue(() => Arguments.Add(new AttachedArgumentListItem(argument)));
-            //}
-            IList<AttachedArgument> attachedArguments = App.Current.Configurator.ListAttachedArgumentsForProgram(programListItem.Id);
-            dispatcherQueue.TryEnqueue(() =>
-            {
-                foreach (AttachedArgument attachedArgument in attachedArguments)
-                {
-                    Arguments.Add(new AttachedArgumentListItem(attachedArgument));
-                }
-            });
-        });
-        //OnPropertyChanged(nameof(IsListEmpty));
+            Arguments.Add(new AttachedArgumentListItem(attachedArgument));
+        }
     }
 
     public void AddArgument()
     {
         Arguments!.Add(new AttachedArgumentListItem(new AttachedArgument(programListItem.ProgramInfo, string.Empty, false)));
-        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public void RemoveArgument(AttachedArgumentListItem item)
     {
         Arguments!.Remove(item);
         removed.Add(item);
-        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public bool SaveChanges()

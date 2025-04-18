@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="BaseViewModels\" />
     <Folder Include="Helpers\" />
   </ItemGroup>
 
