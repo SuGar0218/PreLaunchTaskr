@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="PreLaunchTaskr.GUI.WinUI3.Views.InstalledProgramListPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:PreLaunchTaskr.GUI.WinUI3.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <NavigationView
+        IsBackButtonVisible="Collapsed"
+        IsBackEnabled="False"
+        IsSettingsVisible="False"
+        PaneDisplayMode="Top"
+        SelectedItem="{x:Bind selectedNavigationItem, Mode=TwoWay}"
+        SelectionChanged="NavigationView_SelectionChanged">
+
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="常规应用" DataContext="{x:Bind traditionalProgramListViewModel}" />
+            <NavigationViewItem Content="类商店应用" DataContext="{x:Bind packagedProgramListViewModel}" />
+        </NavigationView.MenuItems>
+
+        <Frame
+            x:Name="ContentFrame"
+            MinWidth="360"
+            MinHeight="480"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            x:FieldModifier="private"
+            IsNavigationStackEnabled="False" />
+    </NavigationView>
+</Page>

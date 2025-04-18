@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="PreLaunchTaskr.GUI.WinUI3.Views.InstalledTraditionalProgramListPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converter="using:PreLaunchTaskr.GUI.WinUI3.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helper="using:PreLaunchTaskr.GUI.WinUI3.Helpers"
+    xmlns:local="using:PreLaunchTaskr.GUI.WinUI3.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels"
+    Loaded="Page_Loaded"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <DataTemplate x:Key="InstalledProgramListItemDataTemplate" x:DataType="vm:InstalledTraditionalProgramListItem">
+            <ListViewItem
+                Style="{ThemeResource DefaultListViewItemStyle}"
+                ToolTipService.ToolTip="{x:Bind PossiblePath}">
+
+                <ListViewItem.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem Text="打开所在位置" DataContext="{x:Bind}" Click="GoToPath_Click">
+                            <MenuFlyoutItem.Icon>
+                                <SymbolIcon Symbol="Go" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem Text="复制路径" DataContext="{x:Bind}" Click="CopyPath_Click">
+                            <MenuFlyoutItem.Icon>
+                                <SymbolIcon Symbol="Copy" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </ListViewItem.ContextFlyout>
+
+                <Grid Padding="0,4" ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Image
+                        Grid.Column="0"
+                        Width="48"
+                        Source="{x:Bind Icon}" />
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="{x:Bind Name}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            Opacity="0.5"
+                            Text="{x:Bind Publisher}"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            Opacity="0.5"
+                            Text="{x:Bind PossiblePath}"
+                            TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </Grid>
+            </ListViewItem>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <AutoSuggestBox
+            Grid.Row="0"
+            ItemTemplate="{StaticResource InstalledProgramListItemDataTemplate}"
+            ItemsSource="{x:Bind viewModel.SearchedPrograms, Mode=OneWay}"
+            PlaceholderText="搜索应用程序的名称"
+            SuggestionChosen="AutoSuggestBox_SuggestionChosen"
+            TextChanged="AutoSuggestBox_TextChanged" />
+
+        <ListView
+            Grid.Row="1"
+            ItemTemplate="{StaticResource InstalledProgramListItemDataTemplate}"
+            ItemsSource="{x:Bind viewModel.Programs, Mode=OneWay}"
+            SelectedItem="{x:Bind viewModel.SelectedItem, Mode=TwoWay}"
+            SelectionChanged="ListView_SelectionChanged" />
+
+        <Border
+            x:Name="SelectedItemCard"
+            Grid.Row="2"
+            Height="36"
+            HorizontalAlignment="Stretch"
+            x:FieldModifier="private"
+            Loaded="Border_Loaded"
+            Style="{StaticResource CardBorderStyle}"
+            ToolTipService.Placement="Top"
+            ToolTipService.ToolTip="{x:Bind viewModel.SelectedItem.Name, Mode=OneWay}">
+
+            <TextBox
+                Margin="8,0"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                BorderThickness="0"
+                IsHitTestVisible="False"
+                IsReadOnly="True"
+                PlaceholderText="未选择程序"
+                Text="{x:Bind viewModel.SelectedItem.Name, Mode=OneWay}" />
+        </Border>
+    </Grid>
+</Page>

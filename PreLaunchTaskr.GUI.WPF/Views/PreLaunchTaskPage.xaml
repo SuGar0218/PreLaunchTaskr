@@ -1,0 +1,150 @@
+﻿<Page
+    x:Class="PreLaunchTaskr.GUI.WPF.Views.PreLaunchTaskPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converter="clr-namespace:PreLaunchTaskr.GUI.WPF.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dc="clr-namespace:PreLaunchTaskr.GUI.WPF.ViewModels.PageModels"
+    xmlns:local="clr-namespace:PreLaunchTaskr.GUI.WPF.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:my="clr-namespace:PreLaunchTaskr.GUI.WPF.Controls"
+    xmlns:vm="clr-namespace:PreLaunchTaskr.GUI.WPF.ViewModels.ItemModels"
+    Title="PreLaunchTaskPage"
+    d:DataContext="{d:DesignInstance dc:PreLaunchTaskViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Loaded="Page_Loaded"
+    Unloaded="Page_Unloaded"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" />
+        <Style BasedOn="{StaticResource BaseTextBoxStyle}" TargetType="TextBox" />
+        <Style BasedOn="{StaticResource BaseCheckBoxStyle}" TargetType="CheckBox" />
+        <Style BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button" />
+        <Style BasedOn="{StaticResource BaseButtonStyle}" TargetType="my:MenuFlyoutButton" />
+
+        <DataTemplate x:Key="PreLaunchTaskListItemDataTemplate" DataType="vm:PreLaunchTaskListItem">
+            <Border
+                Padding="16"
+                HorizontalAlignment="Stretch"
+                Background="{StaticResource LayerOnAeroAltFillColorDefaultBrush}"
+                BorderBrush="{StaticResource CardStrokeColorBrush}"
+                BorderThickness="1">
+
+                <Border.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem DataContext="{Binding}" Header="复制" />
+                        <MenuItem DataContext="{Binding}" Header="删除" />
+                    </ContextMenu>
+                </Border.ContextMenu>
+
+                <my:MyGrid
+                    ColumnSpacing="4"
+                    ContentHorizontalAlignment="Stretch"
+                    ContentVerticalAlignment="Center">
+
+                    <my:MyGrid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                    </my:MyGrid.ColumnDefinitions>
+
+                    <CheckBox Grid.Column="0" IsChecked="{Binding Enabled, Mode=TwoWay}" />
+
+                    <TextBox
+                        Grid.Column="1"
+                        DataContext="{Binding}"
+                        Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <my:MyStackPanel
+                        Grid.Column="2"
+                        Orientation="Horizontal"
+                        Spacing="4">
+                        <my:MenuFlyoutButton Content="更多选项">
+                            <my:MenuFlyoutButton.ContextMenu>
+                                <ContextMenu Placement="Bottom">
+                                    <MenuItem
+                                        Click="CopyPath_Click"
+                                        DataContext="{Binding}"
+                                        Header="复制路径" />
+                                </ContextMenu>
+                            </my:MenuFlyoutButton.ContextMenu>
+                        </my:MenuFlyoutButton>
+
+                        <my:MenuFlyoutButton Content="删除">
+                            <my:MenuFlyoutButton.ContextMenu>
+                                <ContextMenu Placement="Bottom">
+                                    <MenuItem
+                                        DataContext="{Binding}"
+                                        Foreground="Red"
+                                        Header="确认删除" />
+                                </ContextMenu>
+                            </my:MenuFlyoutButton.ContextMenu>
+                        </my:MenuFlyoutButton>
+                    </my:MyStackPanel>
+                </my:MyGrid>
+            </Border>
+        </DataTemplate>
+
+        <!--<Flyout x:Key="ConfirmDeleteFlyout" x:Name="ConfirmDeleteFlyout" />-->
+
+        <converter:BoolToVisiblityConverter x:Key="BoolToVisiblityConverter" />
+    </Page.Resources>
+
+    <Grid>
+        <ScrollViewer Padding="36,0">
+            <my:MyStackPanel
+                HorizontalAlignment="Stretch"
+                ContentHorizontalAlignment="Stretch"
+                Spacing="8">
+
+                <Border Height="2" />
+
+                <!--<Border Visibility="{Binding IsListEmpty, Mode=OneWay, Converter={StaticResource BoolToVisiblityConverter}}">-->
+                <Border>
+                    <Button
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Click="AddButton_Click">
+                        <!--<my:MyStackPanel Orientation="Horizontal" Spacing="8">-->
+                        <TextBlock Text="添加一个启动前任务" />
+                        <!--</my:MyStackPanel>-->
+                    </Button>
+                </Border>
+
+                <ItemsControl
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ItemTemplate="{StaticResource PreLaunchTaskListItemDataTemplate}"
+                    ItemsSource="{Binding Tasks, Mode=OneWay}" />
+            </my:MyStackPanel>
+        </ScrollViewer>
+
+        <!--<ListBox
+        HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch"
+        Background="Transparent"
+        BorderThickness="0"
+        ItemTemplate="{StaticResource PreLaunchTaskListItemDataTemplate}"
+        ItemsSource="{Binding Arguments}"
+        Loaded="ItemsControl_Loaded" />-->
+
+        <!--<ProgressBar
+        x:Name="ListLoadingProgressBar"
+        VerticalAlignment="Top"
+        x:FieldModifier="private"
+        IsIndeterminate="True"
+        Visibility="Collapsed" />-->
+
+        <!--<my:FloatingActionButton
+        Margin="36"
+        Padding="0"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Bottom"
+        Content="+"
+        Length="56" />-->
+    </Grid>
+</Page>

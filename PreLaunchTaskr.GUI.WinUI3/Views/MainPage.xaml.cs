@@ -57,8 +57,8 @@ public sealed partial class MainPage : Page
     private async void InputProgramPath_Click(object sender, RoutedEventArgs e)
     {
         InputTextPage page = new();
-        await this.MessageBox(page, "程序所在位置");
-        if (string.IsNullOrWhiteSpace(page.Text))
+        DialogResult result = await this.MessageBox(page, "程序所在位置", MessageBoxButtons.OKCancel);
+        if (result != DialogResult.OK || string.IsNullOrWhiteSpace(page.Text))
             return;
 
         string path = StringHelper.TrimQuotes(page.Text.Trim());
