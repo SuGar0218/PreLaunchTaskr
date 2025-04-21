@@ -107,6 +107,12 @@
                     <SymbolIcon Symbol="Paste" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
+
+            <MenuFlyoutItem Click="DragDropToAdd_Click" Text="把文件拖拽进来">
+                <MenuFlyoutItem.Icon>
+                    <SymbolIcon Symbol="TouchPointer" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
         </MenuFlyout>
     </Page.Resources>
 
@@ -134,9 +140,19 @@
             </my:MyStackPanel>
         </Border>
 
+        <!--
+            AllowDrop
+            指定区域不能具有 null 背景，它必须能够接收指针输入。
+            通常，UI 元素默认具有 null 背景。
+            设置 Background="Transparent"
+        -->
         <NavigationView
             x:Name="Navigation"
             Grid.Row="1"
+            AllowDrop="True"
+            Background="Transparent"
+            DragOver="Navigation_DragOver"
+            Drop="Navigation_Drop"
             IsBackButtonVisible="Collapsed"
             IsBackEnabled="False"
             IsPaneToggleButtonVisible="False"

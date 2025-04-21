@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 using PreLaunchTaskr.Common.Helpers;
 using PreLaunchTaskr.GUI.WinUI3.Extensions;
@@ -9,9 +10,12 @@ using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 using PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 
 namespace PreLaunchTaskr.GUI.WinUI3.Views;
@@ -136,6 +140,9 @@ public sealed partial class MainPage : Page
     private async Task ShowFileNameExistedMessageBox(string filename)
         => await this.MessageBox("注册表中的映像劫持是按照文件名而不是文件路径，因此即使不同位置同名文件，也会被映像劫持。", $"已添加过同名文件 {filename}");
 
+    private async Task ShowFileNameExistedMessageBox(IEnumerable<string> filename)
+        => await this.MessageBox($"注册表中的映像劫持是按照文件名而不是文件路径，因此即使不同位置同名文件，也会被映像劫持。\n以下文件因重名未被添加：\n{new StringBuilder().AppendJoin('\n', filename)}", $"已添加过同名文件 ");
+
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
         Navigation.IsPaneOpen = true;
@@ -185,5 +192,50 @@ public sealed partial class MainPage : Page
     {
         ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
         WindowsHelper.OpenPathInExplorer(item.Path);
+    }
+
+    private async void Navigation_Drop(object sender, DragEventArgs e)
+    {
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
+            IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync();
+            if (items.Count == 0)
+                return;
+
+            List<string> duplicatedFileNames = [];
+            List<string> unsupportedFileNames = [];
+            foreach (IStorageItem item in items)
+            {
+                if (Path.GetExtension(item.Name) == ".exe")
+                {
+                    if (!viewModel.AddProgram(item.Name, item.Path))
+                    {
+                        duplicatedFileNames.Add(item.Path);
+                    }
+                }
+                else
+                {
+                    unsupportedFileNames.Add(item.Path);
+                }
+            }
+            if (duplicatedFileNames.Count > 0)
+            {
+                await ShowFileNameExistedMessageBox(duplicatedFileNames);
+            }
+            if (unsupportedFileNames.Count > 0)
+            {
+                await this.MessageBox($"以下文件因文件类型不支持而未被添加：\n{new StringBuilder().AppendJoin('\n', unsupportedFileNames)}", "只能添加 exe 类型的文件");
+            }
+        }
+    }
+
+    private void Navigation_DragOver(object sender, DragEventArgs e)
+    {
+        e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+    }
+
+    private async void DragDropToAdd_Click(object sender, RoutedEventArgs e)
+    {
+        await this.MessageBox("先关闭此提示，然后把你需要添加的程序的 exe 文件拖拽进来即可。", "拖拽以添加");
     }
 }
