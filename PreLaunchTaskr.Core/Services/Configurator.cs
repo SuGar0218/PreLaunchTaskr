@@ -144,11 +144,13 @@ public class Configurator
 
     public bool RemoveProgram(int id)
     {
+        EnableProgram(id, false);
         return programRepository.RemoveById(id);
     }
 
     public bool RemoveProgram(string path)
     {
+        EnableProgram(path, false);
         return programRepository.RemoveByPath(path);
     }
 
