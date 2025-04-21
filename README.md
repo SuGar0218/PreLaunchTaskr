@@ -5,6 +5,7 @@
 ## 这个程序有什么用？
 
 在程序启动时，执行一些您想要的操作：
+
 - 附加启动参数
 - 屏蔽启动参数（支持正则表达式）
 - 在程序启动前，先执行脚本或运行其他程序
@@ -62,12 +63,13 @@ WindowsAppSDK 运行环境有时候并不是新版本兼容旧版本，例如 1.
 
 ## 疑难解答
 
-- 如果程序出现异常，请在此程序的已添加的程序列表中关闭它。
+- 如果程序出现异常，请在此程序的已添加的程序列表中关闭或移除它。
 - 如果不小心移动或删除了还难以恢复，请在注册表中进入 ```HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options```，然后寻找设置过的程序的文件名，点进去，在右侧删掉 Debugger 那一项。
 
 ## 开发者
 
 此项目分为以下模块：
+
 - PreLaunchTaskr.Common：共用的的配置和工具类。
 - PreLaunchTaskr.Core：核心逻辑，包括操作注册表、增删查改用户对程序的配置、带参数启动、实体类。
 - PreLaunchTaskr.CLI.Common：命令行程序共用的工具类。
