@@ -58,7 +58,7 @@ public class Launcher
         if (programInfo is null)
             return false;
 
-        return await Launch(programInfo, args);
+        return await Launch(programInfo, args, false, false);
     }
 
     public async Task<bool> Launch(string path, string[] args)
@@ -67,7 +67,7 @@ public class Launcher
         if (programInfo is null)
             return false;
 
-        return await Launch(programInfo, args);
+        return await Launch(programInfo, args, false, false);
     }
 
     /// <summary>
@@ -76,7 +76,11 @@ public class Launcher
     /// <param name="programInfo">添加的程序的信息</param>
     /// <param name="originArgs">原启动参数，不包含用户附加，不剔除用户屏蔽。</param>
     /// <returns></returns>
-    public async Task<bool> Launch(ProgramInfo programInfo, string[] originArgs, bool asAdmin = false)
+    public async Task<bool> Launch(
+        ProgramInfo programInfo,
+        string[] originArgs,
+        bool asAdmin,
+        bool waitForExit)
     {
         string symlinkPath = GlobalProperties.SymbolicLinkPath(programInfo.Path);
         if (!File.Exists(symlinkPath))
@@ -190,10 +194,14 @@ public class Launcher
                 {
                     StartInfo = programStartInfo,
                 };
-                if (programProcess.Start())
-                {
+
+                if (!programProcess.Start())
+                    return false;
+
+                if (waitForExit)
                     await programProcess.WaitForExitAsync();
-                }
+
+                return true;
             }
             catch  // 遇到异常后尝试以管理员身份运行
             {
@@ -211,10 +219,13 @@ public class Launcher
         };
         programProcessAdmin.StartInfo.UseShellExecute = true;
         programProcessAdmin.StartInfo.Verb = "runas";
+
         if (!programProcessAdmin.Start())
-            //await programProcessAdmin.WaitForExitAsync();
-            //else
             return false;
+
+        if (waitForExit)
+            await programProcessAdmin.WaitForExitAsync();
+
         return true;
     }
 

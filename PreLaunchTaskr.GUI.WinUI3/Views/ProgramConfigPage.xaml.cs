@@ -63,6 +63,7 @@ public sealed partial class ProgramConfigPage : Page
         {
             Process process = new();
             process.StartInfo.FileName = viewModel.ProgramListItem.Path;
+            process.StartInfo.UseShellExecute = true;
             process.StartInfo.Verb = "runas";
             process.Start();
         }

@@ -30,16 +30,25 @@ public partial class ProgramListItem : ObservableObject, IProgramListItem<Bitmap
 
     public BitmapImage? Icon { get; init; }
 
+    /// <summary>
+    /// 是否启用对此程序的设置
+    /// <br/>
+    /// 更改此属性会立即更改注册表映像劫持
+    /// </summary>
     public bool Enabled
     {
         get => ProgramInfo.Enabled;
         set
         {
+            bool oldValue = ProgramInfo.Enabled;
             if (ProgramInfo.Enabled != value)
             {
                 ProgramInfo.Enabled = value;
                 changed = true;
-                SaveChanges();
+                if (!SaveChanges())
+                {
+                    ProgramInfo.Enabled = oldValue;
+                }
             }
             OnPropertyChanged(nameof(Enabled));
         }
@@ -69,6 +78,7 @@ public partial class ProgramListItem : ObservableObject, IProgramListItem<Bitmap
         if (ProgramInfo.Id == -1)
             return false;
 
+        Enabled = false;
         App.Current.Configurator.RemoveAttachedArgument(ProgramInfo.Id);
         return App.Current.Configurator.RemoveProgram(ProgramInfo.Id);
     }
