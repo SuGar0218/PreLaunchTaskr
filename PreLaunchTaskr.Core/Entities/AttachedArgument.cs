@@ -6,7 +6,8 @@ public class AttachedArgument : AbstractEntity
     public string Argument { get; set; }
     public bool Enabled { get; set; }
 
-    public AttachedArgument(ProgramInfo programInfo, string argument, bool enabled) : this(-1, programInfo, argument, enabled) { }
+    public AttachedArgument(ProgramInfo programInfo, string argument, bool enabled)
+        : this(-1, programInfo, argument, enabled) { }
 
     public AttachedArgument(int id, ProgramInfo programInfo, string argument, bool enabled) : base(id)
     {

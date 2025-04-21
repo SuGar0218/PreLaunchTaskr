@@ -53,7 +53,6 @@ public partial class EnvironmentVariableViewModel :
     public void AddEnvironmentVariable()
     {
         EnvironmentVariables!.Add(new EnvironmentVariableListItem(new EnvironmentVariable(programListItem.ProgramInfo, string.Empty, string.Empty, false)));
-        //OnPropertyChanged(nameof(IsListEmpty));
     }
 
     public void RemoveEnvironmentVariable(EnvironmentVariableListItem item)

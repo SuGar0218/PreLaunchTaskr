@@ -2,9 +2,11 @@
 
 public class EnvironmentVariable : AbstractEntity
 {
-    public EnvironmentVariable(ProgramInfo programInfo, string key, string value, bool enabled) : this(-1, programInfo, key, value, enabled) { }
+    public EnvironmentVariable(ProgramInfo programInfo, string key, string value, bool enabled) :
+        this(-1, programInfo, key, value, enabled) { }
 
-    public EnvironmentVariable(int id, ProgramInfo programInfo, string key, string value, bool enabled) : base(-1)
+    public EnvironmentVariable(int id, ProgramInfo programInfo, string key, string value, bool enabled) :
+        base(id)
     {
         ProgramInfo = programInfo;
         Key = key;
