@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "PreLaunchTaskr.Launcher.NET8": {
-      "commandName": "Project",
-      "commandLineArgs": "\"D:\\Program Files\\JianyingPro\\JianyingPro.exe\""
-    }
-  }
-}
