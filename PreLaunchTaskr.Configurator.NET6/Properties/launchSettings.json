@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "PreLaunchTaskr.Configurator.NET6": {
-      "commandName": "Project",
-      "commandLineArgs": "dis-prog -i 1"
-    }
-  }
-}

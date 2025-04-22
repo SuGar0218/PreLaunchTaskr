@@ -1,5 +1,0 @@
-﻿DwmSetWindowAttribute
-SetWindowCompositionAttribute
-OpenThemeData
-DrawThemeText
-CloseThemeData
