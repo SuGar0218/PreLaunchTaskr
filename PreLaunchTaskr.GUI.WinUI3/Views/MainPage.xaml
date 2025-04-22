@@ -138,7 +138,8 @@
                     Height="{ThemeResource PaneToggleButtonHeight}"
                     x:FieldModifier="private"
                     Click="TitleBarToggleButton_Click"
-                    Style="{ThemeResource TitleBarPaneToggleButtonStyle}" />
+                    Style="{ThemeResource TitleBarPaneToggleButtonStyle}"
+                    UseSystemFocusVisuals="False" />
 
                 <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="PreLaunchTaskr" />
             </my:MyStackPanel>

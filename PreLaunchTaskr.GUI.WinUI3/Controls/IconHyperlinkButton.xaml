@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:PreLaunchTaskr.GUI.WinUI3.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Style="{ThemeResource DefaultHyperlinkButtonStyle}"
     mc:Ignorable="d">
 
     <Grid>
@@ -14,7 +15,9 @@
             ContentVerticalAlignment="Center"
             Orientation="Horizontal"
             Spacing="8">
+
             <IconSourceElement IconSource="{x:Bind IconSource}" />
+
             <TextBlock
                 x:Name="TextBlock"
                 x:FieldModifier="private"
