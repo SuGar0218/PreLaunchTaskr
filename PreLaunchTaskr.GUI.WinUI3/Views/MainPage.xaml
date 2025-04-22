@@ -64,13 +64,17 @@
                                 Click="RemoveProgram_Click"
                                 DataContext="{x:Bind}"
                                 Foreground="Red"
-                                Text="确定移除" />
+                                Text="确定移除">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="Delete" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
                         </MenuFlyoutSubItem>
 
                         <MenuFlyoutItem
                             Click="CopyProgramPath_Click"
                             DataContext="{x:Bind}"
-                            Text="复制程序所在位置">
+                            Text="复制程序所在路径">
                             <MenuFlyoutItem.Icon>
                                 <SymbolIcon Symbol="Copy" />
                             </MenuFlyoutItem.Icon>

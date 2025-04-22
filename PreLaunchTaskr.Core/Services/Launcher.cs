@@ -5,6 +5,7 @@ using PreLaunchTaskr.Core.Extensions;
 using PreLaunchTaskr.Core.Repositories.Implementations;
 using PreLaunchTaskr.Core.Repositories.Interfaces;
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -52,22 +53,49 @@ public class Launcher
             new EnvironmentVariableRepositoryImpl(connection));
     }
 
-    public async Task<bool> Launch(int programId, string[] args)
+    public bool Launch(int programId, string[] args)
     {
         ProgramInfo? programInfo = programRepository.GetById(programId);
         if (programInfo is null)
             return false;
 
-        return await Launch(programInfo, args, false, false);
+        return Launch(programInfo, args, false, false);
     }
 
-    public async Task<bool> Launch(string path, string[] args)
+    public bool Launch(string path, string[] args)
     {
         ProgramInfo? programInfo = programRepository.GetByPath(path);
         if (programInfo is null)
             return false;
 
-        return await Launch(programInfo, args, false, false);
+        return Launch(programInfo, args, false, false);
+    }
+
+    public bool Launch(
+        int programId,
+        string[] originArgs,
+        bool asAdmin,
+        bool waitForExit)
+    {
+
+        ProgramInfo? programInfo = programRepository.GetById(programId);
+        if (programInfo is null)
+            return false;
+
+        return Launch(programInfo, originArgs, asAdmin, waitForExit);
+    }
+
+    public bool Launch(
+        string path,
+        string[] originArgs,
+        bool asAdmin,
+        bool waitForExit)
+    {
+        ProgramInfo? programInfo = programRepository.GetByPath(path);
+        if (programInfo is null)
+            return false;
+
+        return Launch(programInfo, originArgs, asAdmin, waitForExit);
     }
 
     /// <summary>
@@ -76,7 +104,7 @@ public class Launcher
     /// <param name="programInfo">添加的程序的信息</param>
     /// <param name="originArgs">原启动参数，不包含用户附加，不剔除用户屏蔽。</param>
     /// <returns></returns>
-    public async Task<bool> Launch(
+    public bool Launch(
         ProgramInfo programInfo,
         string[] originArgs,
         bool asAdmin,
@@ -85,7 +113,14 @@ public class Launcher
         string symlinkPath = GlobalProperties.SymbolicLinkPath(programInfo.Path);
         if (!File.Exists(symlinkPath))
         {
-            File.CreateSymbolicLink(symlinkPath, programInfo.Path);
+            try
+            {
+                File.CreateSymbolicLink(symlinkPath, programInfo.Path);
+            }
+            catch (Exception)
+            {
+                return false;
+            } 
         }
         ProcessStartInfo programStartInfo = new()
         {
@@ -180,7 +215,7 @@ public class Launcher
                 }
             }
             taskProcess.Start();
-            await taskProcess.WaitForExitAsync();
+            taskProcess.WaitForExit();
         }
 
         // 带上处理后的启动参数、专属环境变量，去启动程序
@@ -199,7 +234,7 @@ public class Launcher
                     return false;
 
                 if (waitForExit)
-                    await programProcess.WaitForExitAsync();
+                    programProcess.WaitForExit();
 
                 return true;
             }
@@ -224,7 +259,7 @@ public class Launcher
             return false;
 
         if (waitForExit)
-            await programProcessAdmin.WaitForExitAsync();
+            programProcessAdmin.WaitForExit();
 
         return true;
     }

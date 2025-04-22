@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
+using PreLaunchTaskr.Common.Helpers;
 using PreLaunchTaskr.GUI.WinUI3.Extensions;
 using PreLaunchTaskr.GUI.WinUI3.Helpers;
 using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
@@ -75,18 +76,21 @@ public sealed partial class ProgramConfigPage : Page
 
     private void CopyFileName_Click(object sender, RoutedEventArgs e)
     {
-        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
-        ClipboardHelper.Copy(item.Name);
+        ClipboardHelper.Copy(viewModel.Name);
     }
 
     private void CopyFilePath_Click(object sender, RoutedEventArgs e)
     {
-        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
-        ClipboardHelper.Copy(item.Path);
+        ClipboardHelper.Copy(viewModel.Path);
     }
 
     private void SaveIcon_Click(object sender, RoutedEventArgs e)
     {
-        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
+
+    }
+
+    private void GoToFilePath_Click(object sender, RoutedEventArgs e)
+    {
+        WindowsHelper.OpenPathInExplorer(viewModel.Path);
     }
 }

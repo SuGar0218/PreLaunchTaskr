@@ -2,7 +2,7 @@
   "profiles": {
     "PreLaunchTaskr.Launcher.NET8": {
       "commandName": "Project",
-      "commandLineArgs": "\"D:\\Program Files\\Microsoft VS Code\\Code.exe\"\r\n\"D:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\DesignTools\\SystemThemes\\Wpf\\aero.normalcolor.xaml\""
+      "commandLineArgs": "\"D:\\Program Files\\JianyingPro\\JianyingPro.exe\""
     }
   }
 }

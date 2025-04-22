@@ -37,7 +37,7 @@
 
                 <!--<Image.ContextFlyout>
                     <MenuFlyout>
-                        <MenuFlyoutItem Text="保存图标" DataContext="{x:Bind}" Click="SaveIcon_Click">
+                        <MenuFlyoutItem Click="SaveIcon_Click" Text="保存图标">
                             <MenuFlyoutItem.Icon>
                                 <SymbolIcon Symbol="Save" />
                             </MenuFlyoutItem.Icon>
@@ -57,10 +57,7 @@
 
                     <TextBlock.ContextFlyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem
-                                Click="CopyFileName_Click"
-                                DataContext="{x:Bind}"
-                                Text="复制程序文件名">
+                            <MenuFlyoutItem Click="CopyFileName_Click" Text="复制程序文件名">
                                 <MenuFlyoutItem.Icon>
                                     <SymbolIcon Symbol="Copy" />
                                 </MenuFlyoutItem.Icon>
@@ -80,12 +77,18 @@
 
                     <TextBlock.ContextFlyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem
-                                Click="CopyFilePath_Click"
-                                DataContext="{x:Bind}"
-                                Text="复制程序所在路径">
+                            <MenuFlyoutItem Click="CopyFilePath_Click" Text="复制程序所在路径">
                                 <MenuFlyoutItem.Icon>
                                     <SymbolIcon Symbol="Copy" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem
+                                Click="GoToFilePath_Click"
+                                DataContext="{x:Bind}"
+                                Text="打开程序所在位置">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="Go" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                         </MenuFlyout>

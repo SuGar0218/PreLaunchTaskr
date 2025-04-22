@@ -27,7 +27,7 @@ public sealed partial class EnvironmentVariablePage : Page
         base.OnNavigatedTo(e);
     }
 
-    private void ConfirmDeleteArgument_Click(object sender, RoutedEventArgs e)
+    private void ConfirmDeleteEnvironmentVariable_Click(object sender, RoutedEventArgs e)
     {
         EnvironmentVariableListItem item = DataContextHelper.GetDataContext<EnvironmentVariableListItem>(sender);
         viewModel.RemoveEnvironmentVariable(item);

@@ -7,7 +7,7 @@
 /// </summary>
 internal partial class Program
 {
-    static async Task<int> Main(string[] args)
+    static int Main(string[] args)
     {
         if (args.Length == 0)
             return 0;
@@ -18,6 +18,6 @@ internal partial class Program
         string[] originArgs = args[2..];
         Core.Services.Launcher launcher = Core.Services.Launcher.Init(baseUri);
 
-        return await launcher.Launch(programPath, originArgs) ? 0 : -1;
+        return launcher.Launch(programPath, originArgs) ? 0 : -1;
     }
 }

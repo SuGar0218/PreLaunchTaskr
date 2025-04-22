@@ -29,7 +29,7 @@ public sealed partial class PreLaunchTaskPage : Page
         base.OnNavigatedTo(e);
     }
 
-    private void ConfirmDeleteArgument_Click(object sender, RoutedEventArgs e)
+    private void ConfirmDeleteTask_Click(object sender, RoutedEventArgs e)
     {
         PreLaunchTaskListItem item = DataContextHelper.GetDataContext<PreLaunchTaskListItem>(sender);
         viewModel.RemoveTask(item);
