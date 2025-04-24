@@ -2,6 +2,10 @@
 
 # PreLaunchTaskr.ReadMe
 
+PreLaunchTaskr 有 2 个分支：WinUI 3、WPF
+
+如果 WinUI 3 和 WPF 没有发布同步的更新，那么 main 分支不会更新，所以 main 分支会非常老旧。
+
 ## 这个程序有什么用？
 
 在程序启动时，执行一些您想要的操作：
