@@ -1,6 +1,6 @@
-![PreLaunchTaskr封面](https://github.com/user-attachments/assets/9249bb36-5e66-4205-9f44-9838c8424016)
-
 # PreLaunchTaskr.ReadMe
+
+PreLaunchTaskr 的 WPF 分支
 
 ## 这个程序有什么用？
 
@@ -39,27 +39,18 @@
 
 ### 首次使用
 
-#### WinUI 3
-
-可能提示需要安装 WindowsAppSDK 运行环境，点击“是”，然后等待浏览器打开网页。因为中文网站可能更新不及时，请先把网址中的“zh-cn”改为“en-us”，然后在英文页面下载。
-
-WindowsAppSDK 运行环境有时候并不是新版本兼容旧版本，例如 1.7 版本可能无法运行一些用 1.6 版本开发出来的程序。如果您在英文网页下载并安装了最新运行环境后，仍然提示需要安装 WindowsAppSDK，请告知我，我会尽快为最新版本用新版 WindowsAppSDK 重新生成一份。
-
-#### WPF
-
 可能提示安装 .NET 运行环境，点击“是”，然后等待浏览器打开网页。WPF 版本需要 .NET 6 版本的运行环境。
+
+## 目前的缺陷
+
+- 由于没有调用 C++ API，受限于 C# 中的 Process 类提供的功能，绕开自己设置的映像劫持的方式是创建一个名称不同的符号链接。这可能对于文件名敏感和检测程序目录的软件会有影响。
+- 注册表中的映像劫持如果被此程序意外的因素修改，此程序不会察觉到。会在您下一次开关程序配置时恢复到此程序预期的设置。
 
 ## 解压后有什么
 
-### WinUI 3
-
-- PreLaunchTaskr.GUI.WinUI3.exe：主要程序
-- PreLaunchTaskr.Configurator.NET8.exe：主要用于被 GUI 程序以管理员权限调用，你也可以在命令行中使用，带上 -h 参数会显示帮助，大多数功能需要管理员权限。
-- PreLaunchTaskr.Launcher.NET8.exe：用于完成启动前任务的启动器，映像劫持就是为了运行它。
-
-### WPF
-
-与 WinUI 3 类似
+- PreLaunchTaskr.GUI.WPF.exe：主要程序
+- PreLaunchTaskr.Configurator.NET6.exe：主要用于被 GUI 程序以管理员权限调用，你也可以在命令行中使用，带上 -h 参数会显示帮助，大多数功能需要管理员权限。
+- PreLaunchTaskr.Launcher.NET6.exe：用于完成启动前任务的启动器，映像劫持就是为了运行它。
 
 ## 疑难解答
 
@@ -74,9 +65,8 @@ WindowsAppSDK 运行环境有时候并不是新版本兼容旧版本，例如 1.
 - PreLaunchTaskr.Core：核心逻辑，包括操作注册表、增删查改用户对程序的配置、带参数启动、实体类。
 - PreLaunchTaskr.CLI.Common：命令行程序共用的工具类。
 - PreLaunchTaskr.Configurator.NET6：对 Core 中配置逻辑的命令行包装，WPF 版本的 GUI 程序会以管理员权限调用它。
-- PreLaunchTaskr.Configurator.NET8：对 Core 中配置逻辑的命令行包装，WinUI 3 版本的 GUI 程序会以管理员权限调用它。
-- PreLaunchTaskr.GUI.Common：GUI 程序中基本功能所需的组件，WPF 和 WinUI 3 程序共用组件、共用抽象 ViewMode.
+- PreLaunchTaskr.Launcher.NET6：对 Core 中启动逻辑包装，映像劫持指向的是该项目生成的程序。
+- PreLaunchTaskr.GUI.Common：GUI 程序中基本功能所需的组件，WPF 和 WinUI 3 程序共用组件、共用抽象 ViewModel，但是抽象 ViewModel 如果只是同名在前面加一个I的接口，对程序逻辑没有影响，只是为了便于从 WinUI 3 向 WPF 移植。
 - PreLaunchTaskr.GUI.WPF：WPF 应用程序
-- PreLaunchTaskr.GUI.WinUI3：WinUI 3 应用程序
 
-为了尽量保持对 Windows 10 1909 (18362) 的支持，尽量不要使用高版本才支持的组件。
+程序设计时是按照 Configurator、Launcher、GUI 程序和用于存储程序配置的 settings.config 放在同一文件夹，但是在 Visual Studio 中，对单个项目运行时，它们的输出目录并不在同一个。我目前还没能解决，每次要测试都是手动复制。
