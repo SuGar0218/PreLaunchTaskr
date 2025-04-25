@@ -6,6 +6,14 @@ PreLaunchTaskr 有 2 个分支：WinUI 3、WPF
 
 如果 WinUI 3 和 WPF 没有发布同步的更新，那么 main 分支不会更新，所以 main 分支会非常老旧。
 
+克隆 WinUI 3 分支：
+
+```git clone -b winui3 --single-branch https://github.com/SuGar0218/PreLaunchTaskr.git```
+
+克隆 WPF 分支：
+  
+```git clone -b wpf --single-branch https://github.com/SuGar0218/PreLaunchTaskr.git```
+
 ## 这个程序有什么用？
 
 在程序启动时，执行一些您想要的操作：
