@@ -4,3 +4,5 @@ SHOpenFolderAndSelectItems
 CoInitialize
 CoUninitialize
 ILFree
+GetOpenFileName
+CommDlgExtendedError

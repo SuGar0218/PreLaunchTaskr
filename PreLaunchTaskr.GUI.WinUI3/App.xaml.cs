@@ -4,6 +4,7 @@ using PreLaunchTaskr.Core;
 using PreLaunchTaskr.Core.Services;
 
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using Windows.Win32;
@@ -26,13 +27,27 @@ public partial class App : Application
     /// </summary>
     public App()
     {
+        // 只能开一个窗口
+        if (mainWindow is not null)
+        {
+            mainWindow.Activate();
+            Exit();
+            return;
+        }
+        if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(GlobalProperties.WinUI3Location)).Length > 1)
+        {
+            Exit();
+            return;
+        }
+        // 这里结束之后仍然会触发 OnLaunched
+
         InitializeComponent();
         UnhandledException += App_UnhandledException;
     }
 
     public static new App Current => (App) Application.Current;
 
-    public MainWindow MainWindow { get; private set; } = null!;
+    public MainWindow MainWindow => mainWindow;
 
     public static string BaseDirectory { get; } = Path.GetFullPath(".");
 
@@ -40,11 +55,24 @@ public partial class App : Application
     /// Invoked when the application is launched.
     /// </summary>
     /// <param name="args">Details about the launch request and process.</param>
-    protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
+        // 只能开一个窗口
+        if (mainWindow is not null)
+        {
+            mainWindow.Activate();
+            Exit();
+            return;
+        }
+        if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(GlobalProperties.WinUI3Location)).Length > 1)
+        {
+            Exit();
+            return;
+        }
+
         Configurator = Configurator.Init(GlobalProperties.SettingsLocation, GlobalProperties.LauncherNet8Location);
         Launcher = Launcher.Init(BaseDirectory);
-        MainWindow = new MainWindow();
+        mainWindow = new MainWindow();
         // WinUI 3 默认的窗口启动大小太大，
         // 而 AppWindow 的 Resize 设置的是物理像素，而不是 DIP，
         // 因此等到 MainWindow 中的根元素加载完毕时，才能计算大小，
@@ -84,4 +112,6 @@ public partial class App : Application
 
     internal Configurator Configurator { get; private set; } = null!;
     internal Launcher Launcher { get; private set; } = null!;
+
+    private static MainWindow mainWindow = null!;
 }

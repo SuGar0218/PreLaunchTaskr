@@ -8,6 +8,10 @@ public sealed partial class IconHyperlinkButton : HyperlinkButton
     public IconHyperlinkButton()
     {
         InitializeComponent();
+        Thickness padding = Padding;
+        padding.Left = 0;
+        padding.Right = 0;
+        Padding = padding;
     }
 
     public IconSource? IconSource
@@ -26,6 +30,18 @@ public sealed partial class IconHyperlinkButton : HyperlinkButton
     {
         get => (bool) GetValue(IsComapctProperty);
         set => SetValue(IsComapctProperty, value);
+    }
+
+    public HorizontalAlignment ContentHorizontalAlignment
+    {
+        get => (HorizontalAlignment) GetValue(ContentHorizontalAlignmentProperty);
+        set => SetValue(ContentHorizontalAlignmentProperty, value);
+    }
+
+    public VerticalAlignment ContentVerticalAlignment
+    {
+        get => (VerticalAlignment) GetValue(ContentVerticalAlignmentProperty);
+        set => SetValue(ContentVerticalAlignmentProperty, value);
     }
 
     public static readonly DependencyProperty IconSourceProperty = DependencyProperty.Register(
@@ -49,4 +65,16 @@ public sealed partial class IconHyperlinkButton : HyperlinkButton
             IconHyperlinkButton iconHyperlinkButton = (IconHyperlinkButton) d;
             iconHyperlinkButton.TextBlock.Visibility = (bool) e.NewValue ? Visibility.Collapsed : Visibility.Visible;
         }));
+
+    public static readonly DependencyProperty ContentHorizontalAlignmentProperty = DependencyProperty.Register(
+        nameof(ContentHorizontalAlignment),
+        typeof(HorizontalAlignment),
+        typeof(IconHyperlinkButton),
+        new PropertyMetadata(default));
+
+    public static readonly DependencyProperty ContentVerticalAlignmentProperty = DependencyProperty.Register(
+        nameof(ContentHorizontalAlignment),
+        typeof(VerticalAlignment),
+        typeof(IconHyperlinkButton),
+        new PropertyMetadata(default));
 }

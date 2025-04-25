@@ -81,7 +81,7 @@
                         </Button>
 
                         <Button Background="Transparent" BorderThickness="0">
-                            <SymbolIcon Symbol="Clear" />
+                            <SymbolIcon Symbol="Delete" />
                             <Button.Flyout>
                                 <MenuFlyout>
                                     <MenuFlyoutItem

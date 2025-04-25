@@ -13,6 +13,8 @@ public class GlobalProperties
     public const string ConfiguratorNet8Location = @".\PreLaunchTaskr.Configurator.NET8.exe";
     public const string LauncherNet6Location = @".\PreLaunchTaskr.Launcher.NET6.exe";
     public const string LauncherNet8Location = @".\PreLaunchTaskr.Launcher.NET8.exe";
+    public const string WpfLocation = @".\PreLaunchTaskr.GUI.WPF.exe";
+    public const string WinUI3Location = @".\PreLaunchTaskr.GUI.WinUI3.exe";
 
     public static string SymbolicLinkName(string filename) => "_" + filename;
 
