@@ -11,7 +11,8 @@
 
     <Grid>
         <local:MyStackPanel
-            HorizontalAlignment="Stretch"
+            HorizontalAlignment="{x:Bind ContentHorizontalAlignment}"
+            VerticalAlignment="{x:Bind ContentVerticalAlignment}"
             ContentVerticalAlignment="Center"
             Orientation="Horizontal"
             Spacing="8">

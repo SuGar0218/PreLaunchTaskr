@@ -26,39 +26,39 @@ public sealed partial class MainPage : Page
     {
         InitializeComponent();
 
-        Navigation.IsPaneOpen = false;
+        //Navigation.IsPaneOpen = false;
         Navigation.ExpandedModeThresholdWidth = Math.E * Navigation.OpenPaneLength;
-        Navigation.RegisterPropertyChangedCallback(
-            NavigationView.IsPaneOpenProperty,
-            (o, dp) => AddProgramButton.IsCompact = !Navigation.IsPaneOpen);
     }
 
     private readonly MainViewModel viewModel = new();
 
     private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = new(App.Current.MainWindow);
 
-    private void AddProgramButton_Click(object sender, RoutedEventArgs e)
+    private void ShowAddProgramMenu(object sender, object _)
     {
-        AddProgramMenu.ShowAt(AddProgramButton);
+        AddProgramMenu.ShowAt((FrameworkElement) sender);
     }
 
-    private async void SelectProgramFile_Click(object sender, RoutedEventArgs e)
+    private async void SelectProgramFromFile()
     {
-        StorageFile? file = await FileOpenPickerHelper
-            .OpenFileForWindow(App.Current.MainWindow)
-            .AddFileTypeFilter(".exe")
-            .PickSingleAsync();
+        string? path = await Win32FilePicker.PickFileAsync([
+            new Win32FilePickerFilter("应用程序", "*.exe"),
+            new Win32FilePickerFilter("快捷方式", "*.exe")],
+            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            dereferenceLink: true,
+            App.Current.MainWindow.hWnd);
 
-        if (file is null || string.IsNullOrWhiteSpace(file.Path))
+        if (string.IsNullOrWhiteSpace(path))
             return;
 
-        if (!viewModel.AddProgram(file.Name, file.Path))
+        string filename = Path.GetFileName(path);
+        if (!viewModel.AddProgram(filename, path))
         {
-            await ShowFileNameExistedMessageBox(file.Name);
+            await ShowFileNameExistedMessageBox(filename);
         }
     }
 
-    private async void InputProgramPath_Click(object sender, RoutedEventArgs e)
+    private async void InputProgramPath()
     {
         InputTextPage page = new();
         DialogResult result = await this.MessageBox(page, "程序所在位置", MessageBoxButtons.OKCancel);
@@ -79,7 +79,7 @@ public sealed partial class MainPage : Page
             await ShowFileNameExistedMessageBox(name);
     }
 
-    private async void SelectInstalledProgram_Click(object sender, RoutedEventArgs e)
+    private async void SelectInstalledProgram()
     {
         // 暂不支持商店应用，因为商店应用所在路径无权创建文件，就无法创建符号链接。
         //InstalledProgramListPage page = new();
@@ -115,26 +115,25 @@ public sealed partial class MainPage : Page
         if (result != DialogResult.OK || page.SelectedItem is null || string.IsNullOrWhiteSpace(page.SelectedItem.PossiblePath))
             return;
 
-        string path = page.SelectedItem.PossiblePath;
-        if (!Directory.Exists(path) && !File.Exists(path))
+        string directory = page.SelectedItem.PossiblePath;
+        if (!Directory.Exists(directory) && !File.Exists(directory))
             return;
 
-        result = await this.MessageBox("然后您可以粘贴路径并前往查找您的应用程序", "复制可能所在的路径？", MessageBoxButtons.YesNo);
-        if (result != DialogResult.Yes)
+        string? path = await Win32FilePicker.PickFileAsync([
+            new Win32FilePickerFilter("应用程序", "*.exe"),
+            new Win32FilePickerFilter("快捷方式", "*.exe")],
+            directory,
+            dereferenceLink: true,
+            App.Current.MainWindow.hWnd);
+
+        if (string.IsNullOrWhiteSpace(path))
             return;
 
-        ClipboardHelper.Copy(path);
-        StorageFile? file = await FileOpenPickerHelper
-            .OpenFileForWindow(App.Current.MainWindow)
-            .AddFileTypeFilter(".exe")
-            .PickSingleAsync();
-        if (file is null || string.IsNullOrWhiteSpace(file.Path))
-            return;
-
-        path = file.Path;
-        string name = Path.GetFileName(path);
-        if (!viewModel.AddProgram(name, path))
-            await ShowFileNameExistedMessageBox(name);
+        string filename = Path.GetFileName(path);
+        if (!viewModel.AddProgram(filename, path))
+        {
+            await ShowFileNameExistedMessageBox(filename);
+        }
     }
 
     private async Task ShowFileNameExistedMessageBox(string filename)
@@ -145,7 +144,7 @@ public sealed partial class MainPage : Page
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        Navigation.IsPaneOpen = true;
+        //Navigation.IsPaneOpen = true;
 
         ProgramListProgressBar.Visibility = Visibility.Visible;
         await viewModel.InitAsync();
@@ -153,14 +152,15 @@ public sealed partial class MainPage : Page
         App.Current.MainWindow.ExtendsContentIntoTitleBar = true;
         App.Current.MainWindow.SetTitleBar(TitleBarBorder);
         titleBarPassthroughHelper.Passthrough(TitleBarToggleButton);
-        AddProgramButton.MinWidth = Navigation.CompactPaneLength - 8;  // 折叠的左侧导航菜单宽度减两边的 Margin
+        //AddProgramButton.MinWidth = Navigation.CompactPaneLength - 8;  // 折叠的左侧导航菜单宽度减两边的 Margin
+        //MoreButton.MinWidth = Navigation.CompactPaneLength - 8;  // 折叠的左侧导航菜单宽度减两边的 Margin
         // <Thickness x:Key="NavigationViewItemButtonMargin">4,2</Thickness>
         // https://github.com/microsoft/microsoft-ui-xaml/blob/main/src/controls/dev/NavigationView/NavigationView_themeresources.xaml
 
         ContentFrame.Navigate(typeof(ProgramUnselectedPage));
     }
 
-    private void TitleBarToggleButton_Click(object sender, RoutedEventArgs e)
+    private void ToggleNavigationMenuPane()
     {
         Navigation.IsPaneOpen = !Navigation.IsPaneOpen;
     }
@@ -173,28 +173,33 @@ public sealed partial class MainPage : Page
             return;
         }
 
+        if (args.IsSettingsSelected)
+        {
+            return;
+        }
+
         ContentFrame.Navigate(typeof(ProgramConfigPage), args.SelectedItem);
     }
 
-    private void RemoveProgram_Click(object sender, RoutedEventArgs e)
+    private void RemoveProgram(object sender, object _)
     {
         ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
         viewModel.RemoveProgram(item);
     }
 
-    private void CopyProgramPath_Click(object sender, RoutedEventArgs e)
+    private void CopyProgramPath(object sender, object _)
     {
         ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
         ClipboardHelper.Copy(item.Path);
     }
 
-    private void OpenProgramPath_Click(object sender, RoutedEventArgs e)
+    private void GoToProgramPath(object sender, object _)
     {
         ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
         WindowsHelper.OpenPathInExplorer(item.Path);
     }
 
-    private async void Navigation_Drop(object sender, DragEventArgs e)
+    private async void AddProgramFromDrop(object _, DragEventArgs e)
     {
         if (e.DataView.Contains(StandardDataFormats.StorageItems))
         {
@@ -229,13 +234,18 @@ public sealed partial class MainPage : Page
         }
     }
 
-    private void Navigation_DragOver(object sender, DragEventArgs e)
+    private void Navigation_DragOver(object _, DragEventArgs e)
     {
-        e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+        e.AcceptedOperation = DataPackageOperation.Copy;
     }
 
-    private async void DragDropToAdd_Click(object sender, RoutedEventArgs e)
+    private async void ShowDragToAddGuide()
     {
         await this.MessageBox("先关闭此提示，然后把你需要添加的程序的 exe 文件拖拽进来即可。", "拖拽以添加");
+    }
+
+    private void ShowMoreOptionsMenu(object sender, object _)
+    {
+        MoreOptionsMenu.ShowAt((FrameworkElement) sender);
     }
 }

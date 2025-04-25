@@ -15,16 +15,21 @@
     <Page.Resources>
         <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="LayerOnMicaBaseAltFillColorDefaultBrush" />
         <!--<StaticResource x:Key="NavigationViewContentBackground" ResourceKey="NavigationViewExpandedPaneBackground" />-->
-        <x:Double x:Key="NavigationViewItemOnLeftIconBoxWidth">96</x:Double>
-        <x:Double x:Key="NavigationViewItemOnLeftIconBoxHeight">48</x:Double>
-        <Thickness x:Key="NavigationViewItemOnLeftIconBoxMargin">8,0</Thickness>
-        <Thickness x:Key="NavigationViewItemContentPresenterMargin">4,0</Thickness>
+        <!--<x:Double x:Key="NavigationViewIconBoxWidth">64</x:Double>-->
+        <!--<x:Double x:Key="NavigationViewItemOnLeftIconBoxWidth">64</x:Double>-->
         <!--<SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent" />-->
         <SolidColorBrush x:Key="TabViewBorderBrush" Color="{ThemeResource LayerFillColorDefaultBrush}" />
+        <x:Double x:Key="AppBarThemeMinHeight">0</x:Double>
 
         <!--  NavigationMenuItemTemplate  -->
         <DataTemplate x:Key="ProgramListDataTemplate" x:DataType="vm:ProgramListItem">
             <NavigationViewItem>
+                <NavigationViewItem.Resources>
+                    <x:Double x:Key="NavigationViewItemOnLeftIconBoxHeight">48</x:Double>
+                    <Thickness x:Key="NavigationViewItemOnLeftIconBoxMargin">8,0</Thickness>
+                    <Thickness x:Key="NavigationViewItemContentPresenterMargin">4,0</Thickness>
+                </NavigationViewItem.Resources>
+
                 <NavigationViewItem.Icon>
                     <ImageIcon Source="{x:Bind Icon}" />
                 </NavigationViewItem.Icon>
@@ -61,7 +66,7 @@
                                 <SymbolIcon Foreground="Red" Symbol="Clear" />
                             </MenuFlyoutSubItem.Icon>
                             <MenuFlyoutItem
-                                Click="RemoveProgram_Click"
+                                Click="RemoveProgram"
                                 DataContext="{x:Bind}"
                                 Foreground="Red"
                                 Text="确定移除">
@@ -72,7 +77,7 @@
                         </MenuFlyoutSubItem>
 
                         <MenuFlyoutItem
-                            Click="CopyProgramPath_Click"
+                            Click="CopyProgramPath"
                             DataContext="{x:Bind}"
                             Text="复制程序所在路径">
                             <MenuFlyoutItem.Icon>
@@ -81,7 +86,7 @@
                         </MenuFlyoutItem>
 
                         <MenuFlyoutItem
-                            Click="OpenProgramPath_Click"
+                            Click="GoToProgramPath"
                             DataContext="{x:Bind}"
                             Text="打开程序所在位置">
                             <MenuFlyoutItem.Icon>
@@ -94,27 +99,41 @@
         </DataTemplate>
 
         <MenuFlyout x:Key="AddProgramMenu" x:Name="AddProgramMenu">
-            <MenuFlyoutItem Click="SelectProgramFile_Click" Text="从文件管理器选取">
+            <MenuFlyoutItem Click="{x:Bind SelectProgramFromFile}" Text="从文件管理器选取">
                 <MenuFlyoutItem.Icon>
                     <SymbolIcon Symbol="OpenFile" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
 
-            <MenuFlyoutItem Click="SelectInstalledProgram_Click" Text="从已安装的应用程序中选取">
+            <MenuFlyoutItem Click="{x:Bind SelectInstalledProgram}" Text="从已安装的应用程序中选取">
                 <MenuFlyoutItem.Icon>
                     <SymbolIcon Symbol="List" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
 
-            <MenuFlyoutItem Click="InputProgramPath_Click" Text="输入或粘贴路径">
+            <MenuFlyoutItem Click="{x:Bind InputProgramPath}" Text="输入或粘贴路径">
                 <MenuFlyoutItem.Icon>
                     <SymbolIcon Symbol="Paste" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
 
-            <MenuFlyoutItem Click="DragDropToAdd_Click" Text="把文件拖拽进来">
+            <MenuFlyoutItem Click="{x:Bind ShowDragToAddGuide}" Text="把文件拖拽进来">
                 <MenuFlyoutItem.Icon>
                     <SymbolIcon Symbol="TouchPointer" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+        </MenuFlyout>
+
+        <MenuFlyout x:Key="MoreOptionsMenu" x:Name="MoreOptionsMenu">
+            <MenuFlyoutItem Text="设置">
+                <MenuFlyoutItem.Icon>
+                    <SymbolIcon Symbol="Setting" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+
+            <MenuFlyoutItem Text="关于本程序">
+                <MenuFlyoutItem.Icon>
+                    <SymbolIcon Symbol="Emoji2" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
         </MenuFlyout>
@@ -137,7 +156,7 @@
                     x:Name="TitleBarToggleButton"
                     Height="{ThemeResource PaneToggleButtonHeight}"
                     x:FieldModifier="private"
-                    Click="TitleBarToggleButton_Click"
+                    Click="{x:Bind ToggleNavigationMenuPane}"
                     Style="{ThemeResource TitleBarPaneToggleButtonStyle}"
                     UseSystemFocusVisuals="False" />
 
@@ -157,7 +176,7 @@
             AllowDrop="True"
             Background="Transparent"
             DragOver="Navigation_DragOver"
-            Drop="Navigation_Drop"
+            Drop="AddProgramFromDrop"
             IsBackButtonVisible="Collapsed"
             IsBackEnabled="False"
             IsPaneToggleButtonVisible="False"
@@ -175,16 +194,17 @@
             </NavigationView.PaneCustomContent>
 
             <NavigationView.PaneFooter>
-                <my:IconHyperlinkButton
-                    x:Name="AddProgramButton"
-                    Margin="{ThemeResource NavigationViewItemButtonMargin}"
-                    HorizontalAlignment="Stretch"
-                    Click="AddProgramButton_Click"
-                    Text="添加程序">
-                    <my:IconHyperlinkButton.IconSource>
-                        <SymbolIconSource Symbol="Add" />
-                    </my:IconHyperlinkButton.IconSource>
-                </my:IconHyperlinkButton>
+                <my:MyStackPanel HorizontalAlignment="Stretch" ContentHorizontalAlignment="Stretch">
+                    <NavigationViewItem
+                        Content="添加程序"
+                        Icon="Add"
+                        PointerReleased="{x:Bind ShowAddProgramMenu}" />
+
+                    <!--<NavigationViewItem
+                        Content="更多"
+                        Icon="More"
+                        PointerReleased="{x:Bind ShowMoreOptionsMenu}" />-->
+                </my:MyStackPanel>
             </NavigationView.PaneFooter>
 
             <Frame
