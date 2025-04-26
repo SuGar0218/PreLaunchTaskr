@@ -42,7 +42,7 @@ public partial class MyGrid : Grid
         new PropertyMetadata(HorizontalAlignment.Center));
 
     public static readonly DependencyProperty ContentVerticalAlignmentProperty = DependencyProperty.Register(
-        nameof(ContentHorizontalAlignment),
+        nameof(ContentVerticalAlignment),
         typeof(VerticalAlignment),
         typeof(MyGrid),
         new PropertyMetadata(VerticalAlignment.Center));

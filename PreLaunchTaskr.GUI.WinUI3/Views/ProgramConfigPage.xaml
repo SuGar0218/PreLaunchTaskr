@@ -22,6 +22,7 @@
             Grid.Row="0"
             Margin="36,36,36,18"
             ColumnSpacing="12"
+            ContentHorizontalAlignment="Left"
             ContentVerticalAlignment="Center">
 
             <my:MyGrid.ColumnDefinitions>
