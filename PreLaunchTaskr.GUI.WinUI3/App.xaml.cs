@@ -2,6 +2,7 @@
 
 using PreLaunchTaskr.Core;
 using PreLaunchTaskr.Core.Services;
+using PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
 using System;
 using System.Diagnostics;
@@ -20,6 +21,8 @@ namespace PreLaunchTaskr.GUI.WinUI3;
 /// </summary>
 public partial class App : Application
 {
+    public static string DisplayVersion => "1.3.0";
+
     /// <summary>
     /// Initializes the singleton application object.
     /// This is the first line of authored code executed,
@@ -28,17 +31,17 @@ public partial class App : Application
     public App()
     {
         // 只能开一个窗口
-        if (mainWindow is not null)
-        {
-            mainWindow.Activate();
-            Exit();
-            return;
-        }
-        if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(GlobalProperties.WinUI3Location)).Length > 1)
-        {
-            Exit();
-            return;
-        }
+        //if (mainWindow is not null)
+        //{
+        //    mainWindow.Activate();
+        //    Exit();
+        //    return;
+        //}
+        //if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(GlobalProperties.WinUI3Location)).Length > 1)
+        //{
+        //    Exit();
+        //    return;
+        //}
         // 这里结束之后仍然会触发 OnLaunched
 
         InitializeComponent();
@@ -49,6 +52,8 @@ public partial class App : Application
 
     public MainWindow MainWindow => mainWindow;
 
+    public MultiTabViewModel MultiTab { get; set; } = null!;
+
     public static string BaseDirectory { get; } = Path.GetFullPath(".");
 
     /// <summary>
@@ -58,17 +63,17 @@ public partial class App : Application
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         // 只能开一个窗口
-        if (mainWindow is not null)
-        {
-            mainWindow.Activate();
-            Exit();
-            return;
-        }
-        if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(GlobalProperties.WinUI3Location)).Length > 1)
-        {
-            Exit();
-            return;
-        }
+        //if (mainWindow is not null)
+        //{
+        //    mainWindow.Activate();
+        //    Exit();
+        //    return;
+        //}
+        //if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(GlobalProperties.WinUI3Location)).Length > 1)
+        //{
+        //    Exit();
+        //    return;
+        //}
 
         Configurator = Configurator.Init(GlobalProperties.SettingsLocation, GlobalProperties.LauncherNet8Location);
         Launcher = Launcher.Init(BaseDirectory);

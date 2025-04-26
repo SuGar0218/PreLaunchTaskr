@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Navigation;
 
 using PreLaunchTaskr.Common.Helpers;
 using PreLaunchTaskr.GUI.WinUI3.Extensions;
@@ -20,17 +21,32 @@ using Windows.Storage;
 
 namespace PreLaunchTaskr.GUI.WinUI3.Views;
 
+/// <summary>
+/// 接受导航参数的类型为：MainViewModel
+/// </summary>
 public sealed partial class MainPage : Page
 {
-    public MainPage()
+    public MainPage() : this(null) { }
+
+    public MainPage(MainViewModel? viewModel)
     {
         InitializeComponent();
 
         //Navigation.IsPaneOpen = false;
         Navigation.ExpandedModeThresholdWidth = Math.E * Navigation.OpenPaneLength;
+        this.viewModel = viewModel;
     }
 
-    private readonly MainViewModel viewModel = new();
+    /// <summary>
+    /// 接受导航参数的类型为：MainViewModel
+    /// </summary>
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        viewModel = (MainViewModel?) e.Parameter;
+        base.OnNavigatedTo(e);
+    }
+
+    private MainViewModel? viewModel;
 
     private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = new(App.Current.MainWindow);
 
@@ -52,7 +68,7 @@ public sealed partial class MainPage : Page
             return;
 
         string filename = Path.GetFileName(path);
-        if (!viewModel.AddProgram(filename, path))
+        if (! viewModel!.AddProgram(filename, path))
         {
             await ShowFileNameExistedMessageBox(filename);
         }
@@ -130,7 +146,7 @@ public sealed partial class MainPage : Page
             return;
 
         string filename = Path.GetFileName(path);
-        if (!viewModel.AddProgram(filename, path))
+        if (! viewModel!.AddProgram(filename, path))
         {
             await ShowFileNameExistedMessageBox(filename);
         }
@@ -142,21 +158,28 @@ public sealed partial class MainPage : Page
     private async Task ShowFileNameExistedMessageBox(IEnumerable<string> filename)
         => await this.MessageBox($"注册表中的映像劫持是按照文件名而不是文件路径，因此即使不同位置同名文件，也会被映像劫持。\n以下文件因重名未被添加：\n{new StringBuilder().AppendJoin('\n', filename)}", $"已添加过同名文件 ");
 
-    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    private void Page_Loaded(object sender, RoutedEventArgs e)
     {
         //Navigation.IsPaneOpen = true;
+        if (!firstLoaded)
+            return;
 
-        ProgramListProgressBar.Visibility = Visibility.Visible;
-        await viewModel.InitAsync();
-        ProgramListProgressBar.Visibility = Visibility.Collapsed;
-        App.Current.MainWindow.ExtendsContentIntoTitleBar = true;
-        App.Current.MainWindow.SetTitleBar(TitleBarBorder);
-        titleBarPassthroughHelper.Passthrough(TitleBarToggleButton);
+        firstLoaded = false;
+        LoadAsync();
+        //App.Current.MainWindow.ExtendsContentIntoTitleBar = true;
+        //App.Current.MainWindow.SetTitleBar(TitleBarBorder);
+        //titleBarPassthroughHelper.Passthrough(TitleBarToggleButton);
         //AddProgramButton.MinWidth = Navigation.CompactPaneLength - 8;  // 折叠的左侧导航菜单宽度减两边的 Margin
         //MoreButton.MinWidth = Navigation.CompactPaneLength - 8;  // 折叠的左侧导航菜单宽度减两边的 Margin
         // <Thickness x:Key="NavigationViewItemButtonMargin">4,2</Thickness>
         // https://github.com/microsoft/microsoft-ui-xaml/blob/main/src/controls/dev/NavigationView/NavigationView_themeresources.xaml
+    }
 
+    private async void LoadAsync()
+    {
+        ProgramListProgressBar.Visibility = Visibility.Visible;
+        await viewModel!.InitAsync();
+        ProgramListProgressBar.Visibility = Visibility.Collapsed;
         ContentFrame.Navigate(typeof(ProgramUnselectedPage));
     }
 
@@ -184,7 +207,7 @@ public sealed partial class MainPage : Page
     private void RemoveProgram(object sender, object _)
     {
         ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
-        viewModel.RemoveProgram(item);
+        viewModel!.RemoveProgram(item);
     }
 
     private void CopyProgramPath(object sender, object _)
@@ -247,5 +270,34 @@ public sealed partial class MainPage : Page
     private void ShowMoreOptionsMenu(object sender, object _)
     {
         MoreOptionsMenu.ShowAt((FrameworkElement) sender);
+    }
+
+    private void ConfigInNewTab(object sender, object _)
+    {
+        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
+
+        TabStripItem newTabItem = new(
+            item.Name,
+            new ImageIconSource { ImageSource = item.Icon },
+            typeof(ProgramConfigPage),
+            item);
+
+        App.Current.MultiTab.TryAddUniqueTabStripItem(
+            newTabItem,
+            (one, other) => one.PageType == other.PageType && one.ExtraData == other.ExtraData);
+    }
+
+    private static bool firstLoaded = true;
+
+    private void ShowAboutProgramPage()
+    {
+        TabStripItem newTabItem = new(
+            "关于此程序",
+            new SymbolIconSource { Symbol = Symbol.Emoji2 },
+            typeof(AboutPage));
+
+        App.Current.MultiTab.TryAddUniqueTabStripItem(
+            newTabItem,
+            (one, other) => one.PageType == other.PageType);
     }
 }

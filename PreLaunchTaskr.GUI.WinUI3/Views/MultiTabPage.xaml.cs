@@ -1,0 +1,82 @@
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
+
+using PreLaunchTaskr.GUI.WinUI3.Helpers;
+using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
+using PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+
+namespace PreLaunchTaskr.GUI.WinUI3.Views;
+
+public sealed partial class MultiTabPage : Page
+{
+    public MultiTabPage()
+    {
+        InitializeComponent();
+        App.Current.MultiTab = viewModel;
+    }
+
+    private readonly MultiTabViewModel viewModel = new();
+
+    private void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        TabStripFooterSpace.MinWidth = App.Current.MainWindow.AppWindow.TitleBar.RightInset / XamlRoot.RasterizationScale + 10;
+        App.Current.MainWindow.SetTitleBar(TabStrip);
+        viewModel.AddTabStripItem(new TabStripItem(
+            string.Empty,
+            new SymbolIconSource { Symbol = Symbol.Home },
+            closeable: false,
+            typeof(MainPage),
+            new MainViewModel()));
+    }
+
+    /// <summary>
+    /// TabItems 发生改变时，尝试获取 TabItem 的 Container 始终为 null，因此不能 Passthrough
+    /// </summary>
+    private void TabView_TabItemsChanged(TabView sender, IVectorChangedEventArgs args)
+    {
+        if (sender.TabItems.Count == 0)
+        {
+            Application.Current.Exit();
+            return;
+        }
+    }
+
+    private void TabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count == 0 || e.AddedItems[0] is null)
+        {
+            ContentFrame.Navigate(typeof(Page));
+            return;
+        }
+
+        TabStripItem item = (TabStripItem) e.AddedItems[0];
+        ContentFrame.Navigate(item.PageType, item.ExtraData);
+    }
+
+    private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = new(App.Current.MainWindow);
+
+    private void TabStripFooterSpace_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        titleBarPassthroughHelper.Passthrough(TabStrip);
+    }
+
+    private void TabStrip_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
+    {
+        //sender.TabItems.Remove(args.Tab);  // 绑定了 ItemsSource，不能使用这个
+        viewModel.RemoveTabStripItem((TabStripItem) args.Item);
+    }
+}

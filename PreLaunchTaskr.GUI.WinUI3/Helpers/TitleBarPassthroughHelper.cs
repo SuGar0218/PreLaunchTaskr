@@ -25,15 +25,29 @@ public class TitleBarPassthroughHelper
         if (tabView.TabItems.Count > 0)
         {
             scale = window.Content.XamlRoot.RasterizationScale;
-            FrameworkElement firstTab = (FrameworkElement) tabView.TabItems[0];
+            double passthroughWidth = 0.0;
+            //double passthroughHeight = 0.0;
+            for (int i = 0; i < tabView.TabItems.Count; i++)
+            {
+                FrameworkElement tab = (FrameworkElement) tabView.ContainerFromIndex(i);
+                if (tab is null)
+                    continue;
+                passthroughWidth += tab.ActualWidth;
+                //passthroughHeight = tab.ActualHeight;
+            }
+            if (tabView.IsAddTabButtonVisible)
+            {
+                passthroughWidth = passthroughWidth
+                    + (double) Application.Current.Resources["TabViewItemAddButtonWidth"]
+                    + ((Thickness) Application.Current.Resources["TabViewItemAddButtonContainerPadding"]).Left
+                    + ((Thickness) Application.Current.Resources["TabViewItemAddButtonContainerPadding"]).Right;
+            }
+            FrameworkElement firstTab = (FrameworkElement) tabView.ContainerFromIndex(0);
             Point position = firstTab.TransformToVisual(window.Content).TransformPoint(new());
             Rect rect = tabView.TransformToVisual(null).TransformBounds(new Rect(
                 x: position.X,
                 y: position.Y,
-                width: firstTab.ActualWidth * tabView.TabItems.Count
-                    + (double) Application.Current.Resources["TabViewItemAddButtonWidth"]
-                    + ((Thickness) Application.Current.Resources["TabViewItemAddButtonContainerPadding"]).Left
-                    + ((Thickness) Application.Current.Resources["TabViewItemAddButtonContainerPadding"]).Right,
+                width: passthroughWidth,
                 height: firstTab.ActualHeight
             ));
             InputNonClientPointerSource

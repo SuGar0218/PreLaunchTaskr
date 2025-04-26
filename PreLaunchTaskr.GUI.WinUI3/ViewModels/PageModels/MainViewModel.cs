@@ -90,4 +90,5 @@ public class MainViewModel : IMainViewModel<ProgramListItem, BitmapImage>
 
     private readonly Dictionary<int, ProgramListItem> idCache = new();
     private readonly Dictionary<string, ProgramListItem> nameCache = new();
+    //private readonly HashSet<string> 
 }

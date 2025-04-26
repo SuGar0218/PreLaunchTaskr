@@ -5,7 +5,7 @@ using System;
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 
 /// <summary>
-/// 已添加的程序的设置页的分类 NavigationView 的每一项的 PageViewModel
+/// 已添加的程序的设置页的分类 NavigationView 的每一项的 ExtraData
 /// </summary>
 public class ProgramConfigCategoryItem : IProgramConfigCategoryItem
 {

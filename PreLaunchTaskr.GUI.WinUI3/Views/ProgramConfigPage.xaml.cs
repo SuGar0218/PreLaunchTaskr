@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 
 using PreLaunchTaskr.Common.Helpers;
@@ -36,12 +37,15 @@ public sealed partial class ProgramConfigPage : Page
     private void CategoryNavigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         ProgramConfigCategoryItem selectedItem = (ProgramConfigCategoryItem) args.SelectedItem;
-        ContentFrame.Navigate(selectedItem.PageType, selectedItem.PageViewModel, args.RecommendedNavigationTransitionInfo);
+        ContentFrame.Navigate(
+            selectedItem.PageType,
+            selectedItem.PageViewModel,
+            args.RecommendedNavigationTransitionInfo);
     }
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        CategoryNavigation.SelectedItem = viewModel.Categories.First();
+        CategoryNavigation.SelectedItem ??= viewModel.Categories.First();
     }
 
     private ProgramConfigViewModel viewModel = null!;

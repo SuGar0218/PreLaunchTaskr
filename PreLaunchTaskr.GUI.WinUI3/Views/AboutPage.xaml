@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="PreLaunchTaskr.GUI.WinUI3.Views.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:PreLaunchTaskr.GUI.WinUI3"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:PreLaunchTaskr.GUI.WinUI3.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:my="using:PreLaunchTaskr.GUI.WinUI3.Controls"
+    mc:Ignorable="d">
+
+    <ScrollView Padding="36">
+        <StackPanel Grid.Row="1" Spacing="12">
+            <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="关于此应用" />
+
+            <Expander
+                HorizontalContentAlignment="Left"
+                HorizontalAlignment="Stretch"
+                ExpandDirection="Down"
+                IsExpanded="True">
+
+                <Expander.Header>
+                    <StackPanel Margin="4,12">
+                        <TextBlock Text="PreLaunchTaskr" />
+                        <TextBlock Opacity="0.5" Text="{x:Bind app:App.DisplayVersion}" />
+                    </StackPanel>
+                </Expander.Header>
+
+                <my:MyStackPanel>
+                    <my:IconHyperlinkButton
+                        HorizontalAlignment="Left"
+                        Padding="8"
+                        NavigateUri="https://github.com/SuGar0218/PreLaunchTaskr/tree/winui3"
+                        Text="前往 GitHub 查看此项目">
+                        <my:IconHyperlinkButton.IconSource>
+                            <SymbolIconSource Symbol="Go" />
+                        </my:IconHyperlinkButton.IconSource>
+                    </my:IconHyperlinkButton>
+                </my:MyStackPanel>
+            </Expander>
+
+            <Expander
+                HorizontalContentAlignment="Left"
+                HorizontalAlignment="Stretch"
+                ExpandDirection="Down"
+                Header="开发工具"
+                IsExpanded="True">
+
+                <StackPanel>
+                    <my:IconHyperlinkButton
+                        Padding="8"
+                        NavigateUri="https://github.com/microsoft/microsoft-ui-xaml"
+                        Text="WinUI 3">
+                        <my:IconHyperlinkButton.IconSource>
+                            <SymbolIconSource Symbol="Go" />
+                        </my:IconHyperlinkButton.IconSource>
+                    </my:IconHyperlinkButton>
+
+                    <my:IconHyperlinkButton
+                        Padding="8"
+                        NavigateUri="https://github.com/CommunityToolkit/Windows"
+                        Text="Windows Community Toolkit">
+                        <my:IconHyperlinkButton.IconSource>
+                            <SymbolIconSource Symbol="Go" />
+                        </my:IconHyperlinkButton.IconSource>
+                    </my:IconHyperlinkButton>
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+    </ScrollView>
+</Page>

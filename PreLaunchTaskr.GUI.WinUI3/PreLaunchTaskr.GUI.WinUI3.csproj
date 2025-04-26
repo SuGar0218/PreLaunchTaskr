@@ -16,15 +16,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\DefaultProgramIcon.png" />
+    <Content Remove="Assets\PreLaunchTaskrTitle.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Controls\IconHyperlinkButton.xaml" />
+    <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AttachArgumentPage.xaml" />
     <None Remove="Views\BlockArgumentPage.xaml" />
     <None Remove="Views\EnvironmentVariablePage.xaml" />
     <None Remove="Views\InstalledPackagedProgramListPage.xaml" />
     <None Remove="Views\InstalledProgramListPage.xaml" />
     <None Remove="Views\MainPage.xaml" />
+    <None Remove="Views\MultiTabPage.xaml" />
     <None Remove="Views\PreLaunchTaskPage.xaml" />
     <None Remove="Views\ProgramConfigPage.xaml" />
     <None Remove="Views\ProgramUnselectedPage.xaml" />
@@ -76,6 +79,15 @@
     <None Update="Assets\DefaultProgramIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\PreLaunchTaskrTitle.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Page Update="Views\AboutPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\MultiTabPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\InstalledProgramListPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

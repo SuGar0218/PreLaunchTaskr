@@ -42,7 +42,7 @@ public sealed partial class MainWindow : Window
         }
         else
         {
-            SystemBackdrop = new MicaBackdrop();
+            SystemBackdrop = new MicaBackdrop { Kind = MicaKind.BaseAlt };
         }
 
         hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -50,12 +50,10 @@ public sealed partial class MainWindow : Window
 
     public readonly nint hWnd;
 
-    //private readonly ObservableCollection<InfoBarItem> infos = [];
-
     private void Frame_Loaded(object sender, RoutedEventArgs e)
     {
         Frame frame = (Frame) sender;
-        frame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
+        frame.Navigate(typeof(MultiTabPage), null);
 
         double scale = frame.XamlRoot.RasterizationScale;
         AppWindow.Resize(new Windows.Graphics.SizeInt32((int) (3 * NavigationViewOpenPaneLength * scale), (int) (720 * scale)));

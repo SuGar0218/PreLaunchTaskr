@@ -9,7 +9,7 @@ using PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 namespace PreLaunchTaskr.GUI.WinUI3.Views;
 
 /// <summary>
-/// 此页接收导航参数为自身对应的 PageViewModel，类型为 EnvironmentVariableViewModel
+/// 此页接收导航参数为自身对应的 ExtraData，类型为 EnvironmentVariableViewModel
 /// </summary>
 public sealed partial class EnvironmentVariablePage : Page
 {
@@ -18,12 +18,9 @@ public sealed partial class EnvironmentVariablePage : Page
         InitializeComponent();
     }
 
-    protected override async void OnNavigatedTo(NavigationEventArgs e)
+    protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         viewModel = (EnvironmentVariableViewModel) e.Parameter;
-        ListLoadingProgressBar.Visibility = Visibility.Visible;
-        await viewModel.InitAsync();
-        ListLoadingProgressBar.Visibility = Visibility.Collapsed;
         base.OnNavigatedTo(e);
     }
 
@@ -50,5 +47,12 @@ public sealed partial class EnvironmentVariablePage : Page
     {
         EnvironmentVariableListItem item = DataContextHelper.GetDataContext<EnvironmentVariableListItem>(sender);
         ClipboardHelper.Copy(item.Value);
+    }
+
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        ListLoadingProgressBar.Visibility = Visibility.Visible;
+        await viewModel.InitAsync();
+        ListLoadingProgressBar.Visibility = Visibility.Collapsed;
     }
 }

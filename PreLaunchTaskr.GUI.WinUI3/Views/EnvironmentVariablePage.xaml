@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:my="using:PreLaunchTaskr.GUI.WinUI3.Controls"
     xmlns:vm="using:PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels"
+    Loaded="Page_Loaded"
     Unloaded="Page_Unloaded"
     mc:Ignorable="d">
 

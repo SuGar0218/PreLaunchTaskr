@@ -9,7 +9,7 @@ using PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 namespace PreLaunchTaskr.GUI.WinUI3.Views;
 
 /// <summary>
-/// 此页接收导航参数为自身对应的 PageViewModel，类型为 BlockArgumentPage
+/// 此页接收导航参数为自身对应的 ExtraData，类型为 BlockArgumentPage
 /// </summary>
 public sealed partial class BlockArgumentPage : Page
 {
@@ -20,12 +20,9 @@ public sealed partial class BlockArgumentPage : Page
 
     private BlockArgumentViewModel viewModel = null!;
 
-    protected override async void OnNavigatedTo(NavigationEventArgs e)
+    protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         viewModel = (BlockArgumentViewModel) e.Parameter;
-        ListLoadingProgressBar.Visibility = Visibility.Visible;
-        await viewModel.InitAsync();
-        ListLoadingProgressBar.Visibility = Visibility.Collapsed;
         base.OnNavigatedTo(e);
     }
 
@@ -44,5 +41,12 @@ public sealed partial class BlockArgumentPage : Page
     {
         BlockedArgumentListItem item = DataContextHelper.GetDataContext<BlockedArgumentListItem>(sender);
         ClipboardHelper.Copy(item.Argument);
+    }
+
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        ListLoadingProgressBar.Visibility = Visibility.Visible;
+        await viewModel.InitAsync();
+        ListLoadingProgressBar.Visibility = Visibility.Collapsed;
     }
 }

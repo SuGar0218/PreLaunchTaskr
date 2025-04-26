@@ -9,6 +9,7 @@
     xmlns:my="using:PreLaunchTaskr.GUI.WinUI3.Controls"
     xmlns:vm="using:PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels"
     Loaded="Page_Loaded"
+    NavigationCacheMode="Disabled"
     mc:Ignorable="d">
 
     <Grid>
@@ -22,6 +23,7 @@
             Grid.Row="0"
             Margin="36,36,36,18"
             ColumnSpacing="12"
+            ContentHorizontalAlignment="Left"
             ContentVerticalAlignment="Center">
 
             <my:MyGrid.ColumnDefinitions>
@@ -46,7 +48,11 @@
                 </Image.ContextFlyout>-->
             </Image>
 
-            <StackPanel Grid.Column="1">
+            <my:MyStackPanel
+                Grid.Column="1"
+                HorizontalAlignment="Left"
+                ContentHorizontalAlignment="Stretch">
+                
                 <TextBlock
                     Style="{ThemeResource SubtitleTextBlockStyle}"
                     Text="{x:Bind viewModel.Name}"
@@ -67,6 +73,7 @@
                 </TextBlock>
 
                 <TextBlock
+                    HorizontalAlignment="Stretch"
                     Opacity="0.5"
                     Style="{ThemeResource BodyTextBlockStyle}"
                     Text="{x:Bind viewModel.Path}"
@@ -95,7 +102,7 @@
                     </TextBlock.ContextFlyout>
                 </TextBlock>
                 <!--<ToggleSwitch IsOn="{x:Bind viewModel.Enabled, Mode=TwoWay}" />-->
-            </StackPanel>
+            </my:MyStackPanel>
 
             <StackPanel
                 Grid.Column="2"

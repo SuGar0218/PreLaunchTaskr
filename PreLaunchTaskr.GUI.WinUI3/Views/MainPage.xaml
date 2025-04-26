@@ -10,6 +10,7 @@
     xmlns:my="using:PreLaunchTaskr.GUI.WinUI3.Controls"
     xmlns:vm="using:PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels"
     Loaded="Page_Loaded"
+    NavigationCacheMode="Required"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -18,7 +19,8 @@
         <!--<x:Double x:Key="NavigationViewIconBoxWidth">64</x:Double>-->
         <!--<x:Double x:Key="NavigationViewItemOnLeftIconBoxWidth">64</x:Double>-->
         <!--<SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent" />-->
-        <SolidColorBrush x:Key="TabViewBorderBrush" Color="{ThemeResource LayerFillColorDefaultBrush}" />
+        <!--<SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent" />-->
+        <!--<CornerRadius x:Key="NavigationViewContentGridCornerRadius">0</CornerRadius>-->
         <x:Double x:Key="AppBarThemeMinHeight">0</x:Double>
 
         <!--  NavigationMenuItemTemplate  -->
@@ -77,11 +79,11 @@
                         </MenuFlyoutSubItem>
 
                         <MenuFlyoutItem
-                            Click="CopyProgramPath"
+                            Click="ConfigInNewTab"
                             DataContext="{x:Bind}"
-                            Text="复制程序所在路径">
+                            Text="在新标签页中配置">
                             <MenuFlyoutItem.Icon>
-                                <SymbolIcon Symbol="Copy" />
+                                <SymbolIcon Symbol="Go" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
 
@@ -91,6 +93,15 @@
                             Text="打开程序所在位置">
                             <MenuFlyoutItem.Icon>
                                 <SymbolIcon Symbol="Go" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+
+                        <MenuFlyoutItem
+                            Click="CopyProgramPath"
+                            DataContext="{x:Bind}"
+                            Text="复制程序所在路径">
+                            <MenuFlyoutItem.Icon>
+                                <SymbolIcon Symbol="Copy" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
                     </MenuFlyout>
@@ -145,7 +156,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Border
+        <!--<Border
             x:Name="TitleBarBorder"
             Grid.Row="0"
             HorizontalAlignment="Stretch"
@@ -162,7 +173,75 @@
 
                 <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="PreLaunchTaskr" />
             </my:MyStackPanel>
-        </Border>
+        </Border>-->
+        <my:MyStackPanel
+            Grid.Row="0"
+            ContentVerticalAlignment="Center"
+            Orientation="Horizontal">
+
+            <Button
+                x:Name="TitleBarToggleButton"
+                Height="{ThemeResource TitleBarCompactHeight}"
+                x:FieldModifier="private"
+                Click="{x:Bind ToggleNavigationMenuPane}"
+                Style="{ThemeResource TitleBarPaneToggleButtonStyle}" />
+
+            <MenuBar>
+                <MenuBarItem Title="添加程序">
+                    <MenuFlyoutItem Click="{x:Bind SelectProgramFromFile}" Text="从文件管理器选取">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="OpenFile" />
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+
+                    <MenuFlyoutItem Click="{x:Bind SelectInstalledProgram}" Text="从已安装的应用程序中选取">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="List" />
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+
+                    <MenuFlyoutItem Click="{x:Bind InputProgramPath}" Text="输入或粘贴路径">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="Paste" />
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+
+                    <MenuFlyoutItem Click="{x:Bind ShowDragToAddGuide}" Text="把文件拖拽进来">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="TouchPointer" />
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                </MenuBarItem>
+
+                <!--<MenuBarItem Title="移除程序">
+                    <MenuFlyoutItem Text="在列表中右键">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="List" />
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                </MenuBarItem>-->
+
+                <MenuBarItem Title="其他…">
+                    <MenuFlyoutItem Text="重新加载" Click="{x:Bind LoadAsync}">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="Refresh" />
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                    
+                    <!--<MenuFlyoutItem Text="设置">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="Setting" />
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>-->
+
+                    <MenuFlyoutItem Click="{x:Bind ShowAboutProgramPage}" Text="关于本程序">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="Emoji2" />
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                </MenuBarItem>
+            </MenuBar>
+        </my:MyStackPanel>
 
         <!--
             AllowDrop
@@ -193,19 +272,19 @@
                     Visibility="Collapsed" />
             </NavigationView.PaneCustomContent>
 
-            <NavigationView.PaneFooter>
+            <!--<NavigationView.PaneFooter>
                 <my:MyStackPanel HorizontalAlignment="Stretch" ContentHorizontalAlignment="Stretch">
                     <NavigationViewItem
                         Content="添加程序"
                         Icon="Add"
                         PointerReleased="{x:Bind ShowAddProgramMenu}" />
 
-                    <!--<NavigationViewItem
+                    <NavigationViewItem
                         Content="更多"
                         Icon="More"
-                        PointerReleased="{x:Bind ShowMoreOptionsMenu}" />-->
+                        PointerReleased="{x:Bind ShowMoreOptionsMenu}" />
                 </my:MyStackPanel>
-            </NavigationView.PaneFooter>
+            </NavigationView.PaneFooter>-->
 
             <Frame
                 x:Name="ContentFrame"
