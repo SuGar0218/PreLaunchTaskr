@@ -33,10 +33,10 @@ public sealed partial class MultiTabPage : Page
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        TabStripFooterSpace.MinWidth = App.Current.MainWindow.AppWindow.TitleBar.RightInset / XamlRoot.RasterizationScale + 10;
+        TabStripFooterSpace.MinWidth = App.Current.MainWindow.AppWindow.TitleBar.RightInset / XamlRoot.RasterizationScale + 16;
         App.Current.MainWindow.SetTitleBar(TabStrip);
         viewModel.AddTabStripItem(new TabStripItem(
-            string.Empty,
+            nameof(PreLaunchTaskr),
             new SymbolIconSource { Symbol = Symbol.Home },
             closeable: false,
             typeof(MainPage),
@@ -65,18 +65,23 @@ public sealed partial class MultiTabPage : Page
 
         TabStripItem item = (TabStripItem) e.AddedItems[0];
         ContentFrame.Navigate(item.PageType, item.ExtraData);
+        titleBarPassthroughHelper.Passthrough(TabStrip);
     }
 
     private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = new(App.Current.MainWindow);
 
     private void TabStripFooterSpace_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        titleBarPassthroughHelper.Passthrough(TabStrip);
     }
 
     private void TabStrip_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
     {
         //sender.TabItems.Remove(args.Tab);  // 绑定了 ItemsSource，不能使用这个
         viewModel.RemoveTabStripItem((TabStripItem) args.Item);
+    }
+
+    private void TabStrip_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        titleBarPassthroughHelper.Passthrough(TabStrip);
     }
 }

@@ -13,10 +13,10 @@
 
     <Page.Resources>
         <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="LayerOnMicaBaseAltFillColorDefault" />
-        <Thickness x:Key="TabViewItemHeaderIconMargin">8,0,8,0</Thickness>
-        <Thickness x:Key="TabViewItemHeaderPadding">0,3,0,3</Thickness>
-        <Thickness x:Key="TabViewSelectedItemHeaderPadding">1,3,1,4</Thickness>
-        <Thickness x:Key="TabViewItemHeaderCloseMargin">4,0,4,0</Thickness>
+        <!--<Thickness x:Key="TabViewItemHeaderIconMargin">4,0,4,0</Thickness>
+        <Thickness x:Key="TabViewItemHeaderPadding">4,3,4,3</Thickness>
+        <Thickness x:Key="TabViewSelectedItemHeaderPadding">5,3,5,4</Thickness>
+        <Thickness x:Key="TabViewItemHeaderCloseMargin">4,0,4,0</Thickness>-->
         <StaticResource x:Key="TabViewItemHeaderCloseButtonWidth" ResourceKey="TabViewItemAddButtonHeight" />
     </Page.Resources>
 
@@ -27,18 +27,20 @@
         </Grid.RowDefinitions>
 
         <TabView
+            SizeChanged="TabStrip_SizeChanged"
             x:Name="TabStrip"
             Grid.Row="0"
             Padding="0,8,0,0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
+            CanDrag="False"
             CanDragTabs="False"
+            CanReorderTabs="False"
             IsAddTabButtonVisible="False"
             SelectedIndex="{x:Bind viewModel.CurrentTabIndex, Mode=TwoWay}"
             SelectionChanged="TabView_SelectionChanged"
             TabCloseRequested="TabStrip_TabCloseRequested"
-            TabItemsSource="{x:Bind viewModel.TabStripItems}"
-            TabWidthMode="SizeToContent">
+            TabItemsSource="{x:Bind viewModel.TabStripItems}">
 
             <TabView.TabStripHeader>
                 <Image
@@ -55,11 +57,11 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>-->
 
-                    <Border
-                        x:Name="TabStripFooterSpace"
-                        HorizontalAlignment="Stretch"
-                        x:FieldModifier="private"
-                        SizeChanged="TabStripFooterSpace_SizeChanged" />
+                <Border
+                    x:Name="TabStripFooterSpace"
+                    HorizontalAlignment="Stretch"
+                    x:FieldModifier="private"
+                    SizeChanged="TabStripFooterSpace_SizeChanged" />
                 <!--</Grid>-->
             </TabView.TabStripFooter>
 

@@ -222,21 +222,21 @@
                 </MenuBarItem>-->
 
                 <MenuBarItem Title="其他…">
-                    <MenuFlyoutItem Text="重新加载" Click="{x:Bind LoadAsync}">
+                    <MenuFlyoutItem Click="{x:Bind ShowAboutProgramPage}" Text="关于本程序">
                         <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="Refresh" />
+                            <SymbolIcon Symbol="Emoji2" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
-                    
+
                     <!--<MenuFlyoutItem Text="设置">
                         <MenuFlyoutItem.Icon>
                             <SymbolIcon Symbol="Setting" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>-->
 
-                    <MenuFlyoutItem Click="{x:Bind ShowAboutProgramPage}" Text="关于本程序">
+                    <MenuFlyoutItem Click="{x:Bind LoadAsync}" Text="重新加载">
                         <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="Emoji2" />
+                            <SymbolIcon Symbol="Refresh" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
                 </MenuBarItem>
