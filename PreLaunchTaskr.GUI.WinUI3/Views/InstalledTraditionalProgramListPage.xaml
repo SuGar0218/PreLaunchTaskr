@@ -14,18 +14,22 @@
 
     <Page.Resources>
         <DataTemplate x:Key="InstalledProgramListItemDataTemplate" x:DataType="vm:InstalledTraditionalProgramListItem">
-            <ListViewItem
-                Style="{ThemeResource DefaultListViewItemStyle}"
-                ToolTipService.ToolTip="{x:Bind PossiblePath}">
+            <ListViewItem Style="{ThemeResource DefaultListViewItemStyle}" ToolTipService.ToolTip="{x:Bind PossiblePath}">
 
                 <ListViewItem.ContextFlyout>
                     <MenuFlyout>
-                        <MenuFlyoutItem Text="打开所在位置" DataContext="{x:Bind}" Click="GoToPath_Click">
+                        <MenuFlyoutItem
+                            Click="GoToPath_Click"
+                            DataContext="{x:Bind}"
+                            Text="打开所在位置">
                             <MenuFlyoutItem.Icon>
                                 <SymbolIcon Symbol="Go" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
-                        <MenuFlyoutItem Text="复制路径" DataContext="{x:Bind}" Click="CopyPath_Click">
+                        <MenuFlyoutItem
+                            Click="CopyPath_Click"
+                            DataContext="{x:Bind}"
+                            Text="复制路径">
                             <MenuFlyoutItem.Icon>
                                 <SymbolIcon Symbol="Copy" />
                             </MenuFlyoutItem.Icon>
@@ -77,6 +81,7 @@
 
         <ListView
             Grid.Row="1"
+            Width="480"
             ItemTemplate="{StaticResource InstalledProgramListItemDataTemplate}"
             ItemsSource="{x:Bind viewModel.Programs, Mode=OneWay}"
             SelectedItem="{x:Bind viewModel.SelectedItem, Mode=TwoWay}"
