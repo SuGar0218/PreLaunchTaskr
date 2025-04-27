@@ -20,8 +20,12 @@
                 ExpandDirection="Down"
                 IsExpanded="True">
 
+                <Expander.Transitions>
+                    <RepositionThemeTransition />
+                </Expander.Transitions>
+
                 <Expander.Header>
-                    <StackPanel Margin="4,12">
+                    <StackPanel Margin="2,12">
                         <TextBlock Text="PreLaunchTaskr" />
                         <TextBlock Opacity="0.5" Text="{x:Bind app:App.DisplayVersion}" />
                     </StackPanel>
@@ -46,6 +50,10 @@
                 ExpandDirection="Down"
                 Header="开发工具"
                 IsExpanded="True">
+
+                <Expander.Transitions>
+                    <RepositionThemeTransition />
+                </Expander.Transitions>
 
                 <StackPanel>
                     <my:IconHyperlinkButton

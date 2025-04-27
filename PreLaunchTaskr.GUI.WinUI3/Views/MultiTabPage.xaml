@@ -42,7 +42,7 @@
             SelectionChanged="TabStrip_SelectionChanged"
             TabCloseRequested="TabStrip_TabCloseRequested"
             TabItemsSource="{x:Bind viewModel.TabStripItems}">
-
+            
             <TabView.TabStripHeader>
                 <Image
                     Height="20"
@@ -71,7 +71,12 @@
                     <TabViewItem
                         Header="{x:Bind Header}"
                         IconSource="{x:Bind Icon}"
-                        IsClosable="{x:Bind Closeable}" />
+                        IsClosable="{x:Bind Closeable}">
+                        
+                        <TabViewItem.Transitions>
+                            <!--<EntranceThemeTransition IsStaggeringEnabled="True" />-->
+                        </TabViewItem.Transitions>
+                    </TabViewItem>
                 </DataTemplate>
             </TabView.TabItemTemplate>
         </TabView>

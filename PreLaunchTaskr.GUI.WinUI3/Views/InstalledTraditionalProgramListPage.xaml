@@ -15,7 +15,6 @@
     <Page.Resources>
         <DataTemplate x:Key="InstalledProgramListItemDataTemplate" x:DataType="vm:InstalledTraditionalProgramListItem">
             <ListViewItem Style="{ThemeResource DefaultListViewItemStyle}" ToolTipService.ToolTip="{x:Bind PossiblePath}">
-
                 <ListViewItem.ContextFlyout>
                     <MenuFlyout>
                         <MenuFlyoutItem
@@ -62,6 +61,17 @@
                 </Grid>
             </ListViewItem>
         </DataTemplate>
+
+        <Storyboard
+            x:Key="ProgramListAnimation"
+            x:Name="ProgramListAnimation"
+            Storyboard.TargetName="ProgramListView">
+
+            <DoubleAnimation
+                x:Name="ProgramListHeightAnimation"
+                EnableDependentAnimation="True"
+                Storyboard.TargetProperty="Height" />
+        </Storyboard>
     </Page.Resources>
 
     <Grid>
@@ -79,13 +89,25 @@
             SuggestionChosen="AutoSuggestBox_SuggestionChosen"
             TextChanged="AutoSuggestBox_TextChanged" />
 
-        <ListView
+        <ProgressRing
+            x:Name="ProgramListProgressRing"
             Grid.Row="1"
-            Width="480"
+            Margin="24"
+            IsIndeterminate="True" />
+
+        <ListView
+            x:Name="ProgramListView"
+            Grid.Row="1"
             ItemTemplate="{StaticResource InstalledProgramListItemDataTemplate}"
             ItemsSource="{x:Bind viewModel.Programs, Mode=OneWay}"
             SelectedItem="{x:Bind viewModel.SelectedItem, Mode=TwoWay}"
-            SelectionChanged="ListView_SelectionChanged" />
+            SelectionChanged="ListView_SelectionChanged"
+            Transitions="{x:Null}">
+
+            <ListView.ScaleTransition>
+                <Vector3Transition />
+            </ListView.ScaleTransition>
+        </ListView>
 
         <Border
             x:Name="SelectedItemCard"

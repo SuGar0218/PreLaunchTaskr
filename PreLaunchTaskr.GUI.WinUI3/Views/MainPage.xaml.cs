@@ -91,7 +91,7 @@ public sealed partial class MainPage : Page
 
         string name = Path.GetFileName(path);
 
-        if (!viewModel.AddProgram(name, path))
+        if (! viewModel!.AddProgram(name, path))
             await ShowFileNameExistedMessageBox(name);
     }
 
@@ -125,7 +125,7 @@ public sealed partial class MainPage : Page
         //if (!viewModel.AddProgram(name, path))
         //    await ShowFileNameExistedMessageBox(name);
 
-        InstalledTraditionalProgramListPage page = new();
+        InstalledTraditionalProgramListPage page = new() { Width = 480 };
         DialogResult result;
         result = await this.MessageBox(page, "已安装的程序", MessageBoxButtons.OKCancel);
         if (result != DialogResult.OK || page.SelectedItem is null || string.IsNullOrWhiteSpace(page.SelectedItem.PossiblePath))
@@ -236,7 +236,7 @@ public sealed partial class MainPage : Page
             {
                 if (Path.GetExtension(item.Name) == ".exe")
                 {
-                    if (!viewModel.AddProgram(item.Name, item.Path))
+                    if (! viewModel!.AddProgram(item.Name, item.Path))
                     {
                         duplicatedFileNames.Add(item.Path);
                     }

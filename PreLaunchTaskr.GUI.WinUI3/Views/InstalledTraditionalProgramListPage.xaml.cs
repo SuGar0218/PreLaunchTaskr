@@ -41,8 +41,10 @@ public sealed partial class InstalledTraditionalProgramListPage : Page
     {
         if (!loaded)
         {
+            ProgramListProgressRing.IsActive = true;
             loaded = true;
             await viewModel.InitAsync();
+            ProgramListProgressRing.IsActive = false;
         }
     }
 
