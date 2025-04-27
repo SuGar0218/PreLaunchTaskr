@@ -14,7 +14,9 @@ public class TitleBarPassthroughHelper
     public TitleBarPassthroughHelper(Window window)
     {
         this.window = window;
-        this.scale = window.Content.XamlRoot.RasterizationScale;
+        // System.Runtime.InteropServices.COMException
+        // The WinUI Desktop Window object has already been closed.”
+        // this.scale = window.Content.XamlRoot.RasterizationScale;
     }
 
     private readonly Window window;
@@ -22,6 +24,7 @@ public class TitleBarPassthroughHelper
 
     public void Passthrough(TabView tabView)
     {
+        this.scale = window.Content.XamlRoot.RasterizationScale;
         if (tabView.TabItems.Count > 0)
         {
             scale = window.Content.XamlRoot.RasterizationScale;
@@ -58,6 +61,7 @@ public class TitleBarPassthroughHelper
 
     public void Passthrough(FrameworkElement element)
     {
+        this.scale = window.Content.XamlRoot.RasterizationScale;
         InputNonClientPointerSource
             .GetForWindowId(window.AppWindow.Id)
             .SetRegionRects(NonClientRegionKind.Passthrough, [GetUIElementPixelRectInt32(element)]);
@@ -65,7 +69,7 @@ public class TitleBarPassthroughHelper
 
     public void Passthrough(IList<FrameworkElement> elements)
     {
-        scale = window.Content.XamlRoot.RasterizationScale;
+        this.scale = window.Content.XamlRoot.RasterizationScale;
         RectInt32[] rects = new RectInt32[elements.Count];
         int count = 0;
         foreach (var element in elements)

@@ -46,16 +46,16 @@ public sealed partial class MultiTabPage : Page
     /// <summary>
     /// TabItems 发生改变时，尝试获取 TabItem 的 Container 始终为 null，因此不能 Passthrough
     /// </summary>
-    private void TabView_TabItemsChanged(TabView sender, IVectorChangedEventArgs args)
+    private void TabStrip_TabItemsChanged(TabView sender, IVectorChangedEventArgs args)
     {
-        if (sender.TabItems.Count == 0)
+        if (args.CollectionChange == CollectionChange.ItemRemoved && sender.TabItems.Count == 0)
         {
             Application.Current.Exit();
             return;
         }
     }
 
-    private void TabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void TabStrip_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (e.AddedItems.Count == 0 || e.AddedItems[0] is null)
         {
@@ -65,23 +65,31 @@ public sealed partial class MultiTabPage : Page
 
         TabStripItem item = (TabStripItem) e.AddedItems[0];
         ContentFrame.Navigate(item.PageType, item.ExtraData);
-        titleBarPassthroughHelper.Passthrough(TabStrip);
     }
 
     private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = new(App.Current.MainWindow);
 
+    // TabView.SizeChanged 会先于 TabView.TabStripFooter 内的 SizeChanged 发生
+
+    private bool tabStripSizeChanged;
+
+    private void TabStrip_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        tabStripSizeChanged = true;
+        titleBarPassthroughHelper.Passthrough(TabStrip);
+    }
+
     private void TabStripFooterSpace_SizeChanged(object sender, SizeChangedEventArgs e)
     {
+        if (!tabStripSizeChanged)
+            titleBarPassthroughHelper.Passthrough(TabStrip);
+
+        tabStripSizeChanged = false;
     }
 
     private void TabStrip_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
     {
         //sender.TabItems.Remove(args.Tab);  // 绑定了 ItemsSource，不能使用这个
         viewModel.RemoveTabStripItem((TabStripItem) args.Item);
-    }
-
-    private void TabStrip_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        titleBarPassthroughHelper.Passthrough(TabStrip);
     }
 }
