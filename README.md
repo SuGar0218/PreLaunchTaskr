@@ -4,6 +4,10 @@
 
 PreLaunchTaskr 的 WinUI 3 分支
 
+克隆 WinUI 3 分支：
+
+git clone -b winui3 --single-branch https://github.com/SuGar0218/PreLaunchTaskr.git
+
 ## 这个程序有什么用？
 
 在程序启动时，执行一些您想要的操作：
