@@ -5,12 +5,14 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 
+using PreLaunchTaskr.GUI.WinUI3.Helpers;
 using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 using PreLaunchTaskr.GUI.WinUI3.Views;
 
 using System.Collections.ObjectModel;
 
 using Windows.UI;
+using Windows.UI.ViewManagement;
 
 using WinRT;
 
@@ -25,7 +27,11 @@ public sealed partial class MainWindow : Window
         AppWindow.TitleBar.ButtonHoverBackgroundColor = Color.FromArgb(32, 128, 128, 128);
         AppWindow.TitleBar.ButtonPressedBackgroundColor = Color.FromArgb(16, 128, 128, 128);
 
-        if (!MicaController.IsSupported() && DesktopAcrylicController.IsSupported())
+        if (MicaController.IsSupported())
+        {
+            SystemBackdrop = new MicaBackdrop { Kind = MicaKind.BaseAlt };
+        }
+        else if (DesktopAcrylicController.IsSupported())
         {
             systemBackdropConfiguration = new SystemBackdropConfiguration();
             desktopAcrylicController = new DesktopAcrylicController
@@ -39,16 +45,30 @@ public sealed partial class MainWindow : Window
             {
                 systemBackdropConfiguration.IsInputActive = e.WindowActivationState != WindowActivationState.Deactivated;
             };
+            Color themeColor = new UISettings().GetColorValue(UIColorType.Accent);
+            themeColor.A = 32;
+            Background = new SolidColorBrush(themeColor);
         }
         else
         {
-            SystemBackdrop = new MicaBackdrop { Kind = MicaKind.BaseAlt };
+            Color themeColor = new UISettings().GetColorValue(UIColorType.Accent);
+            themeColor.A = 32;
+            Background = new SolidColorBrush(themeColor);
         }
 
         hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        MaterialController = new(this);
+    }
+
+    public Brush Background
+    {
+        get => ContentFrame.Background;
+        set => ContentFrame.Background = value;
     }
 
     public readonly nint hWnd;
+
+    public MainWindowMaterialController MaterialController { get; }
 
     private void Frame_Loaded(object sender, RoutedEventArgs e)
     {

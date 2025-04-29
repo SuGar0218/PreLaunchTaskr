@@ -147,11 +147,19 @@
                     </HyperlinkButton>
                 </Border>
 
-                <ItemsRepeater ItemTemplate="{StaticResource EnvironmentVariableListItemDataTemplate}" ItemsSource="{x:Bind viewModel.EnvironmentVariables, Mode=OneWay}">
-                    <ItemsRepeater.Layout>
-                        <StackLayout Spacing="8" />
-                    </ItemsRepeater.Layout>
-                </ItemsRepeater>
+                <ItemsControl ItemTemplate="{StaticResource EnvironmentVariableListItemDataTemplate}" ItemsSource="{x:Bind viewModel.EnvironmentVariables, Mode=OneWay}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="8">
+                                <StackPanel.ChildrenTransitions>
+                                    <TransitionCollection>
+                                        <RepositionThemeTransition />
+                                    </TransitionCollection>
+                                </StackPanel.ChildrenTransitions>
+                            </StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </StackPanel>
         </ScrollView>
 

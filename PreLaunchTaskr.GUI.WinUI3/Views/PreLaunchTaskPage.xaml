@@ -124,11 +124,19 @@
                     </HyperlinkButton>
                 </Border>
 
-                <ItemsRepeater ItemTemplate="{StaticResource PreLaunchTaskListItemDataTemplate}" ItemsSource="{x:Bind viewModel.Tasks, Mode=OneWay}">
-                    <ItemsRepeater.Layout>
-                        <StackLayout Spacing="8" />
-                    </ItemsRepeater.Layout>
-                </ItemsRepeater>
+                <ItemsControl ItemTemplate="{StaticResource PreLaunchTaskListItemDataTemplate}" ItemsSource="{x:Bind viewModel.Tasks, Mode=OneWay}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="8">
+                                <StackPanel.ChildrenTransitions>
+                                    <TransitionCollection>
+                                        <RepositionThemeTransition />
+                                    </TransitionCollection>
+                                </StackPanel.ChildrenTransitions>
+                            </StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </StackPanel>
         </ScrollView>
 

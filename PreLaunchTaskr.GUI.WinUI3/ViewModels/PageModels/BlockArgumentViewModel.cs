@@ -23,6 +23,7 @@ public partial class BlockArgumentViewModel :
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsListEmpty))]
     public partial ObservableCollection<BlockedArgumentListItem>? Arguments { get; private set; }
 
     public void Init()

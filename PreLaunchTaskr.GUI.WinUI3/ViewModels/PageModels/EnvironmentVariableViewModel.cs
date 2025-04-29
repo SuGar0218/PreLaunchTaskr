@@ -24,6 +24,7 @@ public partial class EnvironmentVariableViewModel :
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsListEmpty))]
     public partial ObservableCollection<EnvironmentVariableListItem>? EnvironmentVariables { get; private set; }
 
     public void Init()

@@ -24,6 +24,7 @@ public partial class AttachArgumentViewModel :
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsListEmpty))]
     public partial ObservableCollection<AttachedArgumentListItem>? Arguments { get; private set; }
 
     public void Init()

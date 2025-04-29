@@ -10,15 +10,18 @@
     xmlns:my="using:PreLaunchTaskr.GUI.WinUI3.Controls"
     mc:Ignorable="d">
 
-    <ScrollView Padding="36">
-        <StackPanel Grid.Row="1" Spacing="12">
+    <Page.Resources>
+        <Style TargetType="Expander">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+        </Style>
+    </Page.Resources>
+
+    <ScrollView Margin="36">
+        <StackPanel Grid.Row="1" Spacing="16">
             <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="关于此应用" />
 
-            <Expander
-                HorizontalContentAlignment="Left"
-                HorizontalAlignment="Stretch"
-                ExpandDirection="Down"
-                IsExpanded="True">
+            <Expander ExpandDirection="Down" IsExpanded="True">
 
                 <Expander.Transitions>
                     <RepositionThemeTransition />
@@ -33,8 +36,8 @@
 
                 <my:MyStackPanel>
                     <my:IconHyperlinkButton
-                        HorizontalAlignment="Left"
                         Padding="8"
+                        HorizontalAlignment="Left"
                         NavigateUri="https://github.com/SuGar0218/PreLaunchTaskr/tree/winui3"
                         Text="前往 GitHub 查看此项目">
                         <my:IconHyperlinkButton.IconSource>
@@ -45,8 +48,6 @@
             </Expander>
 
             <Expander
-                HorizontalContentAlignment="Left"
-                HorizontalAlignment="Stretch"
                 ExpandDirection="Down"
                 Header="开发工具"
                 IsExpanded="True">

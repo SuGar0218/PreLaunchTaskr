@@ -18,6 +18,14 @@
         <Thickness x:Key="TabViewSelectedItemHeaderPadding">5,3,5,4</Thickness>
         <Thickness x:Key="TabViewItemHeaderCloseMargin">4,0,4,0</Thickness>-->
         <StaticResource x:Key="TabViewItemHeaderCloseButtonWidth" ResourceKey="TabViewItemAddButtonHeight" />
+
+        <Style TargetType="TabViewListView">
+            <Setter Property="ItemContainerTransitions">
+                <Setter.Value>
+                    <TransitionCollection />
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
 
     <Grid>
@@ -27,12 +35,10 @@
         </Grid.RowDefinitions>
 
         <TabView
-            SizeChanged="TabStrip_SizeChanged"
             x:Name="TabStrip"
             Grid.Row="0"
             Padding="0,8,0,0"
             HorizontalAlignment="Stretch"
-            TabItemsChanged="TabStrip_TabItemsChanged"
             VerticalAlignment="Stretch"
             CanDrag="False"
             CanDragTabs="False"
@@ -40,9 +46,11 @@
             IsAddTabButtonVisible="False"
             SelectedIndex="{x:Bind viewModel.CurrentTabIndex, Mode=TwoWay}"
             SelectionChanged="TabStrip_SelectionChanged"
+            SizeChanged="TabStrip_SizeChanged"
             TabCloseRequested="TabStrip_TabCloseRequested"
+            TabItemsChanged="TabStrip_TabItemsChanged"
             TabItemsSource="{x:Bind viewModel.TabStripItems}">
-            
+
             <TabView.TabStripHeader>
                 <Image
                     Height="20"
@@ -72,7 +80,7 @@
                         Header="{x:Bind Header}"
                         IconSource="{x:Bind Icon}"
                         IsClosable="{x:Bind Closeable}">
-                        
+
                         <TabViewItem.Transitions>
                             <!--<EntranceThemeTransition IsStaggeringEnabled="True" />-->
                         </TabViewItem.Transitions>

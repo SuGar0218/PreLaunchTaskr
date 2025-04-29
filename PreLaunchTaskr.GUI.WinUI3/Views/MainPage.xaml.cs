@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 
@@ -42,7 +43,9 @@ public sealed partial class MainPage : Page
     /// </summary>
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-        viewModel = (MainViewModel?) e.Parameter;
+        MainViewModel? newViewModel = (MainViewModel?) e.Parameter;
+        if (viewModel is null || (newViewModel is not null && newViewModel != viewModel))
+            viewModel = newViewModel;
         base.OnNavigatedTo(e);
     }
 
@@ -292,9 +295,21 @@ public sealed partial class MainPage : Page
     private void ShowAboutProgramPage()
     {
         TabStripItem newTabItem = new(
-            "关于此程序",
+            "关于此应用",
             new SymbolIconSource { Symbol = Symbol.Emoji2 },
             typeof(AboutPage));
+
+        App.Current.MultiTab.TryAddUniqueTabStripItem(
+            newTabItem,
+            (one, other) => one.PageType == other.PageType);
+    }
+
+    private void GoToSettingsPage()
+    {
+        TabStripItem newTabItem = new(
+            "设置",
+            new SymbolIconSource { Symbol = Symbol.Setting },
+            typeof(SettingsPage));
 
         App.Current.MultiTab.TryAddUniqueTabStripItem(
             newTabItem,

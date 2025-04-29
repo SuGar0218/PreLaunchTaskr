@@ -19,30 +19,31 @@ public partial class InstalledTraditionalProgramListViewModel : ObservableObject
 {
     public void Init()
     {
-        if (loaded)
-            return;
+        //if (loaded)
+        //    return;
 
-        loaded = true;
+        //loaded = true;
         List<WindowsHelper.ProgramUninstallInfo> programUninstallInfos = WindowsHelper.ListProgramUninstallInfo();
         foreach (WindowsHelper.ProgramUninstallInfo programUninstallInfo in programUninstallInfos)
         {
-            programs.Add(new InstalledTraditionalProgramListItem(programUninstallInfo));
+            Programs.Add(new InstalledTraditionalProgramListItem(programUninstallInfo));
         }
     }
 
     public async Task InitAsync()
     {
-        if (loaded)
-            return;
+        //if (loaded)
+        //    return;
 
-        loaded = true;
+        //loaded = true;
+        Programs = [];
         List<WindowsHelper.ProgramUninstallInfo> programUninstallInfos = await Task.Run(() => WindowsHelper.ListProgramUninstallInfo());
         foreach (WindowsHelper.ProgramUninstallInfo programUninstallInfo in programUninstallInfos)
         {
             InstalledTraditionalProgramListItem item = new InstalledTraditionalProgramListItem(programUninstallInfo);
             if (!string.IsNullOrWhiteSpace(item.PossiblePath))
             {
-                programs.Add(item);
+                Programs.Add(item);
             }
         }
     }
@@ -53,26 +54,26 @@ public partial class InstalledTraditionalProgramListViewModel : ObservableObject
             return 0;
 
         List<InstalledTraditionalProgramListItem> result = [];
-        await Task.Run(() =>
+        await Task.Run((Action) (() =>
         {
-            foreach (var program in programs)
+            foreach (var program in this.Programs)
             {
                 string[] words = program.Name.Split(' ');
                 for (int i = 0; i < words.Length; i++)
                 {
                     if (words[i].StartsWith(name) || words[i].StartsWith(name, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        result.Add(program);
+                        result.Add((InstalledTraditionalProgramListItem) program);
                         break;
                     }
                 }
             }
-        });
+        }));
         SearchedPrograms = new ObservableCollection<InstalledTraditionalProgramListItem>(result);
         return SearchedPrograms.Count;
     }
 
-    public ObservableCollection<InstalledTraditionalProgramListItem> Programs => programs;
+    //public ObservableCollection<InstalledTraditionalProgramListItem> Programs => Programs;
 
     [ObservableProperty]
     public partial ObservableCollection<InstalledTraditionalProgramListItem> SearchedPrograms { get; private set; }
@@ -80,7 +81,8 @@ public partial class InstalledTraditionalProgramListViewModel : ObservableObject
     [ObservableProperty]
     public partial InstalledTraditionalProgramListItem? SelectedItem { get; set; }
 
-    private static readonly ObservableCollection<InstalledTraditionalProgramListItem> programs = [];
+    [ObservableProperty]
+    public partial ObservableCollection<InstalledTraditionalProgramListItem> Programs { get; private set; }
 
-    private static bool loaded;  // 初始为 false
+    //private static bool loaded;  // 初始为 false
 }

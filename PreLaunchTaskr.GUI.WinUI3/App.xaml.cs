@@ -30,19 +30,21 @@ public partial class App : Application
     /// </summary>
     public App()
     {
+#if !DEBUG
         // 只能开一个窗口
-        //if (mainWindow is not null)
-        //{
-        //    mainWindow.Activate();
-        //    Exit();
-        //    return;
-        //}
-        //if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(GlobalProperties.WinUI3Location)).Length > 1)
-        //{
-        //    Exit();
-        //    return;
-        //}
+        if (mainWindow is not null)
+        {
+            mainWindow.Activate();
+            Exit();
+            return;
+        }
+        if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(GlobalProperties.WinUI3Location)).Length > 1)
+        {
+            Exit();
+            return;
+        }
         // 这里结束之后仍然会触发 OnLaunched
+#endif
 
         InitializeComponent();
         UnhandledException += App_UnhandledException;
@@ -63,17 +65,17 @@ public partial class App : Application
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         // 只能开一个窗口
-        //if (mainWindow is not null)
-        //{
-        //    mainWindow.Activate();
-        //    Exit();
-        //    return;
-        //}
-        //if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(GlobalProperties.WinUI3Location)).Length > 1)
-        //{
-        //    Exit();
-        //    return;
-        //}
+        if (mainWindow is not null)
+        {
+            mainWindow.Activate();
+            Exit();
+            return;
+        }
+        if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(GlobalProperties.WinUI3Location)).Length > 1)
+        {
+            Exit();
+            return;
+        }
 
         Configurator = Configurator.Init(GlobalProperties.SettingsLocation, GlobalProperties.LauncherNet8Location);
         Launcher = Launcher.Init(BaseDirectory);

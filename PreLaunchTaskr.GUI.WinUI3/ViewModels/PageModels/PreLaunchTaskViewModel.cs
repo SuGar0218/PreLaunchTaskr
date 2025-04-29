@@ -23,6 +23,7 @@ public partial class PreLaunchTaskViewModel :
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsListEmpty))]
     public partial ObservableCollection<PreLaunchTaskListItem>? Tasks { get; private set; }
 
     public void Init()

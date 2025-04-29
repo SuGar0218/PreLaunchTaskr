@@ -17,5 +17,9 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>-->
 
-    <Frame IsNavigationStackEnabled="False" Loaded="Frame_Loaded" />
+    <Frame
+        x:Name="ContentFrame"
+        x:FieldModifier="private"
+        IsNavigationStackEnabled="False"
+        Loaded="Frame_Loaded" />
 </Window>

@@ -31,6 +31,7 @@
     <None Remove="Views\PreLaunchTaskPage.xaml" />
     <None Remove="Views\ProgramConfigPage.xaml" />
     <None Remove="Views\ProgramUnselectedPage.xaml" />
+    <None Remove="Views\SettingsPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -85,6 +86,9 @@
     <None Update="Assets\PreLaunchTaskrTitle.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\AboutPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -147,6 +151,9 @@
     <Page Update="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dao\" />
   </ItemGroup>
 
   <!--

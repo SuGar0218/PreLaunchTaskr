@@ -3,6 +3,7 @@
     x:Class="PreLaunchTaskr.GUI.WinUI3.Views.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helper="using:PreLaunchTaskr.GUI.WinUI3.Helpers"
     xmlns:local="using:PreLaunchTaskr.GUI.WinUI3.Views"
@@ -22,6 +23,7 @@
         <!--<SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent" />-->
         <!--<CornerRadius x:Key="NavigationViewContentGridCornerRadius">0</CornerRadius>-->
         <x:Double x:Key="AppBarThemeMinHeight">0</x:Double>
+        <!--<Thickness x:Key="MenuBarItemMargin">4,0,4,0</Thickness>-->
 
         <!--  NavigationMenuItemTemplate  -->
         <DataTemplate x:Key="ProgramListDataTemplate" x:DataType="vm:ProgramListItem">
@@ -31,6 +33,10 @@
                     <Thickness x:Key="NavigationViewItemOnLeftIconBoxMargin">8,0</Thickness>
                     <Thickness x:Key="NavigationViewItemContentPresenterMargin">4,0</Thickness>
                 </NavigationViewItem.Resources>
+
+                <!--<NavigationViewItem.Transitions>
+                    <AddDeleteThemeTransition />
+                </NavigationViewItem.Transitions>-->
 
                 <NavigationViewItem.Icon>
                     <ImageIcon Source="{x:Bind Icon}" />
@@ -136,13 +142,7 @@
         </MenuFlyout>
 
         <MenuFlyout x:Key="MoreOptionsMenu" x:Name="MoreOptionsMenu">
-            <MenuFlyoutItem Text="设置">
-                <MenuFlyoutItem.Icon>
-                    <SymbolIcon Symbol="Setting" />
-                </MenuFlyoutItem.Icon>
-            </MenuFlyoutItem>
-
-            <MenuFlyoutItem Text="关于本程序">
+            <MenuFlyoutItem Text="关于此应用">
                 <MenuFlyoutItem.Icon>
                     <SymbolIcon Symbol="Emoji2" />
                 </MenuFlyoutItem.Icon>
@@ -174,19 +174,26 @@
                 <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="PreLaunchTaskr" />
             </my:MyStackPanel>
         </Border>-->
-        <my:MyStackPanel
+        <my:MyGrid
             Grid.Row="0"
-            ContentVerticalAlignment="Center"
-            Orientation="Horizontal">
+            ContentHorizontalAlignment="Left"
+            ContentVerticalAlignment="Center">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
 
             <Button
                 x:Name="TitleBarToggleButton"
-                Height="{ThemeResource TitleBarCompactHeight}"
+                Grid.Row="0"
+                Height="30"
                 x:FieldModifier="private"
                 Click="{x:Bind ToggleNavigationMenuPane}"
                 Style="{ThemeResource TitleBarPaneToggleButtonStyle}" />
 
-            <MenuBar>
+            <MenuBar Grid.Column="1">
                 <MenuBarItem Title="添加程序">
                     <MenuFlyoutItem Click="{x:Bind SelectProgramFromFile}" Text="从文件管理器选取">
                         <MenuFlyoutItem.Icon>
@@ -222,7 +229,7 @@
                 </MenuBarItem>-->
 
                 <MenuBarItem Title="其他…">
-                    <MenuFlyoutItem Click="{x:Bind ShowAboutProgramPage}" Text="关于本程序">
+                    <MenuFlyoutItem Click="{x:Bind ShowAboutProgramPage}" Text="关于此应用">
                         <MenuFlyoutItem.Icon>
                             <SymbolIcon Symbol="Emoji2" />
                         </MenuFlyoutItem.Icon>
@@ -241,7 +248,23 @@
                     </MenuFlyoutItem>
                 </MenuBarItem>
             </MenuBar>
-        </my:MyStackPanel>
+
+            <!--<Button
+                Grid.Column="2"
+                Height="30"
+                AnimatedIcon.State="Pressed"
+                Click="{x:Bind GoToSettingsPage}"
+                Style="{ThemeResource CommandBarFlyoutEllipsisButtonStyle}">
+
+            -->
+            <!--  设置图标  -->
+            <!--
+                <FontIcon
+                    AnimatedIcon.State="Pressed"
+                    FontSize="{ThemeResource InfoBarIconFontSize}"
+                    Glyph="&#xE713;" />
+            </Button>-->
+        </my:MyGrid>
 
         <!--
             AllowDrop

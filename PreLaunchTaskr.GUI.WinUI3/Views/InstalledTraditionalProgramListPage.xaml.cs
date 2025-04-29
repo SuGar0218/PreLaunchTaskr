@@ -41,11 +41,16 @@ public sealed partial class InstalledTraditionalProgramListPage : Page
     {
         if (!loaded)
         {
-            ProgramListProgressRing.IsActive = true;
             loaded = true;
-            await viewModel.InitAsync();
-            ProgramListProgressRing.IsActive = false;
+            await LoadAsync();
         }
+    }
+
+    private async Task LoadAsync()
+    {
+        ProgramListProgressRing.IsActive = true;
+        await viewModel.InitAsync();
+        ProgramListProgressRing.IsActive = false;
     }
 
     private void Border_Loaded(object sender, RoutedEventArgs e)

@@ -61,17 +61,6 @@
                 </Grid>
             </ListViewItem>
         </DataTemplate>
-
-        <Storyboard
-            x:Key="ProgramListAnimation"
-            x:Name="ProgramListAnimation"
-            Storyboard.TargetName="ProgramListView">
-
-            <DoubleAnimation
-                x:Name="ProgramListHeightAnimation"
-                EnableDependentAnimation="True"
-                Storyboard.TargetProperty="Height" />
-        </Storyboard>
     </Page.Resources>
 
     <Grid>
@@ -81,13 +70,34 @@
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
-        <AutoSuggestBox
-            Grid.Row="0"
-            ItemTemplate="{StaticResource InstalledProgramListItemDataTemplate}"
-            ItemsSource="{x:Bind viewModel.SearchedPrograms, Mode=OneWay}"
-            PlaceholderText="搜索应用程序的名称"
-            SuggestionChosen="AutoSuggestBox_SuggestionChosen"
-            TextChanged="AutoSuggestBox_TextChanged" />
+        <Grid Grid.Row="0" ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            
+            <AutoSuggestBox
+                Grid.Column="0"
+                ItemTemplate="{StaticResource InstalledProgramListItemDataTemplate}"
+                ItemsSource="{x:Bind viewModel.SearchedPrograms, Mode=OneWay}"
+                PlaceholderText="搜索应用程序的名称"
+                SuggestionChosen="AutoSuggestBox_SuggestionChosen"
+                TextChanged="AutoSuggestBox_TextChanged" />
+
+            <Button Grid.Column="1">
+                <SymbolIcon Symbol="Refresh" />
+
+                <Button.Flyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem Text="我刚才安装了新应用" Click="{x:Bind LoadAsync}">
+                            <MenuFlyoutItem.Icon>
+                                <SymbolIcon Symbol="Refresh" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
 
         <ProgressRing
             x:Name="ProgramListProgressRing"
@@ -101,12 +111,13 @@
             ItemTemplate="{StaticResource InstalledProgramListItemDataTemplate}"
             ItemsSource="{x:Bind viewModel.Programs, Mode=OneWay}"
             SelectedItem="{x:Bind viewModel.SelectedItem, Mode=TwoWay}"
-            SelectionChanged="ListView_SelectionChanged"
-            Transitions="{x:Null}">
+            SelectionChanged="ListView_SelectionChanged">
 
-            <ListView.ScaleTransition>
-                <Vector3Transition />
-            </ListView.ScaleTransition>
+            <ListView.Transitions>
+                <TransitionCollection>
+                    <ContentThemeTransition />
+                </TransitionCollection>
+            </ListView.Transitions>
         </ListView>
 
         <Border

@@ -50,6 +50,11 @@ public sealed partial class AttachArgumentPage : Page
         //viewModel.Init();
         ListLoadingProgressBar.Visibility = Visibility.Collapsed;
     }
+
+    private void Border_Unloaded(object sender, RoutedEventArgs e)
+    {
+        Border border = (Border) sender;
+    }
 }
 
 /*

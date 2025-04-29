@@ -21,7 +21,7 @@
         <!--  上半部分：应用程序信息、立即应用设置按钮  -->
         <my:MyGrid
             Grid.Row="0"
-            Margin="36,36,36,18"
+            Margin="36,28,36,18"
             ColumnSpacing="12"
             ContentHorizontalAlignment="Left"
             ContentVerticalAlignment="Center">
@@ -52,7 +52,7 @@
                 Grid.Column="1"
                 HorizontalAlignment="Left"
                 ContentHorizontalAlignment="Stretch">
-                
+
                 <TextBlock
                     Style="{ThemeResource SubtitleTextBlockStyle}"
                     Text="{x:Bind viewModel.Name}"
