@@ -5,6 +5,7 @@ using PreLaunchTaskr.Core.Dao;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Repositories.Interfaces;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Repositories.Implementations;
@@ -75,7 +76,7 @@ public class ArgumentRepositoryImpl : IArgumentRepository
     public int ClearBlockedArgumentsForProgram(string path)
     {
         ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? 0 : ClearBlockedArgumentsForProgram(programInfo.Id);
+        return programInfo is null ? 0 : ClearBlockedArgumentsForProgram(programInfo);
     }
 
     public int ClearBlockedArgumentsForProgram(ProgramInfo programInfo)
@@ -93,86 +94,44 @@ public class ArgumentRepositoryImpl : IArgumentRepository
         return blockedArgumentDao.GetByPrimaryKey(id);
     }
 
-    public IList<AttachedArgument> ListAllAttachedArguments()
-    {
-        return attachedArgumentDao.List();
-    }
-
-    public IList<BlockedArgument> ListAllBlockedArguments()
-    {
-        return blockedArgumentDao.List();
-    }
-
-    public IList<AttachedArgument> ListAttachedArguments(int length, int skip = 0)
+    public List<AttachedArgument> ListAttachedArguments(int length = -1, int skip = 0)
     {
         return attachedArgumentDao.List(length, skip);
     }
 
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(int programId)
-    {
-        return attachedArgumentDao.ListByForeignKey(programId);
-    }
-
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(string path)
-    {
-        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? EmptyList.Of<AttachedArgument>() : ListAttachedArgumentsByProgram(programInfo.Id);
-    }
-
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(ProgramInfo programInfo)
-    {
-        return ListAttachedArgumentsByProgram(programInfo.Id);
-    }
-
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(int programId, int length, int skip = 0)
+    public List<AttachedArgument> ListAttachedArgumentsByProgram(int programId, int length = -1, int skip = 0)
     {
         return attachedArgumentDao.ListByForeignKey(programId, length, skip);
     }
 
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(string path, int length, int skip = 0)
+    public List<AttachedArgument> ListAttachedArgumentsByProgram(string path, int length = -1, int skip = 0)
     {
         ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? EmptyList.Of<AttachedArgument>() : ListAttachedArgumentsByProgram(programInfo.Id, length, skip);
+        return programInfo is null ? EmptyList.Of<AttachedArgument>() : ListAttachedArgumentsByProgram(programInfo, length, skip);
     }
 
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(ProgramInfo programInfo, int length, int skip = 0)
+    public List<AttachedArgument> ListAttachedArgumentsByProgram(ProgramInfo programInfo, int length = -1, int skip = 0)
     {
         return ListAttachedArgumentsByProgram(programInfo.Id, length, skip);
     }
 
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(int programId)
-    {
-        return blockedArgumentDao.ListByForeignKey(programId);
-    }
-
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(string path)
-    {
-        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? EmptyList.Of<BlockedArgument>() : ListBlockedArgumentsByProgram(programInfo.Id);
-    }
-
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(ProgramInfo programInfo)
-    {
-        return ListBlockedArgumentsByProgram(programInfo.Id);
-    }
-
-    public IList<BlockedArgument> ListBlockedArguments(int length, int skip = 0)
+    public List<BlockedArgument> ListBlockedArguments(int length = -1, int skip = 0)
     {
         return blockedArgumentDao.List(length, skip);
     }
 
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(int programId, int length, int skip = 0)
+    public List<BlockedArgument> ListBlockedArgumentsByProgram(int programId, int length = -1, int skip = 0)
     {
         return blockedArgumentDao.ListByForeignKey(programId, length, skip);
     }
 
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(string path, int length, int skip = 0)
+    public List<BlockedArgument> ListBlockedArgumentsByProgram(string path, int length = -1, int skip = 0)
     {
         ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? EmptyList.Of<BlockedArgument>() : ListBlockedArgumentsByProgram(programInfo.Id, length, skip);
+        return programInfo is null ? EmptyList.Of<BlockedArgument>() : ListBlockedArgumentsByProgram(programInfo, length, skip);
     }
 
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(ProgramInfo programInfo, int length, int skip = 0)
+    public List<BlockedArgument> ListBlockedArgumentsByProgram(ProgramInfo programInfo, int length = -1, int skip = 0)
     {
         return ListBlockedArgumentsByProgram(programInfo.Id, length, skip);
     }
@@ -197,68 +156,110 @@ public class ArgumentRepositoryImpl : IArgumentRepository
         return blockedArgumentDao.Update(blockedArgument) > 0;
     }
 
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(int programId, bool enabled)
-    {
-        return attachedArgumentDao.ListEnabledByForeignKey(programId, enabled);
-    }
-
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(string path, bool enabled)
-    {
-        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? EmptyList.Of<AttachedArgument>() : ListEnabledAttachedArgumentsByProgram(programInfo.Id, enabled);
-    }
-
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(ProgramInfo programInfo, bool enabled)
-    {
-        return ListEnabledAttachedArgumentsByProgram(programInfo.Id, enabled);
-    }
-
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(int programId, bool enabled, int length, int skip = 0)
+    public List<AttachedArgument> ListEnabledAttachedArgumentsByProgram(int programId, bool enabled = true, int length = -1, int skip = 0)
     {
         return attachedArgumentDao.ListEnabledByForeignKey(programId, enabled, length, skip);
     }
 
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(string path, bool enabled, int length, int skip = 0)
+    public List<AttachedArgument> ListEnabledAttachedArgumentsByProgram(string path, bool enabled = true, int length = -1, int skip = 0)
     {
         ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? EmptyList.Of<AttachedArgument>() : ListEnabledAttachedArgumentsByProgram(programInfo.Id, enabled, length, skip);
+        return programInfo is null ? EmptyList.Of<AttachedArgument>() : ListEnabledAttachedArgumentsByProgram(programInfo, enabled, length, skip);
     }
 
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(ProgramInfo programInfo, bool enabled, int length, int skip = 0)
+    public List<AttachedArgument> ListEnabledAttachedArgumentsByProgram(ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0)
     {
         return ListEnabledAttachedArgumentsByProgram(programInfo.Id, enabled, length, skip);
     }
 
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(int programId, bool enabled)
-    {
-        return blockedArgumentDao.ListEnabledByForeignKey(programId, enabled);
-    }
-
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(string path, bool enabled)
-    {
-        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? EmptyList.Of<BlockedArgument>() : ListEnabledBlockedArgumentsByProgram(programInfo.Id, enabled);
-    }
-
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(ProgramInfo programInfo, bool enabled)
-    {
-        return ListEnabledBlockedArgumentsByProgram(programInfo.Id, enabled);
-    }
-
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(int programId, bool enabled, int length, int skip = 0)
+    public List<BlockedArgument> ListEnabledBlockedArgumentsByProgram(int programId, bool enabled = true, int length = -1, int skip = 0)
     {
         return blockedArgumentDao.ListEnabledByForeignKey(programId, enabled, length, skip);
     }
 
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(string path, bool enabled, int length, int skip = 0)
+    public List<BlockedArgument> ListEnabledBlockedArgumentsByProgram(string path, bool enabled = true, int length = -1, int skip = 0)
     {
         ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? EmptyList.Of<BlockedArgument>() : ListEnabledBlockedArgumentsByProgram(programInfo.Id, enabled, length, skip);
+        return programInfo is null ? EmptyList.Of<BlockedArgument>() : ListEnabledBlockedArgumentsByProgram(programInfo, enabled, length, skip);
     }
 
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(ProgramInfo programInfo, bool enabled, int length, int skip = 0)
+    public List<BlockedArgument> ListEnabledBlockedArgumentsByProgram(ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0)
     {
         return ListEnabledBlockedArgumentsByProgram(programInfo.Id, enabled, length, skip);
+    }
+
+    public int ForEachAttachedArguments(Action<AttachedArgument> action, int length = -1, int skip = 0)
+    {
+        return attachedArgumentDao.ForEach(action, length, skip);
+    }
+
+    public int ForEachAttachedArgumentsByProgram(Action<AttachedArgument> action, int programId, int length = -1, int skip = 0)
+    {
+        return attachedArgumentDao.ForEachByForeignKey(action, programId, length, skip);
+    }
+
+    public int ForEachAttachedArgumentsByProgram(Action<AttachedArgument> action, string path, int length = -1, int skip = 0)
+    {
+        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
+        return programInfo is null ? 0 : ForEachAttachedArgumentsByProgram(action, programInfo, length, skip);
+    }
+
+    public int ForEachAttachedArgumentsByProgram(Action<AttachedArgument> action, ProgramInfo programInfo, int length = -1, int skip = 0)
+    {
+        return attachedArgumentDao.ForEachByForeignKey(action, programInfo.Id, length, skip);
+    }
+
+    public int ForEachEnabledAttachedArgumentsByProgram(Action<AttachedArgument> action, int programId, bool enabled = true, int length = -1, int skip = 0)
+    {
+        return attachedArgumentDao.ForEachEnabledByForeignKey(action, programId, enabled, length, skip);
+    }
+
+    public int ForEachEnabledAttachedArgumentsByProgram(Action<AttachedArgument> action, string path, bool enabled = true, int length = -1, int skip = 0)
+    {
+        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
+        return programInfo is null ? 0 : ForEachEnabledAttachedArgumentsByProgram(action, programInfo, enabled, length, skip);
+    }
+
+    public int ForEachEnabledAttachedArgumentsByProgram(Action<AttachedArgument> action, ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0)
+    {
+        return ForEachEnabledAttachedArgumentsByProgram(action, programInfo.Id, enabled, length, skip);
+    }
+
+    public int ForEachBlockedArguments(Action<BlockedArgument> action, int length = -1, int skip = 0)
+    {
+        return blockedArgumentDao.ForEach(action, length, skip);
+    }
+
+    public int ForEachBlockedArgumentsByProgram(Action<BlockedArgument> action, int programId, int length = -1, int skip = 0)
+    {
+        return blockedArgumentDao.ForEachByForeignKey(action, programId, length, skip);
+    }
+
+    public int ForEachBlockedArgumentsByProgram(Action<BlockedArgument> action, string path, int length = -1, int skip = 0)
+    {
+        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
+        return programInfo is null ? 0 : ForEachBlockedArgumentsByProgram(action, programInfo, length, skip);
+    }
+
+    public int ForEachBlockedArgumentsByProgram(Action<BlockedArgument> action, ProgramInfo programInfo, int length = -1, int skip = 0)
+    {
+        return ForEachBlockedArgumentsByProgram(action, programInfo.Id, length, skip);
+    }
+
+    public int ForEachEnabledBlockedArgumentsByProgram(Action<BlockedArgument> action, int programId, bool enabled = true, int length = -1, int skip = 0)
+    {
+        return blockedArgumentDao.ForEachEnabledByForeignKey(action, programId, enabled, length, skip);
+    }
+
+    public int ForEachEnabledBlockedArgumentsByProgram(Action<BlockedArgument> action, string path, bool enabled = true, int length = -1, int skip = 0)
+    {
+        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
+        return programInfo is null ? 0 : ForEachEnabledBlockedArgumentsByProgram(action, programInfo, enabled, length, skip);
+    }
+
+    public int ForEachEnabledBlockedArgumentsByProgram(Action<BlockedArgument> action, ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0)
+    {
+        return ForEachEnabledBlockedArgumentsByProgram(action, programInfo.Id, enabled, length, skip);
     }
 
     private readonly AttachedArgumentDao attachedArgumentDao;

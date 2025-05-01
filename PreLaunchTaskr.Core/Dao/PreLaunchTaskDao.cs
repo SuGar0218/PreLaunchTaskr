@@ -5,6 +5,7 @@ using PreLaunchTaskr.Core.Dao.Tables;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Utils.SqlUtils;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Dao;
@@ -114,7 +115,7 @@ public class PreLaunchTaskDao :
             .ExecuteDataReading<PreLaunchTask>(ReadPreLaunchTask);
     }
 
-    public IList<PreLaunchTask> List(int limit = -1, int offset = 0)
+    public List<PreLaunchTask> List(int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -131,7 +132,7 @@ public class PreLaunchTaskDao :
             .ExecuteListReading<PreLaunchTask>(ReadPreLaunchTask);
     }
 
-    public IList<PreLaunchTask> ListByForeignKey(int key, int limit = -1, int offset = 0)
+    public List<PreLaunchTask> ListByForeignKey(int key, int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -151,7 +152,7 @@ public class PreLaunchTaskDao :
             .ExecuteListReading<PreLaunchTask>(ReadPreLaunchTask);
     }
 
-    public IList<PreLaunchTask> ListEnabledByForeignKey(int key, bool enabled, int limit = -1, int offset = 0)
+    public List<PreLaunchTask> ListEnabledByForeignKey(int key, bool enabled, int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -227,5 +228,64 @@ public class PreLaunchTaskDao :
         command.ExecuteNonQuery();
         command.CommandText = PreLaunchTaskTable.CreateIfNotExistsSQL;
         command.ExecuteNonQuery();
+    }
+
+    public int ForEach(Action<PreLaunchTask> action, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(PreLaunchTaskTable.AllColumns, ProgramTable.AllColumns)
+            .Where($"{PreLaunchTaskTable.Column.ProgramId} = {ProgramTable.Column.Id}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .ExecuteListReading<PreLaunchTask>(ReadPreLaunchTask, action);
+    }
+
+    public int ForEachByForeignKey(Action<PreLaunchTask> action, int key, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(PreLaunchTaskTable.AllColumns, ProgramTable.AllColumns)
+            .From(PreLaunchTaskTable.Name, ProgramTable.Name)
+            .Where($"{PreLaunchTaskTable.Column.ProgramId} = {ProgramTable.Column.Id}")
+            .And($"{PreLaunchTaskTable.Column.ProgramId} = ${PreLaunchTaskTable.Field.ProgramId}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .AddParameterWithValue(PreLaunchTaskTable.Field.ProgramId, key)
+            .ExecuteListReading<PreLaunchTask>(ReadPreLaunchTask, action);
+    }
+
+    public int ForEachEnabledByForeignKey(Action<PreLaunchTask> action, int key, bool enabled, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(PreLaunchTaskTable.AllColumns, ProgramTable.AllColumns)
+            .From(PreLaunchTaskTable.Name, ProgramTable.Name)
+            .Where($"{PreLaunchTaskTable.Column.ProgramId} = {ProgramTable.Column.Id}")
+            .And($"{PreLaunchTaskTable.Column.ProgramId} = ${PreLaunchTaskTable.Field.ProgramId}")
+            .And($"{PreLaunchTaskTable.Column.Enabled} = ${PreLaunchTaskTable.Field.Enabled}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .AddParameterWithValue(PreLaunchTaskTable.Field.ProgramId, key)
+            .AddParameterWithValue(PreLaunchTaskTable.Field.Enabled, enabled)
+            .ExecuteListReading<PreLaunchTask>(ReadPreLaunchTask, action);
     }
 }

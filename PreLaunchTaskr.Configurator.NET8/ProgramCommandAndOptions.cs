@@ -127,6 +127,33 @@ internal partial class Program
         "静默运行（不显示控制台窗口）")
     { Arity = ArgumentArity.ZeroOrOne };
 
+    /// <summary>
+    /// 用于批量启用
+    /// </summary>
+    private static readonly Option<int[]> enableProgramsByIdOption = new(
+        ["--enable", "-en"],
+        "启用指定 ID 的程序的设置"
+    )
+    { Arity = ArgumentArity.OneOrMore };
+
+    /// <summary>
+    /// 用于批量禁用
+    /// </summary>
+    private static readonly Option<int[]> disableProgramsByIdOption = new(
+        ["--disable", "-dis"],
+        "禁用指定 ID 的程序的设置"
+    )
+    { Arity = ArgumentArity.OneOrMore };
+
+    /// <summary>
+    /// 用于批量移除
+    /// </summary>
+    private static readonly Option<int[]> removeProgramsByIdOption = new(
+        ["--remove", "-r"],
+        "移除指定 ID 的程序的设置"
+    )
+    { Arity = ArgumentArity.OneOrMore };
+
     private static readonly Option<int[]> listAttachedArgumentProgramIdOption = new(
         "--program-id",
         "根据此程序ID列出为它附加的参数")
@@ -327,117 +354,121 @@ internal partial class Program
         rootCommand
             .AddGlobalOptions(silentOption)
             .HandleOption(RunSilent, silentOption)
+
+            .AddOptions(enableProgramsByIdOption, disableProgramsByIdOption)
+            .HandleOption(EnableOrDisableProgramsById, enableProgramsByIdOption, disableProgramsByIdOption)
+
             .AddCommands(
-            listProgramCommand.AddAliases("ls-prog")
-                .HandleNoOption(ListPrograms),
-            listAttachedArgumentCommand.AddAliases("ls-attach")
-                .AddOptions(listAttachedArgumentProgramIdOption)
-                .HandleOption(ListAttachedArguments, listAttachedArgumentProgramIdOption),
-            listBlockedArgumentCommand.AddAliases("ls-block")
-                .AddOptions(listBlockedArgumentProgramIdOption)
-                .HandleOption(ListBlockedArguments, listBlockedArgumentProgramIdOption),
-            listPreLaunchTaskCommand.AddAliases("ls-pretsk")
-                .AddOptions(listPreLaunchTaskProgramIdOption)
-                .HandleOption(ListPreLaunchTasks, listPreLaunchTaskProgramIdOption),
-            listEnvironmentVariableCommand.AddAliases("ls-envvar")
-                .AddOptions(listPreLaunchTaskProgramIdOption)
-                .HandleOption(ListEnvironmentVariables, listEnvironmentVariableProgramIdOption),
+                listProgramCommand.AddAliases("ls-prog")
+                    .HandleNoOption(ListPrograms),
+                listAttachedArgumentCommand.AddAliases("ls-attach")
+                    .AddOptions(listAttachedArgumentProgramIdOption)
+                    .HandleOption(ListAttachedArguments, listAttachedArgumentProgramIdOption),
+                listBlockedArgumentCommand.AddAliases("ls-block")
+                    .AddOptions(listBlockedArgumentProgramIdOption)
+                    .HandleOption(ListBlockedArguments, listBlockedArgumentProgramIdOption),
+                listPreLaunchTaskCommand.AddAliases("ls-pretsk")
+                    .AddOptions(listPreLaunchTaskProgramIdOption)
+                    .HandleOption(ListPreLaunchTasks, listPreLaunchTaskProgramIdOption),
+                listEnvironmentVariableCommand.AddAliases("ls-envvar")
+                    .AddOptions(listPreLaunchTaskProgramIdOption)
+                    .HandleOption(ListEnvironmentVariables, listEnvironmentVariableProgramIdOption),
 
-            addProgramCommand.AddAliases("add-prog")
-                .AddOptions(addProgramPathOption, addProgramPathEnableFlag)
-                .HandleOption(AddProgram, addProgramPathOption, addProgramPathEnableFlag),
-            addAttachedArgumentCommand.AddAliases("add-attach")
-                .AddOptions(
-                    addAttachedArgumentProgramIdOption,
-                    addAttachedArgumentOption,
-                    addAttachedArgumentEnableFlag)
-                .HandleOption(AttachArgument,
-                    addAttachedArgumentProgramIdOption,
-                    addAttachedArgumentOption,
-                    addAttachedArgumentEnableFlag),
-            addBlockedArgumentCommand.AddAliases("add-block")
-                .AddOptions(
-                    addBlockedArgumentProgramIdOption,
-                    addBlockedArgumentOption,
-                    addBlockedArgumentEnableFlag,
-                    addBlockedArgumentRegexFlag)
-                .HandleOption(BlockArgument,
-                    addBlockedArgumentProgramIdOption,
-                    addBlockedArgumentOption,
-                    addBlockedArgumentEnableFlag,
-                    addBlockedArgumentRegexFlag),
-            addPreLaunchTaskCommand.AddAliases("add-pretsk")
-                .AddOptions(
-                    addPreLaunchTaskProgramIdOption,
-                    addPreLaunchTaskPathOption,
-                    addPreLaunchTaskEnableFlag,
-                    addPreLaunchTaskAcceptProgramArgsFlag,
-                    addPreLaunchTaskIncludeAttachedArgsFlag)
-                .HandleOption(AddPreLaunchTask,
-                    addPreLaunchTaskProgramIdOption,
-                    addPreLaunchTaskPathOption,
-                    addPreLaunchTaskEnableFlag,
-                    addPreLaunchTaskAcceptProgramArgsFlag,
-                    addPreLaunchTaskIncludeAttachedArgsFlag),
-            addEnvironmentVariableCommand.AddAliases("add-envvar")
-                .AddOptions(
-                    addEnvironmentVariableProgramIdOption,
-                    addEnvironmentVariableKeyOption,
-                    addEnvironmentVariableValueOption,
-                    addEnvironmentVariableEnableFlag)
-                .HandleOption(AddEnvironmentVariable,
-                    addEnvironmentVariableProgramIdOption,
-                    addEnvironmentVariableKeyOption,
-                    addEnvironmentVariableValueOption,
-                    addEnvironmentVariableEnableFlag),
+                addProgramCommand.AddAliases("add-prog")
+                    .AddOptions(addProgramPathOption, addProgramPathEnableFlag)
+                    .HandleOption(AddProgram, addProgramPathOption, addProgramPathEnableFlag),
+                addAttachedArgumentCommand.AddAliases("add-attach")
+                    .AddOptions(
+                        addAttachedArgumentProgramIdOption,
+                        addAttachedArgumentOption,
+                        addAttachedArgumentEnableFlag)
+                    .HandleOption(AttachArgument,
+                        addAttachedArgumentProgramIdOption,
+                        addAttachedArgumentOption,
+                        addAttachedArgumentEnableFlag),
+                addBlockedArgumentCommand.AddAliases("add-block")
+                    .AddOptions(
+                        addBlockedArgumentProgramIdOption,
+                        addBlockedArgumentOption,
+                        addBlockedArgumentEnableFlag,
+                        addBlockedArgumentRegexFlag)
+                    .HandleOption(BlockArgument,
+                        addBlockedArgumentProgramIdOption,
+                        addBlockedArgumentOption,
+                        addBlockedArgumentEnableFlag,
+                        addBlockedArgumentRegexFlag),
+                addPreLaunchTaskCommand.AddAliases("add-pretsk")
+                    .AddOptions(
+                        addPreLaunchTaskProgramIdOption,
+                        addPreLaunchTaskPathOption,
+                        addPreLaunchTaskEnableFlag,
+                        addPreLaunchTaskAcceptProgramArgsFlag,
+                        addPreLaunchTaskIncludeAttachedArgsFlag)
+                    .HandleOption(AddPreLaunchTask,
+                        addPreLaunchTaskProgramIdOption,
+                        addPreLaunchTaskPathOption,
+                        addPreLaunchTaskEnableFlag,
+                        addPreLaunchTaskAcceptProgramArgsFlag,
+                        addPreLaunchTaskIncludeAttachedArgsFlag),
+                addEnvironmentVariableCommand.AddAliases("add-envvar")
+                    .AddOptions(
+                        addEnvironmentVariableProgramIdOption,
+                        addEnvironmentVariableKeyOption,
+                        addEnvironmentVariableValueOption,
+                        addEnvironmentVariableEnableFlag)
+                    .HandleOption(AddEnvironmentVariable,
+                        addEnvironmentVariableProgramIdOption,
+                        addEnvironmentVariableKeyOption,
+                        addEnvironmentVariableValueOption,
+                        addEnvironmentVariableEnableFlag),
 
-            removeProgramCommand.AddAliases("rm-prog")
-                .AddOptions(removeProgramIdOption)
-                .HandleOption(RemoveProgram, removeProgramIdOption),
-            removeAttachedArgumentCommand.AddAliases("rm-attach")
-                .AddOptions(removeAttachedArgumentIdOption)
-                .HandleOption(RemoveAttachedArgument, removeAttachedArgumentIdOption),
-            removeBlockedArgumentCommand.AddAliases("rm-block")
-                .AddOptions(removeBlockedArgumentIdOption)
-                .HandleOption(RemoveBlockedArgument, removeBlockedArgumentIdOption),
-            removePreLaunchTaskCommand.AddAliases("rm-pretsk")
-                .AddOptions(removePreLaunchTaskIdOption)
-                .HandleOption(RemovePreLaunchTask, removePreLaunchTaskIdOption),
-            removeEnvironmentVariableCommand.AddAliases("rm-envvar")
-                .AddOptions(removeEnvironmentVariableIdOption)
-                .HandleOption(RemoveEnvironmentVariable, removeEnvironmentVariableIdOption),
+                removeProgramCommand.AddAliases("rm-prog")
+                    .AddOptions(removeProgramIdOption)
+                    .HandleOption(RemoveProgram, removeProgramIdOption),
+                removeAttachedArgumentCommand.AddAliases("rm-attach")
+                    .AddOptions(removeAttachedArgumentIdOption)
+                    .HandleOption(RemoveAttachedArgument, removeAttachedArgumentIdOption),
+                removeBlockedArgumentCommand.AddAliases("rm-block")
+                    .AddOptions(removeBlockedArgumentIdOption)
+                    .HandleOption(RemoveBlockedArgument, removeBlockedArgumentIdOption),
+                removePreLaunchTaskCommand.AddAliases("rm-pretsk")
+                    .AddOptions(removePreLaunchTaskIdOption)
+                    .HandleOption(RemovePreLaunchTask, removePreLaunchTaskIdOption),
+                removeEnvironmentVariableCommand.AddAliases("rm-envvar")
+                    .AddOptions(removeEnvironmentVariableIdOption)
+                    .HandleOption(RemoveEnvironmentVariable, removeEnvironmentVariableIdOption),
 
-            enableProgramCommand.AddAliases("en-prog")
-                .AddOptions(enableProgramIdOption)
-                .HandleOption(EnableProgram, enableProgramIdOption),
-            enableAttachedArgumentCommand.AddAliases("en-attach")
-                .AddOptions(enableAttachedArgumentIdOption)
-                .HandleOption(EnableAttachedArgument, enableAttachedArgumentIdOption),
-            enableBlockedArgumentCommand.AddAliases("en-block")
-                .AddOptions(enableBlockedArgumentIdOption)
-                .HandleOption(EnableBlockedArgument, enableBlockedArgumentIdOption),
-            enablePreLaunchTaskCommand.AddAliases("en-pretsk")
-                .AddOptions(enablePreLaunchTaskIdOption)
-                .HandleOption(EnablePreLaunchTask, enablePreLaunchTaskIdOption),
-            enableEnvironmentVariableCommand.AddAliases("en-envvar")
-                .AddOptions(enableEnvironmentVariableIdOption)
-                .HandleOption(EnableEnvironmentVariable, enableEnvironmentVariableIdOption),
+                enableProgramCommand.AddAliases("en-prog")
+                    .AddOptions(enableProgramIdOption)
+                    .HandleOption(EnableProgram, enableProgramIdOption),
+                enableAttachedArgumentCommand.AddAliases("en-attach")
+                    .AddOptions(enableAttachedArgumentIdOption)
+                    .HandleOption(EnableAttachedArgument, enableAttachedArgumentIdOption),
+                enableBlockedArgumentCommand.AddAliases("en-block")
+                    .AddOptions(enableBlockedArgumentIdOption)
+                    .HandleOption(EnableBlockedArgument, enableBlockedArgumentIdOption),
+                enablePreLaunchTaskCommand.AddAliases("en-pretsk")
+                    .AddOptions(enablePreLaunchTaskIdOption)
+                    .HandleOption(EnablePreLaunchTask, enablePreLaunchTaskIdOption),
+                enableEnvironmentVariableCommand.AddAliases("en-envvar")
+                    .AddOptions(enableEnvironmentVariableIdOption)
+                    .HandleOption(EnableEnvironmentVariable, enableEnvironmentVariableIdOption),
 
-            disableProgramCommand.AddAliases("dis-prog")
-                .AddOptions(disableProgramIdOption)
-                .HandleOption(DisableProgram, disableProgramIdOption),
-            disableAttachedArgumentCommand.AddAliases("dis-attach")
-                .AddOptions(disableAttachedArgumentIdOption)
-                .HandleOption(DisableAttachedArgument, disableAttachedArgumentIdOption),
-            disableBlockedArgumentCommand.AddAliases("dis-block")
-                .AddOptions(disableBlockedArgumentIdOption)
-                .HandleOption(DisableBlockedArgument, disableBlockedArgumentIdOption),
-            disablePreLaunchTaskCommand.AddAliases("dis-pretsk")
-                .AddOptions(disablePreLaunchTaskIdOption)
-                .HandleOption(DisablePreLaunchTask, disablePreLaunchTaskIdOption),
-            disableEnvironmentVariableCommand.AddAliases("dis-envvar")
-                .AddOptions(disableEnvironmentVariableIdOption)
-                .HandleOption(DisableEnvironmentVariable, disableEnvironmentVariableIdOption)
+                disableProgramCommand.AddAliases("dis-prog")
+                    .AddOptions(disableProgramIdOption)
+                    .HandleOption(DisableProgram, disableProgramIdOption),
+                disableAttachedArgumentCommand.AddAliases("dis-attach")
+                    .AddOptions(disableAttachedArgumentIdOption)
+                    .HandleOption(DisableAttachedArgument, disableAttachedArgumentIdOption),
+                disableBlockedArgumentCommand.AddAliases("dis-block")
+                    .AddOptions(disableBlockedArgumentIdOption)
+                    .HandleOption(DisableBlockedArgument, disableBlockedArgumentIdOption),
+                disablePreLaunchTaskCommand.AddAliases("dis-pretsk")
+                    .AddOptions(disablePreLaunchTaskIdOption)
+                    .HandleOption(DisablePreLaunchTask, disablePreLaunchTaskIdOption),
+                disableEnvironmentVariableCommand.AddAliases("dis-envvar")
+                    .AddOptions(disableEnvironmentVariableIdOption)
+                    .HandleOption(DisableEnvironmentVariable, disableEnvironmentVariableIdOption)
         );
     }
 }

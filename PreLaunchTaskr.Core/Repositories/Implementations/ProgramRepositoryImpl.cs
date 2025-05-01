@@ -4,6 +4,7 @@ using PreLaunchTaskr.Core.Dao;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Repositories.Interfaces;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Repositories.Implementations;
@@ -60,12 +61,12 @@ public class ProgramRepositoryImpl : IProgramRepository
         return programInfoDao.GetByUniqueKey(path);
     }
 
-    public IList<ProgramInfo> List(int length, int skip)
+    public List<ProgramInfo> List(int length = -1, int skip = 0)
     {
         return programInfoDao.List(length, skip);
     }
 
-    public IList<ProgramInfo> ListAll()
+    public List<ProgramInfo> ListAll()
     {
         return programInfoDao.List();
     }
@@ -90,14 +91,24 @@ public class ProgramRepositoryImpl : IProgramRepository
         return programInfoDao.Update(programInfo) > 0;
     }
 
-    public IList<ProgramInfo> ListAllEnabled(bool enabled)
+    public List<ProgramInfo> ListAllEnabled(bool enabled)
     {
         return programInfoDao.ListEnabled(enabled);
     }
 
-    public IList<ProgramInfo> ListEnabled(bool enabled, int length, int skip = 0)
+    public List<ProgramInfo> ListEnabled(bool enabled, int length = -1, int skip = 0)
     {
         return programInfoDao.ListEnabled(enabled, length, skip);
+    }
+
+    public int ForEach(Action<ProgramInfo> action, int length = -1, int skip = 0)
+    {
+        return programInfoDao.ForEach(action, length, skip);
+    }
+
+    public int ForEachEnabled(Action<ProgramInfo> action, bool enabled = true, int length = -1, int skip = 0)
+    {
+        return programInfoDao.ForEachEnabled(action, enabled, length, skip);
     }
 
     private readonly ProgramInfoDao programInfoDao;

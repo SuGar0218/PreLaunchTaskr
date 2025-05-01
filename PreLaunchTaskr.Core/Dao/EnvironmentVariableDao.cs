@@ -5,6 +5,7 @@ using PreLaunchTaskr.Core.Dao.Tables;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Utils.SqlUtils;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Dao;
@@ -112,7 +113,7 @@ public class EnvironmentVariableDao :
             .ExecuteDataReading<EnvironmentVariable>(ReadEnvironmentVariable);
     }
 
-    public IList<EnvironmentVariable> List(int limit = -1, int offset = 0)
+    public List<EnvironmentVariable> List(int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -130,7 +131,7 @@ public class EnvironmentVariableDao :
             .ExecuteListReading<EnvironmentVariable>(ReadEnvironmentVariable);
     }
 
-    public IList<EnvironmentVariable> ListByForeignKey(int key, int limit = -1, int offset = 0)
+    public List<EnvironmentVariable> ListByForeignKey(int key, int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -149,7 +150,7 @@ public class EnvironmentVariableDao :
             .ExecuteListReading<EnvironmentVariable>(ReadEnvironmentVariable);
     }
 
-    public IList<EnvironmentVariable> ListEnabledByForeignKey(int key, bool enabled, int limit = -1, int offset = 0)
+    public List<EnvironmentVariable> ListEnabledByForeignKey(int key, bool enabled, int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -221,5 +222,63 @@ public class EnvironmentVariableDao :
         command.ExecuteNonQuery();
         command.CommandText = EnvironmentVariableTable.CreateIfNotExistsSQL;
         command.ExecuteNonQuery();
+    }
+
+    public int ForEach(Action<EnvironmentVariable> action, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(EnvironmentVariableTable.AllColumns, ProgramTable.AllColumns)
+            .From(EnvironmentVariableTable.Name, ProgramTable.Name)
+            .Where($"{EnvironmentVariableTable.Column.ProgramId} = {ProgramTable.Column.Id}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .ExecuteListReading<EnvironmentVariable>(ReadEnvironmentVariable, action);
+    }
+
+    public int ForEachByForeignKey(Action<EnvironmentVariable> action, int key, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(EnvironmentVariableTable.AllColumns, ProgramTable.AllColumns)
+            .From(EnvironmentVariableTable.Name, ProgramTable.Name)
+            .Where($"{EnvironmentVariableTable.Column.ProgramId} = {ProgramTable.Column.Id}")
+            .And($"{EnvironmentVariableTable.Column.ProgramId} = ${EnvironmentVariableTable.Field.ProgramId}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .AddParameterWithValue(EnvironmentVariableTable.Field.ProgramId, key)
+            .ExecuteListReading<EnvironmentVariable>(ReadEnvironmentVariable, action);
+    }
+
+    public int ForEachEnabledByForeignKey(Action<EnvironmentVariable> action, int key, bool enabled, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(EnvironmentVariableTable.AllColumns, ProgramTable.AllColumns)
+            .From(EnvironmentVariableTable.Name, ProgramTable.Name)
+            .Where($"{EnvironmentVariableTable.Column.ProgramId} = {ProgramTable.Column.Id}")
+            .And($"{EnvironmentVariableTable.Column.ProgramId} = ${EnvironmentVariableTable.Field.ProgramId}")
+            .And($"{EnvironmentVariableTable.Column.Enabled} = ${EnvironmentVariableTable.Field.Enabled}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .AddParameterWithValue(EnvironmentVariableTable.Field.ProgramId, key)
+            .AddParameterWithValue(EnvironmentVariableTable.Field.Enabled, enabled)
+            .ExecuteListReading<EnvironmentVariable>(ReadEnvironmentVariable, action);
     }
 }

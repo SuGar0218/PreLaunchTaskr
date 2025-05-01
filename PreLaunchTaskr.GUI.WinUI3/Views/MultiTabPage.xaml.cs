@@ -73,12 +73,19 @@ public sealed partial class MultiTabPage : Page
 
     private bool tabStripSizeChanged;
 
+    /// <summary>
+    /// 标签页栏尺寸变化时，需要重新执行标题栏 Passthrough
+    /// </summary>
     private void TabStrip_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         tabStripSizeChanged = true;
         titleBarPassthroughHelper.Passthrough(TabStrip);
     }
 
+    /// <summary>
+    /// 标签页栏末端尺寸变化时，需要重新执行标题栏 Passthrough，
+    /// 但如果整个标题栏尺寸已经变化过了，那没必要再执行。
+    /// </summary>
     private void TabStripFooterSpace_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         if (!tabStripSizeChanged)

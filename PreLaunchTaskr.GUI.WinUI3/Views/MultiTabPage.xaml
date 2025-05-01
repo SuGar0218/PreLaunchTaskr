@@ -79,12 +79,7 @@
                     <TabViewItem
                         Header="{x:Bind Header}"
                         IconSource="{x:Bind Icon}"
-                        IsClosable="{x:Bind Closeable}">
-
-                        <TabViewItem.Transitions>
-                            <!--<EntranceThemeTransition IsStaggeringEnabled="True" />-->
-                        </TabViewItem.Transitions>
-                    </TabViewItem>
+                        IsClosable="{x:Bind Closeable}" />
                 </DataTemplate>
             </TabView.TabItemTemplate>
         </TabView>

@@ -34,13 +34,25 @@ public sealed partial class ProgramConfigPage : Page
         base.OnNavigatedTo(e);
     }
 
+    private ProgramConfigCategoryItem? lastSelectedItem = null;
+
     private void CategoryNavigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         ProgramConfigCategoryItem selectedItem = (ProgramConfigCategoryItem) args.SelectedItem;
+        NavigationTransitionInfo? transition;
+        if (lastSelectedItem is null || lastSelectedItem == selectedItem)
+        {
+            transition = new SuppressNavigationTransitionInfo();
+        }
+        else
+        {
+            transition = args.RecommendedNavigationTransitionInfo;
+        }
         ContentFrame.Navigate(
             selectedItem.PageType,
             selectedItem.PageViewModel,
-            args.RecommendedNavigationTransitionInfo);
+            transition);
+        lastSelectedItem = selectedItem;
     }
 
     private void Page_Loaded(object sender, RoutedEventArgs e)

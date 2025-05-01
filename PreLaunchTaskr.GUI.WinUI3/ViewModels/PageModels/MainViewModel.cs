@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Dispatching;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 using PreLaunchTaskr.Common;
@@ -9,17 +11,23 @@ using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
-public class MainViewModel : IMainViewModel<ProgramListItem, BitmapImage>
+public partial class MainViewModel : ObservableObject, IMainViewModel<ProgramListItem, BitmapImage>
 {
-    public ObservableCollection<ProgramListItem> Programs { get; private set; } = [];
+    [ObservableProperty]
+    public partial ObservableCollection<ProgramListItem> Programs { get; private set; }
+
+    [ObservableProperty]
+    public partial ProgramListItem SelectedItem { get; set; }
 
     public void Init()
     {
-        Programs.Clear();
+        Programs = [];
         idCache.Clear();
         nameCache.Clear();
         IList<ProgramInfo> programInfos = App.Current.Configurator.ListPrograms();
@@ -34,7 +42,7 @@ public class MainViewModel : IMainViewModel<ProgramListItem, BitmapImage>
 
     public async Task InitAsync()
     {
-        Programs.Clear();
+        Programs = [];
         idCache.Clear();
         nameCache.Clear();
         IList<ProgramInfo> programInfos = await Task.Run(() => App.Current.Configurator.ListPrograms());
@@ -88,7 +96,47 @@ public class MainViewModel : IMainViewModel<ProgramListItem, BitmapImage>
         return ProcessStarter.StartSilentAsAdminAndWait(GlobalProperties.ConfiguratorNet8Location, $" disable-program --id {id}") is not null;
     }
 
+    public async Task<bool> EnableAllPrograms(bool enable = true)
+    {
+        int i;
+        bool[] backup = new bool[Programs.Count];  // 复制一份，如果未能修改成功，则回退
+        i = 0;
+        foreach (ProgramListItem item in Programs)
+        {
+            backup[i] = item.Enabled;
+            item.Enabled = enable;
+            i++;
+        }
+        bool success = await Task.Run(() => ProgramListItem.SaveChanges(Programs, backup));
+        //if (!success)
+        //{
+        //    i = 0;
+        //    foreach (ProgramListItem item in Programs)
+        //    {
+        //        item.Enabled = backup[i];
+        //        i++;
+        //    }
+        //}
+        return success;
+    }
+
+    public async Task<bool> RemoveAllPrograms()
+    {
+        if (! await EnableAllPrograms(false))
+            return false;
+
+        foreach (ProgramListItem item in Programs)
+        {
+            item.Remove();
+        }
+
+        // 不能用 foreach 移除
+        Programs.Clear();
+        idCache.Clear();
+        nameCache.Clear();
+        return true;
+    }
+
     private readonly Dictionary<int, ProgramListItem> idCache = new();
     private readonly Dictionary<string, ProgramListItem> nameCache = new();
-    //private readonly HashSet<string> 
 }

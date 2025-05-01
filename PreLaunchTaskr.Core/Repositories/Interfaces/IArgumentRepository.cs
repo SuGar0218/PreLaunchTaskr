@@ -1,27 +1,31 @@
 ﻿using PreLaunchTaskr.Core.Entities;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Repositories.Interfaces;
 
 public interface IArgumentRepository
 {
-    public IList<AttachedArgument> ListAllAttachedArguments();
-    public IList<AttachedArgument> ListAttachedArguments(int length, int skip = 0);
+    public List<AttachedArgument> ListAttachedArguments(int length = -1, int skip = 0);
 
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(int programId);
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(string path);
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(ProgramInfo programInfo);
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(int programId, int length, int skip = 0);
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(string path, int length, int skip = 0);
-    public IList<AttachedArgument> ListAttachedArgumentsByProgram(ProgramInfo programInfo, int length, int skip = 0);
+    public List<AttachedArgument> ListAttachedArgumentsByProgram(int programId, int length = -1, int skip = 0);
+    public List<AttachedArgument> ListAttachedArgumentsByProgram(string path, int length = -1, int skip = 0);
+    public List<AttachedArgument> ListAttachedArgumentsByProgram(ProgramInfo programInfo, int length = -1, int skip = 0);
 
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(int programId, bool enabled);
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(string path, bool enabled);
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(ProgramInfo programInfo, bool enabled);
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(int programId, bool enabled, int length, int skip = 0);
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(string path, bool enabled, int length, int skip = 0);
-    public IList<AttachedArgument> ListEnabledAttachedArgumentsByProgram(ProgramInfo programInfo, bool enabled, int length, int skip = 0);
+    public List<AttachedArgument> ListEnabledAttachedArgumentsByProgram(int programId, bool enabled = true, int length = -1, int skip = 0);
+    public List<AttachedArgument> ListEnabledAttachedArgumentsByProgram(string path, bool enabled = true, int length = -1, int skip = 0);
+    public List<AttachedArgument> ListEnabledAttachedArgumentsByProgram(ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0);
+
+    public int ForEachAttachedArguments(Action<AttachedArgument> action, int length = -1, int skip = 0);
+
+    public int ForEachAttachedArgumentsByProgram(Action<AttachedArgument> action, int programId, int length = -1, int skip = 0);
+    public int ForEachAttachedArgumentsByProgram(Action<AttachedArgument> action, string path, int length = -1, int skip = 0);
+    public int ForEachAttachedArgumentsByProgram(Action<AttachedArgument> action, ProgramInfo programInfo, int length = -1, int skip = 0);
+
+    public int ForEachEnabledAttachedArgumentsByProgram(Action<AttachedArgument> action, int programId, bool enabled = true, int length = -1, int skip = 0);
+    public int ForEachEnabledAttachedArgumentsByProgram(Action<AttachedArgument> action, string path, bool enabled = true, int length = -1, int skip = 0);
+    public int ForEachEnabledAttachedArgumentsByProgram(Action<AttachedArgument> action, ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0);
 
     public AttachedArgument? GetAttachedArgumentById(int id);
 
@@ -34,22 +38,25 @@ public interface IArgumentRepository
     public int ClearAttachedArgumentsForProgram(ProgramInfo programInfo);
 
 
-    public IList<BlockedArgument> ListAllBlockedArguments();
-    public IList<BlockedArgument> ListBlockedArguments(int length, int skip = 0);
+    public List<BlockedArgument> ListBlockedArguments(int length = -1, int skip = 0);
 
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(int programId);
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(string path);
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(ProgramInfo programInfo);
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(int programId, int length, int skip = 0);
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(string path, int length, int skip = 0);
-    public IList<BlockedArgument> ListBlockedArgumentsByProgram(ProgramInfo programInfo, int length, int skip = 0);
+    public List<BlockedArgument> ListBlockedArgumentsByProgram(int programId, int length = -1, int skip = 0);
+    public List<BlockedArgument> ListBlockedArgumentsByProgram(string path, int length = -1, int skip = 0);
+    public List<BlockedArgument> ListBlockedArgumentsByProgram(ProgramInfo programInfo, int length = -1, int skip = 0);
 
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(int programId, bool enabled);
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(string path, bool enabled);
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(ProgramInfo programInfo, bool enabled);
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(int programId, bool enabled, int length, int skip = 0);
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(string path, bool enabled, int length, int skip = 0);
-    public IList<BlockedArgument> ListEnabledBlockedArgumentsByProgram(ProgramInfo programInfo, bool enabled, int length, int skip = 0);
+    public List<BlockedArgument> ListEnabledBlockedArgumentsByProgram(int programId, bool enabled = true, int length = -1, int skip = 0);
+    public List<BlockedArgument> ListEnabledBlockedArgumentsByProgram(string path, bool enabled = true, int length = -1, int skip = 0);
+    public List<BlockedArgument> ListEnabledBlockedArgumentsByProgram(ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0);
+
+    public int ForEachBlockedArguments(Action<BlockedArgument> action, int length = -1, int skip = 0);
+
+    public int ForEachBlockedArgumentsByProgram(Action<BlockedArgument> action, int programId, int length = -1, int skip = 0);
+    public int ForEachBlockedArgumentsByProgram(Action<BlockedArgument> action, string path, int length = -1, int skip = 0);
+    public int ForEachBlockedArgumentsByProgram(Action<BlockedArgument> action, ProgramInfo programInfo, int length = -1, int skip = 0);
+
+    public int ForEachEnabledBlockedArgumentsByProgram(Action<BlockedArgument> action, int programId, bool enabled = true, int length = -1, int skip = 0);
+    public int ForEachEnabledBlockedArgumentsByProgram(Action<BlockedArgument> action, string path, bool enabled = true, int length = -1, int skip = 0);
+    public int ForEachEnabledBlockedArgumentsByProgram(Action<BlockedArgument> action, ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0);
 
     public BlockedArgument? GetBlockedArgumentById(int id);
 

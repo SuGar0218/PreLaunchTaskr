@@ -19,7 +19,7 @@
                 <Border.ContextFlyout>
                     <MenuFlyout>
                         <MenuFlyoutItem
-                            Click="CopyPath_Click"
+                            Click="CopyPath"
                             DataContext="{x:Bind}"
                             Text="复制路径">
                             <MenuFlyoutItem.Icon>
@@ -31,7 +31,7 @@
                                 <SymbolIcon Foreground="Red" Symbol="Delete" />
                             </MenuFlyoutSubItem.Icon>
                             <MenuFlyoutItem
-                                Click="ConfirmDeleteTask_Click"
+                                Click="DeleteTask"
                                 DataContext="{x:Bind}"
                                 Foreground="Red"
                                 Text="确认删除">
@@ -71,7 +71,7 @@
                             <Button.Flyout>
                                 <MenuFlyout>
                                     <MenuFlyoutItem
-                                        Click="CopyPath_Click"
+                                        Click="CopyPath"
                                         DataContext="{x:Bind}"
                                         Text="复制路径" />
                                     <MenuFlyoutSeparator />
@@ -86,7 +86,7 @@
                             <Button.Flyout>
                                 <MenuFlyout>
                                     <MenuFlyoutItem
-                                        Click="ConfirmDeleteTask_Click"
+                                        Click="DeleteTask"
                                         DataContext="{x:Bind}"
                                         Foreground="Red"
                                         Text="确认删除">

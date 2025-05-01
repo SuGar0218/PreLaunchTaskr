@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dao\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <!--

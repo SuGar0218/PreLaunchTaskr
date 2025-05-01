@@ -5,6 +5,7 @@ using PreLaunchTaskr.Core.Dao.Tables;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Utils.SqlUtils;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Dao;
@@ -108,7 +109,7 @@ public class BlockedArgumentDao :
             .ExecuteDataReading<BlockedArgument>(ReadBlockedArgument)!;
     }
 
-    public IList<BlockedArgument> List(int limit = -1, int offset = 0)
+    public List<BlockedArgument> List(int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -126,7 +127,7 @@ public class BlockedArgumentDao :
             .ExecuteListReading<BlockedArgument>(ReadBlockedArgument);
     }
 
-    public IList<BlockedArgument> ListByForeignKey(int key, int limit = -1, int offset = 0)
+    public List<BlockedArgument> ListByForeignKey(int key, int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -146,7 +147,7 @@ public class BlockedArgumentDao :
             .ExecuteListReading<BlockedArgument>(ReadBlockedArgument);
     }
 
-    public IList<BlockedArgument> ListEnabledByForeignKey(int key, bool enabled, int limit = -1, int offset = 0)
+    public List<BlockedArgument> ListEnabledByForeignKey(int key, bool enabled = true, int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -219,5 +220,65 @@ public class BlockedArgumentDao :
         command.ExecuteNonQuery();
         command.CommandText = BlockedArgumentTable.CreateIfNotExistsSQL;
         command.ExecuteNonQuery();
+    }
+
+    public int ForEach(Action<BlockedArgument> action, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(BlockedArgumentTable.AllColumns, ProgramTable.AllColumns)
+            .From(BlockedArgumentTable.Name, ProgramTable.Name)
+            .Where($"{BlockedArgumentTable.Column.ProgramId} = {ProgramTable.Column.Id}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .ExecuteListReading<BlockedArgument>(ReadBlockedArgument, action);
+    }
+
+    public int ForEachByForeignKey(Action<BlockedArgument> action, int key, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(BlockedArgumentTable.AllColumns, ProgramTable.AllColumns)
+            .From(BlockedArgumentTable.Name, ProgramTable.Name)
+            .Where($"{BlockedArgumentTable.Column.ProgramId} = {ProgramTable.Column.Id}")
+            .And($"{BlockedArgumentTable.Column.ProgramId} = ${BlockedArgumentTable.Field.ProgramId}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .AddParameterWithValue(BlockedArgumentTable.Field.ProgramId, key)
+            .ExecuteListReading<BlockedArgument>(ReadBlockedArgument, action);
+    }
+
+    public int ForEachEnabledByForeignKey(Action<BlockedArgument> action, int key, bool enabled = true, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(BlockedArgumentTable.AllColumns, ProgramTable.AllColumns)
+            .From(BlockedArgumentTable.Name, ProgramTable.Name)
+            .Where($"{BlockedArgumentTable.Column.ProgramId} = {ProgramTable.Column.Id}")
+            .And($"{BlockedArgumentTable.Column.ProgramId} = ${BlockedArgumentTable.Field.ProgramId}")
+            .And($"{BlockedArgumentTable.Column.Enabled} = ${BlockedArgumentTable.Field.Enabled}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .AddParameterWithValue(BlockedArgumentTable.Field.ProgramId, key)
+            .AddParameterWithValue(BlockedArgumentTable.Field.Enabled, enabled)
+            .ExecuteListReading<BlockedArgument>(ReadBlockedArgument, action);
     }
 }

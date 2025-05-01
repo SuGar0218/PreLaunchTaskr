@@ -5,6 +5,7 @@ using PreLaunchTaskr.Core.Dao.Tables;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Utils.SqlUtils;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Dao;
@@ -56,7 +57,7 @@ public class AttachedArgumentDao :
             .ExecuteDataReading<AttachedArgument>(ReadAttachedArgument)!;
     }
 
-    public IList<AttachedArgument> List(int limit = -1, int offset = 0)
+    public List<AttachedArgument> List(int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -74,7 +75,7 @@ public class AttachedArgumentDao :
             .ExecuteListReading<AttachedArgument>(ReadAttachedArgument);
     }
 
-    public IList<AttachedArgument> ListByForeignKey(int key, int limit = -1, int offset = 0)
+    public List<AttachedArgument> ListByForeignKey(int key, int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -94,7 +95,7 @@ public class AttachedArgumentDao :
             .ExecuteListReading<AttachedArgument>(ReadAttachedArgument);
     }
 
-    public IList<AttachedArgument> ListEnabledByForeignKey(int key, bool enabled, int limit = -1, int offset = 0)
+    public List<AttachedArgument> ListEnabledByForeignKey(int key, bool enabled = true, int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -212,5 +213,65 @@ public class AttachedArgumentDao :
         command.ExecuteNonQuery();
         command.CommandText = AttachedArgumentTable.CreateIfNotExistsSQL;
         command.ExecuteNonQuery();
+    }
+
+    public int ForEach(Action<AttachedArgument> action, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(AttachedArgumentTable.AllColumns)
+            .From(AttachedArgumentTable.Name, ProgramTable.Name)
+            .Where($"{AttachedArgumentTable.Column.ProgramId} = {ProgramTable.Column.Id}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .ExecuteListReading<AttachedArgument>(ReadAttachedArgument, action);
+    }
+
+    public int ForEachByForeignKey(Action<AttachedArgument> action, int key, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(AttachedArgumentTable.AllColumns, ProgramTable.AllColumns)
+            .From(AttachedArgumentTable.Name, ProgramTable.Name)
+            .Where($"{AttachedArgumentTable.Column.ProgramId} = {ProgramTable.Column.Id}")
+            .And($"{AttachedArgumentTable.Column.ProgramId} = ${AttachedArgumentTable.Field.ProgramId}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .AddParameterWithValue(AttachedArgumentTable.Field.ProgramId, key)
+            .ExecuteListReading<AttachedArgument>(ReadAttachedArgument, action);
+    }
+
+    public int ForEachEnabledByForeignKey(Action<AttachedArgument> action, int key, bool enabled = true, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+            .Select(AttachedArgumentTable.AllColumns, ProgramTable.AllColumns)
+            .From(AttachedArgumentTable.Name, ProgramTable.Name)
+            .Where($"{AttachedArgumentTable.Column.ProgramId} = {ProgramTable.Column.Id}")
+            .And($"{AttachedArgumentTable.Column.ProgramId} = ${AttachedArgumentTable.Field.ProgramId}")
+            .And($"{AttachedArgumentTable.Column.Enabled} = ${AttachedArgumentTable.Field.Enabled}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .AddParameterWithValue(AttachedArgumentTable.Field.ProgramId, key)
+            .AddParameterWithValue(AttachedArgumentTable.Field.Enabled, enabled)
+            .ExecuteListReading<AttachedArgument>(ReadAttachedArgument, action);
     }
 }

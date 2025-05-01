@@ -5,6 +5,7 @@ using PreLaunchTaskr.Core.Dao;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Repositories.Interfaces;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Repositories.Implementations;
@@ -61,44 +62,23 @@ public class EnvironmentVariableRepositoryImpl : IEnvironmentVariableRepository
         return programInfo is null ? null : GetById(programInfo.Id);
     }
 
-    public IList<EnvironmentVariable> List(int length, int skip = 0)
+    public List<EnvironmentVariable> List(int length = -1, int skip = 0)
     {
         return environmentVariableDao.List(length, skip);
     }
 
-    public IList<EnvironmentVariable> ListAll()
-    {
-        return environmentVariableDao.List();
-    }
-
-    public IList<EnvironmentVariable> ListByProgram(int programId)
-    {
-        return environmentVariableDao.ListByForeignKey(programId);
-    }
-
-    public IList<EnvironmentVariable> ListByProgram(string path)
-    {
-        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? EmptyList.Of<EnvironmentVariable>() : ListByProgram(programInfo.Id);
-    }
-
-    public IList<EnvironmentVariable> ListByProgram(ProgramInfo programInfo)
-    {
-        return ListByProgram(programInfo.Id);
-    }
-
-    public IList<EnvironmentVariable> ListByProgram(int programId, int length, int skip = 0)
+    public List<EnvironmentVariable> ListByProgram(int programId, int length = -1, int skip = 0)
     {
         return environmentVariableDao.ListByForeignKey(programId, length, skip);
     }
 
-    public IList<EnvironmentVariable> ListByProgram(string path, int length, int skip = 0)
+    public List<EnvironmentVariable> ListByProgram(string path, int length = -1, int skip = 0)
     {
         ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
         return programInfo is null ? EmptyList.Of<EnvironmentVariable>() : ListByProgram(programInfo.Id);
     }
 
-    public IList<EnvironmentVariable> ListByProgram(ProgramInfo programInfo, int length, int skip = 0)
+    public List<EnvironmentVariable> ListByProgram(ProgramInfo programInfo, int length = -1, int skip = 0)
     {
         return ListByProgram(programInfo.Id);
     }
@@ -113,36 +93,57 @@ public class EnvironmentVariableRepositoryImpl : IEnvironmentVariableRepository
         return environmentVariableDao.Update(variable) > 0;
     }
 
-    public IList<EnvironmentVariable> ListEnabledByProgram(int programId, bool enabled)
-    {
-        return environmentVariableDao.ListEnabledByForeignKey(programId, enabled);
-    }
-
-    public IList<EnvironmentVariable> ListEnabledByProgram(string path, bool enabled)
-    {
-        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
-        return programInfo is null ? EmptyList.Of<EnvironmentVariable>() : ListEnabledByProgram(programInfo.Id, enabled);
-    }
-
-    public IList<EnvironmentVariable> ListEnabledByProgram(ProgramInfo programInfo, bool enabled)
-    {
-        return ListEnabledByProgram(programInfo.Id, enabled);
-    }
-
-    public IList<EnvironmentVariable> ListEnabledByProgram(int programId, bool enabled, int length, int skip = 0)
+    public List<EnvironmentVariable> ListEnabledByProgram(int programId, bool enabled = true, int length = -1, int skip = 0)
     {
         return environmentVariableDao.ListEnabledByForeignKey(programId, enabled, length, skip);
     }
 
-    public IList<EnvironmentVariable> ListEnabledByProgram(string path, bool enabled, int length, int skip = 0)
+    public List<EnvironmentVariable> ListEnabledByProgram(string path, bool enabled = true, int length = -1, int skip = 0)
     {
         ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
         return programInfo is null ? EmptyList.Of<EnvironmentVariable>() : ListEnabledByProgram(programInfo.Id, enabled, length, skip);
     }
 
-    public IList<EnvironmentVariable> ListEnabledByProgram(ProgramInfo programInfo, bool enabled, int length, int skip = 0)
+    public List<EnvironmentVariable> ListEnabledByProgram(ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0)
     {
         return ListEnabledByProgram(programInfo.Id, enabled, length, skip);
+    }
+
+    public int ForEach(Action<EnvironmentVariable> action, int length = -1, int skip = 0)
+    {
+        return environmentVariableDao.ForEach(action, length, skip);
+    }
+
+    public int ForEachByProgram(Action<EnvironmentVariable> action, int programId, int length = -1, int skip = 0)
+    {
+        return environmentVariableDao.ForEachByForeignKey(action, programId, length, skip);
+    }
+
+    public int ForEachByProgram(Action<EnvironmentVariable> action, string path, int length = -1, int skip = 0)
+    {
+        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
+        return programInfo is null ? 0 : ForEachByProgram(action, programInfo, length, skip);
+    }
+
+    public int ForEachByProgram(Action<EnvironmentVariable> action, ProgramInfo programInfo, int length = -1, int skip = 0)
+    {
+        return ForEachByProgram(action, programInfo.Id, length, skip);
+    }
+
+    public int ForEachEnabledByProgram(Action<EnvironmentVariable> action, int programId, bool enabled = true, int length = -1, int skip = 0)
+    {
+        return environmentVariableDao.ForEachEnabledByForeignKey(action, programId, enabled, length, skip);
+    }
+
+    public int ForEachEnabledByProgram(Action<EnvironmentVariable> action, string path, bool enabled = true, int length = -1, int skip = 0)
+    {
+        ProgramInfo? programInfo = programInfoDao.GetByUniqueKey(path);
+        return programInfo is null ? 0 : ForEachEnabledByProgram(action, programInfo, enabled, length, skip);
+    }
+
+    public int ForEachEnabledByProgram(Action<EnvironmentVariable> action, ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0)
+    {
+        return ForEachEnabledByProgram(action, programInfo.Id, enabled, length, skip);
     }
 
     private readonly EnvironmentVariableDao environmentVariableDao;

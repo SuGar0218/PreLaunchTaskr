@@ -9,6 +9,8 @@ using PreLaunchTaskr.GUI.Common.AbstractViewModels.ItemModels;
 using PreLaunchTaskr.GUI.WinUI3.Utils;
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 
@@ -33,23 +35,18 @@ public partial class ProgramListItem : ObservableObject, IProgramListItem<Bitmap
     /// <summary>
     /// 是否启用对此程序的设置
     /// <br/>
-    /// 更改此属性会立即更改注册表映像劫持
+    /// 更改此属性不会立即更改注册表映像劫持
     /// </summary>
     public bool Enabled
     {
         get => ProgramInfo.Enabled;
         set
         {
-            bool oldValue = ProgramInfo.Enabled;
-            if (ProgramInfo.Enabled != value)
-            {
-                ProgramInfo.Enabled = value;
-                changed = true;
-                if (!SaveChanges())
-                {
-                    ProgramInfo.Enabled = oldValue;
-                }
-            }
+            if (value == Enabled)
+                return;
+
+            ProgramInfo.Enabled = value;
+            changed = true;
             OnPropertyChanged(nameof(Enabled));
         }
     }
@@ -79,13 +76,81 @@ public partial class ProgramListItem : ObservableObject, IProgramListItem<Bitmap
             return false;
 
         Enabled = false;
-        App.Current.Configurator.RemoveAttachedArgument(ProgramInfo.Id);
         return App.Current.Configurator.RemoveProgram(ProgramInfo.Id);
     }
+
+    /// <summary>
+    /// 批量保存修改。如果对每一项修改，会造成连续弹出用户账户控制。
+    /// </summary>
+    /// <param name="items">要保存的项</param>
+    /// <param name="backup">如果失败则恢复到这些值，也可以调用前后自行处理。</param>
+    /// <returns>是否保存成功</returns>
+    public static bool SaveChanges(IEnumerable<ProgramListItem> items, bool[]? backup = null)
+    {
+        StringBuilder enableArgsBuilder = new();
+        StringBuilder disableArgsBuilder = new();
+        foreach (ProgramListItem item in items)
+        {
+            if (item.changed)
+            {
+                item.changed = false;
+                if (item.Enabled)
+                {
+                    enableArgsBuilder.Append(" --enable ").Append(item.Id);
+                }
+                else
+                {
+                    disableArgsBuilder.Append(" --disable ").Append(item.Id);
+                }
+            }
+        }
+
+        if (enableArgsBuilder.Length == 0 && disableArgsBuilder.Length == 0)
+            return true;
+
+        bool success;
+        try
+        {
+            success = ProcessStarter.StartSilentAsAdminAndWait(
+                System.IO.Path.GetFullPath(GlobalProperties.ConfiguratorNet8Location),
+                " -s " +
+                enableArgsBuilder.ToString() +
+                disableArgsBuilder.ToString()) is not null;
+        }
+        catch
+        {
+            success = false;
+        }
+        if (!success && backup is not null)
+        {
+            int i = 0;
+            foreach (ProgramListItem item in items)
+            {
+                item.Enabled = backup[i];
+                i++;
+            }
+        }
+        return success;
+    }
+
+    /// <summary>
+    /// 批量移除。如果对每一项移除，会造成连续弹出用户账户控制。
+    /// </summary>
+    /// <param name="items">要保存的项</param>
+    /// <returns>是否移除成功</returns>
+    //public static bool Remove(IEnumerable<ProgramListItem> items)
+    //{
+
+    //}
 
     public ProgramInfo ProgramInfo { get; private set; }
 
     private bool changed;
 
     private static readonly BitmapImage defaultProgramIcon = new(new Uri(System.IO.Path.Combine(App.BaseDirectory, @"Assets\DefaultProgramIcon.png")));
+
+    public override string ToString()
+    {
+        return $"{Name}, {Enabled}";
+    }
 }

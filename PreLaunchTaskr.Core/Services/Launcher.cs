@@ -77,7 +77,6 @@ public class Launcher
         bool asAdmin,
         bool waitForExit)
     {
-
         ProgramInfo? programInfo = programRepository.GetById(programId);
         if (programInfo is null)
             return false;
@@ -231,12 +230,14 @@ public class Launcher
                 };
 
                 if (!programProcess.Start())
-                    return false;
-
-                if (waitForExit)
-                    programProcess.WaitForExit();
-
-                return true;
+                {
+                    success = false;
+                }
+                else  // 10 秒内不异常退出就当它正常运行了
+                {
+                    programProcess.WaitForExit(waitForExit ? 10000 : -1);  // 毫秒，-1 表示无限期等待，等效于 WaitForExit()
+                }
+                success = !programProcess.HasExited || programProcess.ExitCode == 0;
             }
             catch  // 遇到异常后尝试以管理员身份运行
             {
@@ -258,10 +259,9 @@ public class Launcher
         if (!programProcessAdmin.Start())
             return false;
 
-        if (waitForExit)
-            programProcessAdmin.WaitForExit();
+        programProcessAdmin.WaitForExit(waitForExit ? 10000 : -1);
 
-        return true;
+        return !programProcessAdmin.HasExited || programProcessAdmin.ExitCode == 0;
     }
 
     /// <summary>

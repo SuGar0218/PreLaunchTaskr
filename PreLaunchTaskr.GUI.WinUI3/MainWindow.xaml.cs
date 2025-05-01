@@ -91,4 +91,13 @@ public sealed partial class MainWindow : Window
 
     private readonly DesktopAcrylicController? desktopAcrylicController;
     private readonly SystemBackdropConfiguration? systemBackdropConfiguration;
+
+    private static ThemeShadow? ThemeShadowOnMainWindow
+    {
+        get
+        {
+            field ??= new ThemeShadow();
+            return field;
+        }
+    }
 }

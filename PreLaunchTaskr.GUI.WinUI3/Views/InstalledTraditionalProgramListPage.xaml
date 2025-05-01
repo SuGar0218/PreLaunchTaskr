@@ -18,7 +18,7 @@
                 <ListViewItem.ContextFlyout>
                     <MenuFlyout>
                         <MenuFlyoutItem
-                            Click="GoToPath_Click"
+                            Click="GoToPath"
                             DataContext="{x:Bind}"
                             Text="打开所在位置">
                             <MenuFlyoutItem.Icon>
@@ -26,7 +26,7 @@
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
-                            Click="CopyPath_Click"
+                            Click="CopyPath"
                             DataContext="{x:Bind}"
                             Text="复制路径">
                             <MenuFlyoutItem.Icon>
@@ -126,7 +126,7 @@
             Height="36"
             HorizontalAlignment="Stretch"
             x:FieldModifier="private"
-            Loaded="Border_Loaded"
+            Loaded="AttachThemeShadowOnLoaded"
             Style="{StaticResource CardBorderStyle}"
             ToolTipService.Placement="Top"
             ToolTipService.ToolTip="{x:Bind viewModel.SelectedItem.Name, Mode=OneWay}">

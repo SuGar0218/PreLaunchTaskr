@@ -1,3 +1,4 @@
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -13,8 +14,10 @@ using PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Windows.ApplicationModel.DataTransfer;
@@ -38,6 +41,8 @@ public sealed partial class MainPage : Page
         this.viewModel = viewModel;
     }
 
+    private MainViewModel? viewModel;
+
     /// <summary>
     /// 接受导航参数的类型为：MainViewModel
     /// </summary>
@@ -48,8 +53,6 @@ public sealed partial class MainPage : Page
             viewModel = newViewModel;
         base.OnNavigatedTo(e);
     }
-
-    private MainViewModel? viewModel;
 
     private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = new(App.Current.MainWindow);
 
@@ -168,7 +171,7 @@ public sealed partial class MainPage : Page
             return;
 
         firstLoaded = false;
-        LoadAsync();
+        LoadProgramList();
         //App.Current.MainWindow.ExtendsContentIntoTitleBar = true;
         //App.Current.MainWindow.SetTitleBar(TitleBarBorder);
         //titleBarPassthroughHelper.Passthrough(TitleBarToggleButton);
@@ -178,7 +181,7 @@ public sealed partial class MainPage : Page
         // https://github.com/microsoft/microsoft-ui-xaml/blob/main/src/controls/dev/NavigationView/NavigationView_themeresources.xaml
     }
 
-    private async void LoadAsync()
+    private async void LoadProgramList()
     {
         ProgramListProgressBar.Visibility = Visibility.Visible;
         await viewModel!.InitAsync();
@@ -209,19 +212,19 @@ public sealed partial class MainPage : Page
 
     private void RemoveProgram(object sender, object _)
     {
-        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
+        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender)!;
         viewModel!.RemoveProgram(item);
     }
 
     private void CopyProgramPath(object sender, object _)
     {
-        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
+        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender)!;
         ClipboardHelper.Copy(item.Path);
     }
 
     private void GoToProgramPath(object sender, object _)
     {
-        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
+        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender)!;
         WindowsHelper.OpenPathInExplorer(item.Path);
     }
 
@@ -277,7 +280,7 @@ public sealed partial class MainPage : Page
 
     private void ConfigInNewTab(object sender, object _)
     {
-        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
+        ProgramListItem item = DataContextHelper.GetDataContext<ProgramListItem>(sender)!;
 
         TabStripItem newTabItem = new(
             item.Name,
@@ -314,5 +317,79 @@ public sealed partial class MainPage : Page
         App.Current.MultiTab.TryAddUniqueTabStripItem(
             newTabItem,
             (one, other) => one.PageType == other.PageType);
+    }
+
+    private bool isMiddleButtonPressed;  // 用于识别鼠标中键点按，鼠标中键点击列表项在新标签中打开。
+
+    private void NavigationViewItem_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        PointerPoint pointerPoint = e.GetCurrentPoint((UIElement) sender);
+        isMiddleButtonPressed = pointerPoint.Properties.IsMiddleButtonPressed;
+    }
+
+    private void NavigationViewItem_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (isMiddleButtonPressed)
+        {
+            isMiddleButtonPressed = false;
+            ConfigInNewTab(sender, null!);
+        }
+    }
+
+    private async void EnableAll(object sender, object e)
+    {
+        await viewModel!.EnableAllPrograms(true);
+    }
+
+    private async void DisableAll(object sender, object e)
+    {
+        await viewModel!.EnableAllPrograms(false);
+    }
+
+    /// <summary>
+    /// 无论是用户点击还是由于绑定的数据变化，都会触发 Toggled 事件。在此用 isUserToggled 来判断是否为用户点击造成的切换。
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (!isUserToggled)
+            return;
+
+        isUserToggled = false;
+
+        ProgramListItem? item = DataContextHelper.GetDataContext<ProgramListItem>(sender);
+        if (item is null)  // 页面首次加载时获取到的 DataContext 是 null
+            return;
+
+        ToggleSwitch toggle = (ToggleSwitch) sender;
+        bool backup = item.Enabled;
+        item.Enabled = toggle.IsOn;
+        if (! await Task.Run(item.SaveChanges))
+        {
+            item.Enabled = backup;
+        }
+    }
+
+    private bool isUserToggled = false;  // 判断 ToggleSwitch 的 Toggled 事件发生是否因为用户点击，绑定数据发生变化也会触发 Toggled 事件。
+
+    private void RemoveSelectedItem(object sender, object e)
+    {
+        viewModel!.RemoveProgram(viewModel.SelectedItem);
+    }
+
+    private async void RemoveAllItems(object sender, object e)
+    {
+        await viewModel!.RemoveAllPrograms();
+    }
+
+    private void ToggleSwitch_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        isUserToggled = true;
+    }
+
+    private void ToggleSwitch_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        isUserToggled = true;
     }
 }

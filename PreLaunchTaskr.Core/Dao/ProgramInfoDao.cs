@@ -5,6 +5,7 @@ using PreLaunchTaskr.Core.Dao.Tables;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.Core.Utils.SqlUtils;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Dao;
@@ -46,7 +47,7 @@ public class ProgramInfoDao :
             .ExecuteDataReading<ProgramInfo>(ReadProgramInfo)!;
     }
 
-    public IList<ProgramInfo> List(int limit = -1, int offset = 0)
+    public List<ProgramInfo> List(int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -63,7 +64,7 @@ public class ProgramInfoDao :
             .ExecuteListReading<ProgramInfo>(ReadProgramInfo);
     }
 
-    public IList<ProgramInfo> ListEnabled(bool enabled, int limit = -1, int offset = 0)
+    public List<ProgramInfo> ListEnabled(bool enabled = true, int limit = -1, int offset = 0)
     {
         using SqliteConnection connection = OpenConnection();
         using SqliteCommand command = connection.CreateCommand();
@@ -208,5 +209,41 @@ public class ProgramInfoDao :
         command.ExecuteNonQuery();
         command.CommandText = AttachedArgumentTable.CreateIfNotExistsSQL;
         command.ExecuteNonQuery();
+    }
+
+    public int ForEach(Action<ProgramInfo> action, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+                .Select(ProgramTable.AllColumns)
+                .From(ProgramTable.Name);
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .ExecuteListReading<ProgramInfo>(ReadProgramInfo, action);
+    }
+
+    public int ForEachEnabled(Action<ProgramInfo> action, bool enabled = true, int limit = -1, int offset = 0)
+    {
+        using SqliteConnection connection = OpenConnection();
+        using SqliteCommand command = connection.CreateCommand();
+
+        SqliteCommandTextBuilder builder = new SqliteCommandTextBuilder()
+                .Select(ProgramTable.AllColumns)
+                .From(ProgramTable.Name)
+                .Where($"{ProgramTable.Column.Enabled} = ${ProgramTable.Field.Enabled}");
+
+        if (limit > -1)
+            builder.Limit(limit, offset);
+
+        return builder
+            .GetReadingExcutor(command)
+            .AddParameterWithValue(ProgramTable.Field.Enabled, enabled)
+            .ExecuteListReading<ProgramInfo>(ReadProgramInfo, action);
     }
 }

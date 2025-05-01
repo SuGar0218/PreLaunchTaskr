@@ -26,10 +26,11 @@ public sealed partial class BlockArgumentPage : Page
         base.OnNavigatedTo(e);
     }
 
-    private void ConfirmDeleteArgument_Click(object sender, RoutedEventArgs e)
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        BlockedArgumentListItem item = DataContextHelper.GetDataContext<BlockedArgumentListItem>(sender);
-        viewModel.RemoveArgument(item);
+        ListLoadingProgressBar.Visibility = Visibility.Visible;
+        await viewModel.InitAsync();
+        ListLoadingProgressBar.Visibility = Visibility.Collapsed;
     }
 
     private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -37,16 +38,15 @@ public sealed partial class BlockArgumentPage : Page
         viewModel.SaveChanges();
     }
 
-    private void CopyArgument_Click(object sender, RoutedEventArgs e)
+    private void DeleteArgument(object sender, RoutedEventArgs e)
     {
-        BlockedArgumentListItem item = DataContextHelper.GetDataContext<BlockedArgumentListItem>(sender);
-        ClipboardHelper.Copy(item.Argument);
+        BlockedArgumentListItem item = DataContextHelper.GetDataContext<BlockedArgumentListItem>(sender)!;
+        viewModel.RemoveArgument(item);
     }
 
-    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    private void CopyArgument(object sender, RoutedEventArgs e)
     {
-        ListLoadingProgressBar.Visibility = Visibility.Visible;
-        await viewModel.InitAsync();
-        ListLoadingProgressBar.Visibility = Visibility.Collapsed;
+        BlockedArgumentListItem item = DataContextHelper.GetDataContext<BlockedArgumentListItem>(sender)!;
+        ClipboardHelper.Copy(item.Argument);
     }
 }

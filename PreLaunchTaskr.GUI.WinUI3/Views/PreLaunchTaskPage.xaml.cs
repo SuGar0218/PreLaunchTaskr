@@ -26,10 +26,11 @@ public sealed partial class PreLaunchTaskPage : Page
         base.OnNavigatedTo(e);
     }
 
-    private void ConfirmDeleteTask_Click(object sender, RoutedEventArgs e)
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        PreLaunchTaskListItem item = DataContextHelper.GetDataContext<PreLaunchTaskListItem>(sender);
-        viewModel.RemoveTask(item);
+        ListLoadingProgressBar.Visibility = Visibility.Visible;
+        await viewModel.InitAsync();
+        ListLoadingProgressBar.Visibility = Visibility.Collapsed;
     }
 
     private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -37,16 +38,15 @@ public sealed partial class PreLaunchTaskPage : Page
         viewModel.SaveChanges();
     }
 
-    private void CopyPath_Click(object sender, RoutedEventArgs e)
+    private void DeleteTask(object sender, object _)
     {
-        PreLaunchTaskListItem item = DataContextHelper.GetDataContext<PreLaunchTaskListItem>(sender);
-        ClipboardHelper.Copy(item.Path);
+        PreLaunchTaskListItem item = DataContextHelper.GetDataContext<PreLaunchTaskListItem>(sender)!;
+        viewModel.RemoveTask(item);
     }
 
-    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    private void CopyPath(object sender, object _)
     {
-        ListLoadingProgressBar.Visibility = Visibility.Visible;
-        await viewModel.InitAsync();
-        ListLoadingProgressBar.Visibility = Visibility.Collapsed;
+        PreLaunchTaskListItem item = DataContextHelper.GetDataContext<PreLaunchTaskListItem>(sender)!;
+        ClipboardHelper.Copy(item.Path);
     }
 }

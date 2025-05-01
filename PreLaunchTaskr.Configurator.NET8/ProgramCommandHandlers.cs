@@ -430,4 +430,17 @@ internal partial class Program
 
         Console.WriteLine("此程序没有在静默模式下运行");
     }
+
+    private static void EnableOrDisableProgramsById(int[] idToEnable, int[] idToDisable)
+    {
+        for (int i = 0; i < idToEnable.Length; i++)
+        {
+            configurator.EnableProgram(idToEnable[i], enable: true);
+        }
+
+        for (int i = 0; i < idToDisable.Length; i++)
+        {
+            configurator.EnableProgram(idToDisable[i], enable: false);
+        }
+    }
 }

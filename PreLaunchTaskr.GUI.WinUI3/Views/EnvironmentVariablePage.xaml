@@ -19,7 +19,7 @@
                 <Border.ContextFlyout>
                     <MenuFlyout>
                         <MenuFlyoutItem
-                            Click="CopyName_Click"
+                            Click="CopyName"
                             DataContext="{x:Bind}"
                             Text="复制变量名">
                             <MenuFlyoutItem.Icon>
@@ -27,7 +27,7 @@
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
-                            Click="CopyValue_Click"
+                            Click="CopyValue"
                             DataContext="{x:Bind}"
                             Text="复制变量值">
                             <MenuFlyoutItem.Icon>
@@ -39,7 +39,7 @@
                                 <SymbolIcon Symbol="Delete" />
                             </MenuFlyoutSubItem.Icon>
                             <MenuFlyoutItem
-                                Click="ConfirmDeleteEnvironmentVariable_Click"
+                                Click="DeleteEnvironmentVariable"
                                 DataContext="{x:Bind}"
                                 Foreground="Red"
                                 Text="确认删除">
@@ -93,11 +93,11 @@
                             <Button.Flyout>
                                 <MenuFlyout>
                                     <MenuFlyoutItem
-                                        Click="CopyName_Click"
+                                        Click="CopyName"
                                         DataContext="{x:Bind}"
                                         Text="复制变量名" />
                                     <MenuFlyoutItem
-                                        Click="CopyValue_Click"
+                                        Click="CopyValue"
                                         DataContext="{x:Bind}"
                                         Text="复制变量值" />
                                 </MenuFlyout>
@@ -109,7 +109,7 @@
                             <Button.Flyout>
                                 <MenuFlyout>
                                     <MenuFlyoutItem
-                                        Click="ConfirmDeleteEnvironmentVariable_Click"
+                                        Click="DeleteEnvironmentVariable"
                                         DataContext="{x:Bind}"
                                         Foreground="Red"
                                         Text="确认删除">

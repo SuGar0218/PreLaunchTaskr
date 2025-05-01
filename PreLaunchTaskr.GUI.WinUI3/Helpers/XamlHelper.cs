@@ -11,4 +11,6 @@ public class XamlHelper
     public static bool And(bool b1, bool b2) => b1 && b2;
     public static bool Or(bool b1, bool b2) => b1 || b2;
     public static bool Not(bool b) => !b;
+
+    public static bool IsNotNull(object obj) => obj is not null;
 }

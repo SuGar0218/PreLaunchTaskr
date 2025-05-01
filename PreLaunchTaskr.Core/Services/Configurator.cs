@@ -58,7 +58,7 @@ public class Configurator
 
     public IList<ProgramInfo> ListPrograms()
     {
-        return programRepository.ListAll();
+        return programRepository.List();
     }
 
     public IList<ProgramInfo> ListPrograms(int length, int skip = 0)
@@ -119,20 +119,32 @@ public class Configurator
 
         programInfo.Enabled = enable;
         string symlinkPath = GlobalProperties.SymbolicLinkPath(programInfo.Path);
-        if (enable)
+        try
         {
-            if (File.Exists(symlinkPath))
-                File.Delete(symlinkPath);
-            File.CreateSymbolicLink(symlinkPath, programInfo.Path);
-            WindowsHelper.ImageFileExecutionOptions.SetDebugger(
-                Path.GetFileName(programInfo.Path),
-                $"{Path.GetFullPath(pathToLauncher)}");
+            if (enable)
+            {
+                if (File.Exists(symlinkPath))
+                {
+                    File.Delete(symlinkPath);
+                }
+                File.CreateSymbolicLink(symlinkPath, programInfo.Path);
+
+                WindowsHelper.ImageFileExecutionOptions.SetDebugger(
+                    Path.GetFileName(programInfo.Path),
+                    Path.GetFullPath(pathToLauncher));
+            }
+            else
+            {
+                if (File.Exists(symlinkPath))
+                {
+                    File.Delete(symlinkPath);
+                }
+                WindowsHelper.ImageFileExecutionOptions.UnsetDebugger(Path.GetFileName(programInfo.Path));
+            }
         }
-        else
+        catch
         {
-            if (File.Exists(symlinkPath))
-                File.Delete(symlinkPath);
-            WindowsHelper.ImageFileExecutionOptions.UnsetDebugger(Path.GetFileName(programInfo.Path));
+            return false;
         }
         return UpdateProgram(programInfo);
     }

@@ -27,16 +27,16 @@
 
         <!--  NavigationMenuItemTemplate  -->
         <DataTemplate x:Key="ProgramListDataTemplate" x:DataType="vm:ProgramListItem">
-            <NavigationViewItem>
+            <NavigationViewItem
+                DataContext="{x:Bind}"
+                PointerPressed="NavigationViewItem_PointerPressed"
+                PointerReleased="NavigationViewItem_PointerReleased">
+
                 <NavigationViewItem.Resources>
                     <x:Double x:Key="NavigationViewItemOnLeftIconBoxHeight">48</x:Double>
                     <Thickness x:Key="NavigationViewItemOnLeftIconBoxMargin">8,0</Thickness>
                     <Thickness x:Key="NavigationViewItemContentPresenterMargin">4,0</Thickness>
                 </NavigationViewItem.Resources>
-
-                <!--<NavigationViewItem.Transitions>
-                    <AddDeleteThemeTransition />
-                </NavigationViewItem.Transitions>-->
 
                 <NavigationViewItem.Icon>
                     <ImageIcon Source="{x:Bind Icon}" />
@@ -58,13 +58,16 @@
                     </StackPanel>
 
                     <ToggleSwitch
+                        PointerPressed="ToggleSwitch_PointerPressed"
+                        PointerReleased="ToggleSwitch_PointerReleased"
                         Grid.Column="1"
                         MinWidth="0"
                         Margin="0,0,-16,0"
                         DataContext="{x:Bind}"
                         IsOn="{x:Bind Enabled, Mode=TwoWay}"
                         OffContent="{x:Null}"
-                        OnContent="{x:Null}" />
+                        OnContent="{x:Null}"
+                        Toggled="ToggleSwitch_Toggled" />
                 </Grid>
 
                 <NavigationViewItem.ContextFlyout>
@@ -89,7 +92,8 @@
                             DataContext="{x:Bind}"
                             Text="在新标签页中配置">
                             <MenuFlyoutItem.Icon>
-                                <SymbolIcon Symbol="Go" />
+                                <!--  OpenInNewWindow  -->
+                                <FontIcon Glyph="&#xE8A7;" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
 
@@ -98,7 +102,8 @@
                             DataContext="{x:Bind}"
                             Text="打开程序所在位置">
                             <MenuFlyoutItem.Icon>
-                                <SymbolIcon Symbol="Go" />
+                                <!--  FileExplorer  -->
+                                <FontIcon Glyph="&#xEC50;" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
 
@@ -118,7 +123,8 @@
         <MenuFlyout x:Key="AddProgramMenu" x:Name="AddProgramMenu">
             <MenuFlyoutItem Click="{x:Bind SelectProgramFromFile}" Text="从文件管理器选取">
                 <MenuFlyoutItem.Icon>
-                    <SymbolIcon Symbol="OpenFile" />
+                    <!--  FileExplorer  -->
+                    <FontIcon Glyph="&#xEC50;" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
 
@@ -174,6 +180,7 @@
                 <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="PreLaunchTaskr" />
             </my:MyStackPanel>
         </Border>-->
+
         <my:MyGrid
             Grid.Row="0"
             ContentHorizontalAlignment="Left"
@@ -197,13 +204,15 @@
                 <MenuBarItem Title="添加程序">
                     <MenuFlyoutItem Click="{x:Bind SelectProgramFromFile}" Text="从文件管理器选取">
                         <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="OpenFile" />
+                            <!--  FileExplorer  -->
+                            <FontIcon Glyph="&#xEC50;" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
 
                     <MenuFlyoutItem Click="{x:Bind SelectInstalledProgram}" Text="从已安装的应用程序中选取">
                         <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="List" />
+                            <!--  AllApps  -->
+                            <FontIcon Glyph="&#xE71D;" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
 
@@ -220,13 +229,62 @@
                     </MenuFlyoutItem>
                 </MenuBarItem>
 
-                <!--<MenuBarItem Title="移除程序">
-                    <MenuFlyoutItem Text="在列表中右键">
+                <MenuBarItem Title="移除程序">
+                    <MenuFlyoutSubItem
+                        Foreground="Red"
+                        IsEnabled="{x:Bind helper:XamlHelper.IsNotNull(viewModel.SelectedItem), Mode=OneWay}"
+                        Text="移除选中项">
+
+                        <MenuFlyoutSubItem.Icon>
+                            <SymbolIcon Symbol="Delete" />
+                        </MenuFlyoutSubItem.Icon>
+
+                        <MenuFlyoutItem
+                            Click="RemoveSelectedItem"
+                            Foreground="Red"
+                            Text="确定移除选中项">
+                            <MenuFlyoutItem.Icon>
+                                <SymbolIcon Symbol="Delete" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+
+                        <MenuFlyoutItem IsEnabled="False" Text="也可以在列表项上右键">
+                            <MenuFlyoutItem.Icon>
+                                <!--  Info  -->
+                                <FontIcon Glyph="&#xE946;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyoutSubItem>
+
+                    <MenuFlyoutSubItem Foreground="Red" Text="移除全部">
+                        <MenuFlyoutSubItem.Icon>
+                            <SymbolIcon Symbol="Delete" />
+                        </MenuFlyoutSubItem.Icon>
+                        <MenuFlyoutItem
+                            Click="RemoveAllItems"
+                            Foreground="Red"
+                            Text="全部关闭，确定移除全部">
+                            <MenuFlyoutItem.Icon>
+                                <SymbolIcon Symbol="Delete" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyoutSubItem>
+                </MenuBarItem>
+
+                <MenuBarItem Title="批量开关">
+                    <MenuFlyoutItem Click="EnableAll" Text="全部启用">
                         <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="List" />
+                            <!--  ToggleRight ToggleSwitch ON  -->
+                            <FontIcon Glyph="&#xF19F;" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
-                </MenuBarItem>-->
+                    <MenuFlyoutItem Click="DisableAll" Text="全部关闭">
+                        <MenuFlyoutItem.Icon>
+                            <!--  ToggleLeft ToggleSwitch OFF  -->
+                            <FontIcon Glyph="&#xF19E;" />
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                </MenuBarItem>
 
                 <MenuBarItem Title="其他…">
                     <MenuFlyoutItem Click="{x:Bind ShowAboutProgramPage}" Text="关于此应用">
@@ -235,13 +293,7 @@
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
 
-                    <!--<MenuFlyoutItem Text="设置">
-                        <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="Setting" />
-                        </MenuFlyoutItem.Icon>
-                    </MenuFlyoutItem>-->
-
-                    <MenuFlyoutItem Click="{x:Bind LoadAsync}" Text="重新加载">
+                    <MenuFlyoutItem Click="{x:Bind LoadProgramList}" Text="重新加载">
                         <MenuFlyoutItem.Icon>
                             <SymbolIcon Symbol="Refresh" />
                         </MenuFlyoutItem.Icon>
@@ -284,7 +336,8 @@
             IsPaneToggleButtonVisible="False"
             IsSettingsVisible="False"
             MenuItemTemplate="{StaticResource ProgramListDataTemplate}"
-            MenuItemsSource="{x:Bind viewModel.Programs}"
+            MenuItemsSource="{x:Bind viewModel.Programs, Mode=OneWay}"
+            SelectedItem="{x:Bind viewModel.SelectedItem, Mode=TwoWay}"
             SelectionChanged="Navigation_SelectionChanged">
 
             <NavigationView.PaneCustomContent>

@@ -21,7 +21,12 @@ namespace PreLaunchTaskr.GUI.WinUI3;
 /// </summary>
 public partial class App : Application
 {
-    public static string DisplayVersion => "1.3.0";
+    public static string DisplayVersion =>
+#if DEBUG
+        "1.4.0 DEBUG";
+#else
+        "1.4.0";
+#endif
 
     /// <summary>
     /// Initializes the singleton application object.

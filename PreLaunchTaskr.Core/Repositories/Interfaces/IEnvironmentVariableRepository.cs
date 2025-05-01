@@ -1,27 +1,31 @@
 ﻿using PreLaunchTaskr.Core.Entities;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Repositories.Interfaces;
 
 public interface IEnvironmentVariableRepository
 {
-    public IList<EnvironmentVariable> ListAll();
-    public IList<EnvironmentVariable> List(int length, int skip = 0);
+    public List<EnvironmentVariable> List(int length = -1, int skip = 0);
 
-    public IList<EnvironmentVariable> ListByProgram(int programId);
-    public IList<EnvironmentVariable> ListByProgram(string path);
-    public IList<EnvironmentVariable> ListByProgram(ProgramInfo programInfo);
-    public IList<EnvironmentVariable> ListByProgram(int programId, int length, int skip = 0);
-    public IList<EnvironmentVariable> ListByProgram(string path, int length, int skip = 0);
-    public IList<EnvironmentVariable> ListByProgram(ProgramInfo programInfo, int length, int skip = 0);
+    public List<EnvironmentVariable> ListByProgram(int programId, int length = -1, int skip = 0);
+    public List<EnvironmentVariable> ListByProgram(string path, int length = -1, int skip = 0);
+    public List<EnvironmentVariable> ListByProgram(ProgramInfo programInfo, int length = -1, int skip = 0);
 
-    public IList<EnvironmentVariable> ListEnabledByProgram(int programId, bool enabled);
-    public IList<EnvironmentVariable> ListEnabledByProgram(string path, bool enabled);
-    public IList<EnvironmentVariable> ListEnabledByProgram(ProgramInfo programInfo, bool enabled);
-    public IList<EnvironmentVariable> ListEnabledByProgram(int programId, bool enabled, int length, int skip = 0);
-    public IList<EnvironmentVariable> ListEnabledByProgram(string path, bool enabled, int length, int skip = 0);
-    public IList<EnvironmentVariable> ListEnabledByProgram(ProgramInfo programInfo, bool enabled, int length, int skip = 0);
+    public List<EnvironmentVariable> ListEnabledByProgram(int programId, bool enabled = true, int length = -1, int skip = 0);
+    public List<EnvironmentVariable> ListEnabledByProgram(string path, bool enabled = true, int length = -1, int skip = 0);
+    public List<EnvironmentVariable> ListEnabledByProgram(ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0);
+
+    public int ForEach(Action<EnvironmentVariable> action, int length = -1, int skip = 0);
+
+    public int ForEachByProgram(Action<EnvironmentVariable> action, int programId, int length = -1, int skip = 0);
+    public int ForEachByProgram(Action<EnvironmentVariable> action, string path, int length = -1, int skip = 0);
+    public int ForEachByProgram(Action<EnvironmentVariable> action, ProgramInfo programInfo, int length = -1, int skip = 0);
+
+    public int ForEachEnabledByProgram(Action<EnvironmentVariable> action, int programId, bool enabled = true, int length = -1, int skip = 0);
+    public int ForEachEnabledByProgram(Action<EnvironmentVariable> action, string path, bool enabled = true, int length = -1, int skip = 0);
+    public int ForEachEnabledByProgram(Action<EnvironmentVariable> action, ProgramInfo programInfo, bool enabled = true, int length = -1, int skip = 0);
 
     public EnvironmentVariable? GetById(int id);
     public EnvironmentVariable? GetByPath(string path);

@@ -52,7 +52,7 @@ public partial class WindowsHelper
             using (ImageFileExecutionOptionsKey)
             {
                 using RegistryKey? registryKey = ImageFileExecutionOptionsKey.OpenSubKey(programFileName, writable: true);
-                if (registryKey is null)
+                if (registryKey is null || registryKey.GetValue(DEBUGGER) is null)
                     return;
                 registryKey.DeleteValue(DEBUGGER);
             }

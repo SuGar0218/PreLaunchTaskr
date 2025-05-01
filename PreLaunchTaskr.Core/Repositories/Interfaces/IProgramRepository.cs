@@ -1,16 +1,17 @@
 ﻿using PreLaunchTaskr.Core.Entities;
 
+using System;
 using System.Collections.Generic;
 
 namespace PreLaunchTaskr.Core.Repositories.Interfaces;
 
 public interface IProgramRepository
 {
-    public IList<ProgramInfo> ListAll();
-    public IList<ProgramInfo> List(int length, int skip = 0);
+    public List<ProgramInfo> List(int length = -1, int skip = 0);
+    public List<ProgramInfo> ListEnabled(bool enabled = true, int length = -1, int skip = 0);
 
-    public IList<ProgramInfo> ListAllEnabled(bool enabled);
-    public IList<ProgramInfo> ListEnabled(bool enabled, int length, int skip = 0);
+    public int ForEach(Action<ProgramInfo> action, int length = -1, int skip = 0);
+    public int ForEachEnabled(Action<ProgramInfo> action, bool enabled = true, int length = -1, int skip = 0);
 
     public ProgramInfo? GetById(int id);
     public ProgramInfo? GetByPath(string path);

@@ -53,9 +53,9 @@ public sealed partial class InstalledTraditionalProgramListPage : Page
         ProgramListProgressRing.IsActive = false;
     }
 
-    private void Border_Loaded(object sender, RoutedEventArgs e)
+    private void AttachThemeShadowOnLoaded(object sender, object _)
     {
-        Border border = (Border) sender;
+        UIElement border = (UIElement) sender;
         border.Shadow = shadow;
         border.Translation += new Vector3(0, 0, 16);
     }
@@ -86,15 +86,15 @@ public sealed partial class InstalledTraditionalProgramListPage : Page
         listView.ScrollIntoView(e.AddedItems[0]);
     }
 
-    private void GoToPath_Click(object sender, RoutedEventArgs e)
+    private void GoToPath(object sender, object _)
     {
-        InstalledTraditionalProgramListItem item = DataContextHelper.GetDataContext<InstalledTraditionalProgramListItem>(sender);
+        InstalledTraditionalProgramListItem item = DataContextHelper.GetDataContext<InstalledTraditionalProgramListItem>(sender)!;
         WindowsHelper.OpenPathInExplorer(item.PossiblePath);
     }
 
-    private void CopyPath_Click(object sender, RoutedEventArgs e)
+    private void CopyPath(object sender, object _)
     {
-        InstalledTraditionalProgramListItem item = DataContextHelper.GetDataContext<InstalledTraditionalProgramListItem>(sender);
+        InstalledTraditionalProgramListItem item = DataContextHelper.GetDataContext<InstalledTraditionalProgramListItem>(sender)!;
         ClipboardHelper.Copy(item.PossiblePath);
     }
 }

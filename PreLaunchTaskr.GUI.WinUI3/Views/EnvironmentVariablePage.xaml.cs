@@ -18,35 +18,12 @@ public sealed partial class EnvironmentVariablePage : Page
         InitializeComponent();
     }
 
+    private EnvironmentVariableViewModel viewModel = null!;
+
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         viewModel = (EnvironmentVariableViewModel) e.Parameter;
         base.OnNavigatedTo(e);
-    }
-
-    private void ConfirmDeleteEnvironmentVariable_Click(object sender, RoutedEventArgs e)
-    {
-        EnvironmentVariableListItem item = DataContextHelper.GetDataContext<EnvironmentVariableListItem>(sender);
-        viewModel.RemoveEnvironmentVariable(item);
-    }
-
-    private void Page_Unloaded(object sender, RoutedEventArgs e)
-    {
-        viewModel.SaveChanges();
-    }
-
-    private EnvironmentVariableViewModel viewModel = null!;
-
-    private void CopyName_Click(object sender, RoutedEventArgs e)
-    {
-        EnvironmentVariableListItem item = DataContextHelper.GetDataContext<EnvironmentVariableListItem>(sender);
-        ClipboardHelper.Copy(item.Key);
-    }
-
-    private void CopyValue_Click(object sender, RoutedEventArgs e)
-    {
-        EnvironmentVariableListItem item = DataContextHelper.GetDataContext<EnvironmentVariableListItem>(sender);
-        ClipboardHelper.Copy(item.Value);
     }
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -54,5 +31,28 @@ public sealed partial class EnvironmentVariablePage : Page
         ListLoadingProgressBar.Visibility = Visibility.Visible;
         await viewModel.InitAsync();
         ListLoadingProgressBar.Visibility = Visibility.Collapsed;
+    }
+
+    private void Page_Unloaded(object sender, RoutedEventArgs e)
+    {
+        viewModel.SaveChanges();
+    }
+
+    private void DeleteEnvironmentVariable(object sender, RoutedEventArgs e)
+    {
+        EnvironmentVariableListItem item = DataContextHelper.GetDataContext<EnvironmentVariableListItem>(sender)!;
+        viewModel.RemoveEnvironmentVariable(item);
+    }
+
+    private void CopyName(object sender, RoutedEventArgs e)
+    {
+        EnvironmentVariableListItem item = DataContextHelper.GetDataContext<EnvironmentVariableListItem>(sender)!;
+        ClipboardHelper.Copy(item.Key);
+    }
+
+    private void CopyValue(object sender, RoutedEventArgs e)
+    {
+        EnvironmentVariableListItem item = DataContextHelper.GetDataContext<EnvironmentVariableListItem>(sender)!;
+        ClipboardHelper.Copy(item.Value);
     }
 }

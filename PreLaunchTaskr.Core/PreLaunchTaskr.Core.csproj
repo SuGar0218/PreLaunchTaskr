@@ -13,4 +13,9 @@
     <ProjectReference Include="..\PreLaunchTaskr.Common\PreLaunchTaskr.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dao\Interfaces\" />
+    <Folder Include="Dao\Implementations\" />
+  </ItemGroup>
+
 </Project>

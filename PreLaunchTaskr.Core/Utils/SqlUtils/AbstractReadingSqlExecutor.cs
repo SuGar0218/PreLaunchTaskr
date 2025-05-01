@@ -13,33 +13,34 @@ public abstract class AbstractReadingSqlExecutor<TDbCommand, TDbDataReader, TSel
 
     protected AbstractReadingSqlExecutor(TDbCommand command) : base(command) { }
 
-    public List<TData> ExecuteListReading<TData>(Func<TDbDataReader, TData> ReadDataFromReader)
-    {
-        List<TData> data = new();
-        using (TDbDataReader reader = (TDbDataReader) Command.ExecuteReader())
-        {
-            while (reader.Read())
-            {
-                data.Add(ReadDataFromReader(reader));
-            }
-        }
-        return data;
-    }
-
-    public List<TData> ExecuteListReading<TData>(Func<TDbDataReader, TData> ReadDataFromReader, CommandBehavior behavior)
+    public List<TData> ExecuteListReading<TData>(Func<TDbDataReader, TData> read, CommandBehavior behavior = CommandBehavior.Default)
     {
         List<TData> data = new();
         using (TDbDataReader reader = (TDbDataReader) Command.ExecuteReader(behavior))
         {
             while (reader.Read())
             {
-                data.Add(ReadDataFromReader(reader));
+                data.Add(read.Invoke(reader));
             }
         }
         return data;
     }
 
-    public List<TData> ExecuteColumnReading<TData>(int column = 0)
+    public int ExecuteListReading<TData>(Func<TDbDataReader, TData> read, Action<TData> action, CommandBehavior behavior = CommandBehavior.Default)
+    {
+        int count = 0;
+        using (TDbDataReader reader = (TDbDataReader) Command.ExecuteReader(behavior))
+        {
+            while (reader.Read())
+            {
+                action.Invoke(read.Invoke(reader));
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public List<TData> ExecuteColumnReading<TData>(int column = 0, CommandBehavior behavior = 0)
     {
         List<TData> data = new();
         using (TDbDataReader reader = (TDbDataReader) Command.ExecuteReader())
@@ -52,30 +53,31 @@ public abstract class AbstractReadingSqlExecutor<TDbCommand, TDbDataReader, TSel
         return data;
     }
 
-    public List<TData> ExecuteColumnReading<TData>(int column, CommandBehavior behavior)
+    public int ExecuteColumnReading<TColumn>(Action<TColumn> action, int column = 0, CommandBehavior behavior = 0)
     {
-        List<TData> data = new();
-        using (TDbDataReader reader = (TDbDataReader) Command.ExecuteReader(behavior))
+        int count = 0;
+        using (TDbDataReader reader = (TDbDataReader) Command.ExecuteReader())
         {
             while (reader.Read())
             {
-                data.Add(reader.GetFieldValue<TData>(column));
+                action.Invoke(reader.GetFieldValue<TColumn>(column));
+                count++;
             }
         }
-        return data;
-    }
-
-    public TData? ExecuteScalarReading<TData>()
-    {
-        using TDbDataReader reader = (TDbDataReader) Command.ExecuteReader();
-        return reader.Read() ? reader.GetFieldValue<TData>(0) : default;
+        return count;
     }
 
     public object? ExecuteScalarReading() => Command.ExecuteScalar();
 
-    public TData? ExecuteDataReading<TData>(Func<TDbDataReader, TData> ReadDataFromReader)
+    public T? ExecuteScalarReading<T>()
     {
         using TDbDataReader reader = (TDbDataReader) Command.ExecuteReader();
-        return reader.Read() ? ReadDataFromReader(reader) : default;
+        return reader.Read() ? reader.GetFieldValue<T>(0) : default;
+    }
+
+    public TData? ExecuteDataReading<TData>(Func<TDbDataReader, TData> read)
+    {
+        using TDbDataReader reader = (TDbDataReader) Command.ExecuteReader();
+        return reader.Read() ? read.Invoke(reader) : default;
     }
 }

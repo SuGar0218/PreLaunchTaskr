@@ -26,10 +26,11 @@ public sealed partial class AttachArgumentPage : Page
         base.OnNavigatedTo(e);
     }
 
-    private void ConfirmDeleteArgument_Click(object sender, RoutedEventArgs e)
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        AttachedArgumentListItem item = DataContextHelper.GetDataContext<AttachedArgumentListItem>(sender);
-        viewModel.RemoveArgument(item);
+        ListLoadingProgressBar.Visibility = Visibility.Visible;
+        await viewModel.InitAsync();
+        ListLoadingProgressBar.Visibility = Visibility.Collapsed;
     }
 
     private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -37,23 +38,16 @@ public sealed partial class AttachArgumentPage : Page
         viewModel.SaveChanges();
     }
 
-    private void CopyArgument_Click(object sender, RoutedEventArgs e)
+    private void DeleteArgument(object sender, RoutedEventArgs e)
     {
-        AttachedArgumentListItem item = DataContextHelper.GetDataContext<AttachedArgumentListItem>(sender);
+        AttachedArgumentListItem item = DataContextHelper.GetDataContext<AttachedArgumentListItem>(sender)!;
+        viewModel.RemoveArgument(item);
+    }
+
+    private void CopyArgument(object sender, RoutedEventArgs e)
+    {
+        AttachedArgumentListItem item = DataContextHelper.GetDataContext<AttachedArgumentListItem>(sender)!;
         ClipboardHelper.Copy(item.Argument);
-    }
-
-    private async void Page_Loaded(object sender, RoutedEventArgs e)
-    {
-        ListLoadingProgressBar.Visibility = Visibility.Visible;
-        await viewModel.InitAsync();
-        //viewModel.Init();
-        ListLoadingProgressBar.Visibility = Visibility.Collapsed;
-    }
-
-    private void Border_Unloaded(object sender, RoutedEventArgs e)
-    {
-        Border border = (Border) sender;
     }
 }
 
