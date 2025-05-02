@@ -97,6 +97,8 @@ public class Launcher
         return Launch(programInfo, originArgs, asAdmin, waitForExit);
     }
 
+    private const int TIMEOUT = 3000;  // 毫秒
+
     /// <summary>
     /// 启动程序，传入参数是原启动参数。本函数会根据用户设置对参数处理，
     /// </summary>
@@ -235,7 +237,7 @@ public class Launcher
                 }
                 else  // 10 秒内不异常退出就当它正常运行了
                 {
-                    programProcess.WaitForExit(waitForExit ? 10000 : -1);  // 毫秒，-1 表示无限期等待，等效于 WaitForExit()
+                    programProcess.WaitForExit(waitForExit ? -1 : TIMEOUT);  // 毫秒，-1 表示无限期等待，等效于 WaitForExit()
                 }
                 success = !programProcess.HasExited || programProcess.ExitCode == 0;
             }
@@ -259,7 +261,7 @@ public class Launcher
         if (!programProcessAdmin.Start())
             return false;
 
-        programProcessAdmin.WaitForExit(waitForExit ? 10000 : -1);
+        programProcessAdmin.WaitForExit(waitForExit ? -1 : TIMEOUT);
 
         return !programProcessAdmin.HasExited || programProcessAdmin.ExitCode == 0;
     }
