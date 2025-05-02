@@ -10,6 +10,7 @@ using PreLaunchTaskr.GUI.WinUI3.Helpers;
 using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 using PreLaunchTaskr.GUI.WinUI3.Views;
 
+using System;
 using System.Collections.ObjectModel;
 
 using Windows.UI;
@@ -37,17 +38,17 @@ public sealed partial class MainWindow : Window
         }
         else if (DesktopAcrylicController.IsSupported())
         {
-            //systemBackdropConfiguration = new SystemBackdropConfiguration();
-            //desktopAcrylicController = new DesktopAcrylicController
-            //{
-            //    Kind = DesktopAcrylicKind.Thin,
-            //    LuminosityOpacity = 0.5f
-            //};
-            //desktopAcrylicController.AddSystemBackdropTarget(this.As<ICompositionSupportsSystemBackdrop>());
-            //desktopAcrylicController.SetSystemBackdropConfiguration(systemBackdropConfiguration);
+            //SystemBackdrop = new DesktopAcrylicBackdrop();
+            systemBackdropConfiguration = new SystemBackdropConfiguration();
+            desktopAcrylicController = new DesktopAcrylicController
+            {
+                LuminosityOpacity = (MathF.Sqrt(5) - 1) / 2
+            };
+            desktopAcrylicController.AddSystemBackdropTarget(this.As<ICompositionSupportsSystemBackdrop>());
+            desktopAcrylicController.SetSystemBackdropConfiguration(systemBackdropConfiguration);
             Activated += (o, e) =>
             {
-                //systemBackdropConfiguration.IsInputActive = e.WindowActivationState != WindowActivationState.Deactivated;
+                systemBackdropConfiguration.IsInputActive = e.WindowActivationState != WindowActivationState.Deactivated;
                 if (e.WindowActivationState == WindowActivationState.Deactivated)
                 {
                     CurrentBackground = InactiveBackground;
@@ -57,7 +58,6 @@ public sealed partial class MainWindow : Window
                     CurrentBackground = ActiveBackground;
                 }
             };
-            SystemBackdrop = new DesktopAcrylicBackdrop();
             Color themeColor = new UISettings().GetColorValue(UIColorType.Accent);
             themeColor.A = 48;
             ActiveBackground = new SolidColorBrush(themeColor);

@@ -33,7 +33,7 @@ public sealed partial class MultiTabPage : Page
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        TabStripFooterSpace.MinWidth = App.Current.MainWindow.AppWindow.TitleBar.RightInset / XamlRoot.RasterizationScale + 16;
+        TabStripFooterSpace.MinWidth = App.Current.MainWindow.AppWindow.TitleBar.RightInset / XamlRoot.RasterizationScale;
         App.Current.MainWindow.SetTitleBar(TabStrip);
         viewModel.AddTabStripItem(new TabStripItem(
             nameof(PreLaunchTaskr),

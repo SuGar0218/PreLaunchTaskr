@@ -60,18 +60,11 @@
             </TabView.TabStripHeader>
 
             <TabView.TabStripFooter>
-                <!--<Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>-->
-
                 <Border
                     x:Name="TabStripFooterSpace"
-                    HorizontalAlignment="Stretch"
+                    Grid.Column="1"
                     x:FieldModifier="private"
                     SizeChanged="TabStripFooterSpace_SizeChanged" />
-                <!--</Grid>-->
             </TabView.TabStripFooter>
 
             <TabView.TabItemTemplate>

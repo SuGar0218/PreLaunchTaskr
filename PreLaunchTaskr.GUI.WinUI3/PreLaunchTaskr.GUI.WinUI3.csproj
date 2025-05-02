@@ -175,5 +175,7 @@
     <PublishAot>True</PublishAot>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ApplicationIcon>Assets\PreLaunchTaskr.ico</ApplicationIcon>
+    <AssemblyVersion>1.4.2</AssemblyVersion>
+    <FileVersion>1.4.2</FileVersion>
   </PropertyGroup>
 </Project>
