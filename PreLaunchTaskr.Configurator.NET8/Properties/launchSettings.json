@@ -1,8 +1,7 @@
 {
   "profiles": {
     "PreLaunchTaskr.Configurator.NET8": {
-      "commandName": "Project",
-      "commandLineArgs": "-dis 10"
+      "commandName": "Project"
     }
   }
 }

@@ -1,3 +1,4 @@
+using Microsoft.UI;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
@@ -26,41 +27,65 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
         AppWindow.TitleBar.ButtonHoverBackgroundColor = Color.FromArgb(32, 128, 128, 128);
         AppWindow.TitleBar.ButtonPressedBackgroundColor = Color.FromArgb(16, 128, 128, 128);
-
+#if DEBUG
+        if (false)
+#else
         if (MicaController.IsSupported())
+#endif
         {
             SystemBackdrop = new MicaBackdrop { Kind = MicaKind.BaseAlt };
         }
         else if (DesktopAcrylicController.IsSupported())
         {
-            systemBackdropConfiguration = new SystemBackdropConfiguration();
-            desktopAcrylicController = new DesktopAcrylicController
-            {
-                Kind = DesktopAcrylicKind.Thin,
-                LuminosityOpacity = 0.5f
-            };
-            desktopAcrylicController.AddSystemBackdropTarget(this.As<ICompositionSupportsSystemBackdrop>());
-            desktopAcrylicController.SetSystemBackdropConfiguration(systemBackdropConfiguration);
+            //systemBackdropConfiguration = new SystemBackdropConfiguration();
+            //desktopAcrylicController = new DesktopAcrylicController
+            //{
+            //    Kind = DesktopAcrylicKind.Thin,
+            //    LuminosityOpacity = 0.5f
+            //};
+            //desktopAcrylicController.AddSystemBackdropTarget(this.As<ICompositionSupportsSystemBackdrop>());
+            //desktopAcrylicController.SetSystemBackdropConfiguration(systemBackdropConfiguration);
             Activated += (o, e) =>
             {
-                systemBackdropConfiguration.IsInputActive = e.WindowActivationState != WindowActivationState.Deactivated;
+                //systemBackdropConfiguration.IsInputActive = e.WindowActivationState != WindowActivationState.Deactivated;
+                if (e.WindowActivationState == WindowActivationState.Deactivated)
+                {
+                    CurrentBackground = InactiveBackground;
+                }
+                else
+                {
+                    CurrentBackground = ActiveBackground;
+                }
             };
+            SystemBackdrop = new DesktopAcrylicBackdrop();
             Color themeColor = new UISettings().GetColorValue(UIColorType.Accent);
-            themeColor.A = 32;
-            Background = new SolidColorBrush(themeColor);
+            themeColor.A = 48;
+            ActiveBackground = new SolidColorBrush(themeColor);
         }
         else
         {
             Color themeColor = new UISettings().GetColorValue(UIColorType.Accent);
-            themeColor.A = 32;
-            Background = new SolidColorBrush(themeColor);
+            themeColor.A = 48;
+            ActiveBackground = new SolidColorBrush(themeColor);
         }
 
         hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
         MaterialController = new(this);
     }
 
-    public Brush Background
+    public Brush? ActiveBackground
+    {
+        get => field;
+        set => field = value;
+    }
+
+    public Brush? InactiveBackground
+    {
+        get => field;
+        set => field = value;
+    }
+
+    private Brush? CurrentBackground
     {
         get => ContentFrame.Background;
         set => ContentFrame.Background = value;

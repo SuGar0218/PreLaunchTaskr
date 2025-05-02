@@ -15,9 +15,13 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
         </Style>
+
+        <Style TargetType="my:IconHyperlinkButton">
+            <Setter Property="Padding" Value="8" />
+        </Style>
     </Page.Resources>
 
-    <ScrollView Margin="36">
+    <ScrollView Padding="36">
         <StackPanel Grid.Row="1" Spacing="16">
             <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="关于此应用" />
 
@@ -37,7 +41,6 @@
                 <my:MyStackPanel>
                     <my:IconHyperlinkButton
                         Padding="8"
-                        HorizontalAlignment="Left"
                         NavigateUri="https://github.com/SuGar0218/PreLaunchTaskr/tree/winui3"
                         Text="前往 GitHub 查看此项目">
                         <my:IconHyperlinkButton.IconSource>
@@ -57,6 +60,15 @@
                 </Expander.Transitions>
 
                 <StackPanel>
+                    <my:IconHyperlinkButton
+                        Padding="8"
+                        NavigateUri="https://visualstudio.microsoft.com/zh-hans/vs/preview/"
+                        Text="Visual Studio 2022 Preview">
+                        <my:IconHyperlinkButton.IconSource>
+                            <SymbolIconSource Symbol="Go" />
+                        </my:IconHyperlinkButton.IconSource>
+                    </my:IconHyperlinkButton>
+
                     <my:IconHyperlinkButton
                         Padding="8"
                         NavigateUri="https://github.com/microsoft/microsoft-ui-xaml"
