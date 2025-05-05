@@ -69,6 +69,7 @@ public partial class App : Application
     /// <param name="args">Details about the launch request and process.</param>
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
+#if !DEBUG
         // 只能开一个窗口
         if (mainWindow is not null)
         {
@@ -81,6 +82,7 @@ public partial class App : Application
             Exit();
             return;
         }
+#endif
 
         Configurator = Configurator.Init(GlobalProperties.SettingsLocation, GlobalProperties.LauncherNet8Location);
         Launcher = Launcher.Init(BaseDirectory);

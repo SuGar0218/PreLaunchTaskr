@@ -86,6 +86,24 @@
                             <SymbolIconSource Symbol="Go" />
                         </my:IconHyperlinkButton.IconSource>
                     </my:IconHyperlinkButton>
+
+                    <my:IconHyperlinkButton
+                        Padding="8"
+                        NavigateUri="https://github.com/microsoft/CsWinRT"
+                        Text="CsWinRT">
+                        <my:IconHyperlinkButton.IconSource>
+                            <SymbolIconSource Symbol="Go" />
+                        </my:IconHyperlinkButton.IconSource>
+                    </my:IconHyperlinkButton>
+
+                    <my:IconHyperlinkButton
+                        Padding="8"
+                        NavigateUri="https://github.com/microsoft/CsWin32"
+                        Text="CsWin32">
+                        <my:IconHyperlinkButton.IconSource>
+                            <SymbolIconSource Symbol="Go" />
+                        </my:IconHyperlinkButton.IconSource>
+                    </my:IconHyperlinkButton>
                 </StackPanel>
             </Expander>
         </StackPanel>

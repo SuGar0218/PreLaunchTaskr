@@ -62,7 +62,9 @@ public partial class ProgramListItem : ObservableObject, IProgramListItem<Bitmap
         string commandArgs = Enabled ? $"-s enable-program --id {Id}" : $"-s disable-program --id {Id}";
         try
         {
-            return ProcessStarter.StartSilentAsAdminAndWait(System.IO.Path.GetFullPath(GlobalProperties.ConfiguratorNet8Location), commandArgs) is not null;
+            return ProcessStarter.StartSilentAsAdminAndWait(
+                System.IO.Path.Combine(App.BaseDirectory, GlobalProperties.ConfiguratorNet8Location),
+                commandArgs) is not null;
         }
         catch
         {

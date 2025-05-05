@@ -88,7 +88,7 @@ public sealed partial class MainWindow : Window
     private Brush? CurrentBackground
     {
         get => ContentFrame.Background;
-        set => ContentFrame.Background = value;
+        set => ContentFrame.Background = value;  // 设置当前 Frame 的背景色，只有在 MainWindow 加载完毕后，ContentFrame 才不为 null
     }
 
     public readonly nint hWnd;
@@ -103,7 +103,7 @@ public sealed partial class MainWindow : Window
         double scale = frame.XamlRoot.RasterizationScale;
         AppWindow.Resize(new Windows.Graphics.SizeInt32((int) (3 * NavigationViewOpenPaneLength * scale), (int) (720 * scale)));
 
-        Activate();
+        Activate();  // 因为把激活窗口延后到了 Frame 加载完毕，所以没在设置 CurrentBackground 时引发空引用异常。
     }
 
     private void Window_Closed(object o, WindowEventArgs e)

@@ -36,7 +36,6 @@ public sealed partial class MainPage : Page
     {
         InitializeComponent();
 
-        //Navigation.IsPaneOpen = false;
         Navigation.ExpandedModeThresholdWidth = Math.E * Navigation.OpenPaneLength;
         this.viewModel = viewModel;
     }
@@ -66,7 +65,7 @@ public sealed partial class MainPage : Page
         string? path = await Win32FilePicker.PickFileAsync([
             new Win32FilePickerFilter("应用程序", "*.exe"),
             new Win32FilePickerFilter("快捷方式", "*.exe")],
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            "shell:Desktop",
             dereferenceLink: true,
             App.Current.MainWindow.hWnd);
 
