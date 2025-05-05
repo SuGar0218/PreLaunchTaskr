@@ -21,9 +21,16 @@
         </Style>
     </Page.Resources>
 
-    <ScrollView Padding="36">
-        <StackPanel Grid.Row="1" Spacing="16">
-            <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="关于此应用" />
+    <ScrollView>
+        <StackPanel
+            Grid.Row="1"
+            Margin="36,0"
+            Spacing="16">
+
+            <StackPanel Margin="0,36,0,0">
+                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="关于此应用" />
+                <Image MaxHeight="360" Source="/Assets/PreLaunchTaskrBannerSmallText.png" />
+            </StackPanel>
 
             <Expander ExpandDirection="Down" IsExpanded="True">
 

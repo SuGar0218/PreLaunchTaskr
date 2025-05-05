@@ -16,6 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\DefaultProgramIcon.png" />
+    <Content Remove="Assets\PreLaunchTaskrBannerSmallText.png" />
     <Content Remove="Assets\PreLaunchTaskrTitle.jpg" />
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +82,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="Assets\DefaultProgramIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\PreLaunchTaskrBannerSmallText.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\PreLaunchTaskrTitle.jpg">
