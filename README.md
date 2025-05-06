@@ -1,4 +1,4 @@
-![PreLaunchTaskr封面](https://github.com/user-attachments/assets/9249bb36-5e66-4205-9f44-9838c8424016)
+![Banner](https://github.com/user-attachments/assets/863d687a-7f39-4900-bc42-70e5374bb48f)
 
 # PreLaunchTaskr.ReadMe
 
@@ -6,7 +6,7 @@ PreLaunchTaskr 的 WinUI 3 分支
 
 克隆 WinUI 3 分支：
 
-git clone -b winui3 --single-branch https://github.com/SuGar0218/PreLaunchTaskr.git
+```git clone -b winui3 --single-branch https://github.com/SuGar0218/PreLaunchTaskr.git```
 
 ## 这个程序有什么用？
 
