@@ -14,6 +14,14 @@
         <Style TargetType="Expander">
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="ExpandDirection" Value="Down" />
+            <Setter Property="Transitions">
+                <Setter.Value>
+                    <TransitionCollection>
+                        <RepositionThemeTransition />
+                    </TransitionCollection>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style TargetType="my:IconHyperlinkButton">
@@ -32,12 +40,7 @@
                 <Image MaxHeight="360" Source="/Assets/PreLaunchTaskrBannerSmallText.png" />
             </StackPanel>
 
-            <Expander ExpandDirection="Down" IsExpanded="True">
-
-                <Expander.Transitions>
-                    <RepositionThemeTransition />
-                </Expander.Transitions>
-
+            <Expander IsExpanded="False">
                 <Expander.Header>
                     <StackPanel Margin="2,12">
                         <TextBlock Text="PreLaunchTaskr" />
@@ -57,15 +60,37 @@
                 </my:MyStackPanel>
             </Expander>
 
-            <Expander
-                ExpandDirection="Down"
-                Header="开发工具"
-                IsExpanded="True">
+            <Expander Header="简单说明" IsExpanded="False">
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="{x:Bind ReadMe}" />
+            </Expander>
 
-                <Expander.Transitions>
-                    <RepositionThemeTransition />
-                </Expander.Transitions>
+            <Expander Header="Segoe Fluent 图标字体" IsExpanded="False">
+                <StackPanel>
+                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="随着 Windows 11 的发布，符号图标字体已从 Segoe MDL2 Assets 替换为 Segoe Fluent Icons 字体。" />
 
+                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="在 Windows 10 电脑上可能部分图标不能正常显示，例如显示为一个矩形框。如有需要可以下载，然后在右键菜单中为所有用户安装。" />
+
+                    <my:IconHyperlinkButton
+                        Padding="8"
+                        NavigateUri="https://learn.microsoft.com/zh-cn/windows/apps/design/style/segoe-fluent-icons-font"
+                        Text="了解 Segoe Fluent 图标字体">
+                        <my:IconHyperlinkButton.IconSource>
+                            <SymbolIconSource Symbol="Go" />
+                        </my:IconHyperlinkButton.IconSource>
+                    </my:IconHyperlinkButton>
+
+                    <my:IconHyperlinkButton
+                        Padding="8"
+                        NavigateUri="https://aka.ms/SegoeFluentIcons"
+                        Text="下载 Segoe Fluent 图标字体">
+                        <my:IconHyperlinkButton.IconSource>
+                            <SymbolIconSource Symbol="Go" />
+                        </my:IconHyperlinkButton.IconSource>
+                    </my:IconHyperlinkButton>
+                </StackPanel>
+            </Expander>
+
+            <Expander Header="开发工具" IsExpanded="False">
                 <StackPanel>
                     <my:IconHyperlinkButton
                         Padding="8"

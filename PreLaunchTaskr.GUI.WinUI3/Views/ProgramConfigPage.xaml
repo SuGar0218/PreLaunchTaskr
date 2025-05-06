@@ -122,12 +122,20 @@
                                     <SymbolIcon Symbol="Go" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
+
                             <MenuFlyoutItem
                                 Click="LaunchAsAdmin_Click"
                                 DataContext="{x:Bind viewModel.ProgramListItem}"
                                 Text="以管理员身份启动">
                                 <MenuFlyoutItem.Icon>
                                     <SymbolIcon Symbol="Admin" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem IsEnabled="False" Text="是否按配置启动与此应用的开关有关">
+                                <MenuFlyoutItem.Icon>
+                                    <!--  Info  -->
+                                    <FontIcon Glyph="&#xE946;" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                         </MenuFlyout>

@@ -55,10 +55,10 @@ public sealed partial class MainPage : Page
 
     private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = new(App.Current.MainWindow);
 
-    private void ShowAddProgramMenu(object sender, object _)
-    {
-        AddProgramMenu.ShowAt((FrameworkElement) sender);
-    }
+    //private void ShowAddProgramMenu(object sender, object _)
+    //{
+    //    AddProgramMenu.ShowAt((FrameworkElement) sender);
+    //}
 
     private async void SelectProgramFromFile()
     {
@@ -272,10 +272,10 @@ public sealed partial class MainPage : Page
         await this.MessageBox("先关闭此提示，然后把你需要添加的程序的 exe 文件拖拽进来即可。", "拖拽以添加");
     }
 
-    private void ShowMoreOptionsMenu(object sender, object _)
-    {
-        MoreOptionsMenu.ShowAt((FrameworkElement) sender);
-    }
+    //private void ShowMoreOptionsMenu(object sender, object _)
+    //{
+    //    MoreOptionsMenu.ShowAt((FrameworkElement) sender);
+    //}
 
     private void ConfigInNewTab(object sender, object _)
     {

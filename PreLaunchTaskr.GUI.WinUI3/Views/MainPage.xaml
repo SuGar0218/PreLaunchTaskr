@@ -58,8 +58,6 @@
                     </StackPanel>
 
                     <ToggleSwitch
-                        PointerPressed="ToggleSwitch_PointerPressed"
-                        PointerReleased="ToggleSwitch_PointerReleased"
                         Grid.Column="1"
                         MinWidth="0"
                         Margin="0,0,-16,0"
@@ -67,6 +65,8 @@
                         IsOn="{x:Bind Enabled, Mode=TwoWay}"
                         OffContent="{x:Null}"
                         OnContent="{x:Null}"
+                        PointerPressed="ToggleSwitch_PointerPressed"
+                        PointerReleased="ToggleSwitch_PointerReleased"
                         Toggled="ToggleSwitch_Toggled" />
                 </Grid>
 
@@ -74,8 +74,16 @@
                     <MenuFlyout>
                         <MenuFlyoutSubItem Foreground="Red" Text="移除">
                             <MenuFlyoutSubItem.Icon>
-                                <SymbolIcon Foreground="Red" Symbol="Clear" />
+                                <SymbolIcon Foreground="Red" Symbol="Delete" />
                             </MenuFlyoutSubItem.Icon>
+
+                            <MenuFlyoutItem IsEnabled="False" Text="放弃对它的配置，然后移除。不会从电脑上删除。">
+                                <MenuFlyoutItem.Icon>
+                                    <!--  Info  -->
+                                    <FontIcon Glyph="&#xE946;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
                             <MenuFlyoutItem
                                 Click="RemoveProgram"
                                 DataContext="{x:Bind}"
@@ -120,10 +128,12 @@
             </NavigationViewItem>
         </DataTemplate>
 
-        <MenuFlyout x:Key="AddProgramMenu" x:Name="AddProgramMenu">
+        <!--<MenuFlyout x:Key="AddProgramMenu" x:Name="AddProgramMenu">
             <MenuFlyoutItem Click="{x:Bind SelectProgramFromFile}" Text="从文件管理器选取">
                 <MenuFlyoutItem.Icon>
-                    <!--  FileExplorer  -->
+        -->
+        <!--  FileExplorer  -->
+        <!--
                     <FontIcon Glyph="&#xEC50;" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
@@ -153,7 +163,7 @@
                     <SymbolIcon Symbol="Emoji2" />
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
-        </MenuFlyout>
+        </MenuFlyout>-->
     </Page.Resources>
 
     <Grid>
@@ -198,10 +208,18 @@
                 Height="30"
                 x:FieldModifier="private"
                 Click="{x:Bind ToggleNavigationMenuPane}"
-                Style="{ThemeResource TitleBarPaneToggleButtonStyle}" />
+                Style="{ThemeResource TitleBarPaneToggleButtonStyle}">
+                <Button.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="Escape" />
+                </Button.KeyboardAccelerators>
+            </Button>
 
             <MenuBar Grid.Column="1">
-                <MenuBarItem Title="添加程序">
+                <MenuBarItem Title="添加程序" AccessKey="F1">
+                    <MenuBarItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F1" />
+                    </MenuBarItem.KeyboardAccelerators>
+
                     <MenuFlyoutItem Click="{x:Bind SelectProgramFromFile}" Text="从文件管理器选取">
                         <MenuFlyoutItem.Icon>
                             <!--  FileExplorer  -->
@@ -230,6 +248,10 @@
                 </MenuBarItem>
 
                 <MenuBarItem Title="移除程序">
+                    <MenuBarItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F2" />
+                    </MenuBarItem.KeyboardAccelerators>
+
                     <MenuFlyoutSubItem
                         Foreground="Red"
                         IsEnabled="{x:Bind helper:XamlHelper.IsNotNull(viewModel.SelectedItem), Mode=OneWay}"
@@ -272,6 +294,10 @@
                 </MenuBarItem>
 
                 <MenuBarItem Title="批量开关">
+                    <MenuBarItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F3" />
+                    </MenuBarItem.KeyboardAccelerators>
+
                     <MenuFlyoutItem Click="EnableAll" Text="全部启用">
                         <MenuFlyoutItem.Icon>
                             <!--  ToggleRight ToggleSwitch ON  -->
@@ -287,13 +313,17 @@
                 </MenuBarItem>
 
                 <MenuBarItem Title="其他…">
+                    <MenuBarItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F4" />
+                    </MenuBarItem.KeyboardAccelerators>
+
                     <MenuFlyoutItem Click="{x:Bind ShowAboutProgramPage}" Text="关于此应用">
                         <MenuFlyoutItem.Icon>
                             <SymbolIcon Symbol="Emoji2" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
 
-                    <MenuFlyoutItem Click="{x:Bind LoadProgramList}" Text="重新加载">
+                    <MenuFlyoutItem Click="{x:Bind LoadProgramList}" Text="刷新">
                         <MenuFlyoutItem.Icon>
                             <SymbolIcon Symbol="Refresh" />
                         </MenuFlyoutItem.Icon>

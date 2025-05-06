@@ -23,9 +23,9 @@ public partial class App : Application
 {
     public static string DisplayVersion =>
 #if DEBUG
-        "1.4.3 DEBUG";
+        "1.4.4 DEBUG";
 #else
-        "1.4.3";
+        "1.4.4";
 #endif
 
     /// <summary>
