@@ -65,7 +65,8 @@ public sealed partial class MultiTabPage : Page
         }
 
         TabStripItem item = (TabStripItem) e.AddedItems[0];
-        ContentFrame.Navigate(item.PageType, item.ExtraData);
+        ContentFrame.Navigate(item.PageType, item.ExtraData, new SuppressNavigationTransitionInfo());
+        ContentFrame.BackStack.Clear();
     }
 
     private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = new(App.Current.MainWindow);

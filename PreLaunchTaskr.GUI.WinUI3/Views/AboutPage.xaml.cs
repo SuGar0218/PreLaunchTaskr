@@ -31,10 +31,6 @@ public sealed partial class AboutPage : Page
 
     protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
     {
-        ConnectedAnimationService
-            .GetForCurrentView()
-            .PrepareToAnimate("forwardAnimation", BannerImage);
-
         base.OnNavigatingFrom(e);
     }
 
@@ -53,6 +49,9 @@ public sealed partial class AboutPage : Page
         int r = random.Next();
         if (r % 10 == 0 || r % 10 == 1)
         {
+            ConnectedAnimationService
+                .GetForCurrentView()
+                .PrepareToAnimate("forwardAnimation", BannerImage);
             Frame.Navigate(typeof(BannerPage), null, new SuppressNavigationTransitionInfo());
         }
     }
