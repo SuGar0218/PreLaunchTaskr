@@ -10,6 +10,9 @@
     <None Update="App.xaml">
       <SubType>Designer</SubType>
     </None>
+    <Page Update="Views\BannerPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\SettingsPage.xaml">
       <SubType>Designer</SubType>
     </Page>

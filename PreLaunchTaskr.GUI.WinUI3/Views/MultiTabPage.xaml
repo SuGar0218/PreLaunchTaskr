@@ -83,7 +83,6 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             x:FieldModifier="private"
-            Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
-            IsNavigationStackEnabled="False" />
+            Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}" />
     </Grid>
 </Page>

@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 
 using PreLaunchTaskr.GUI.WinUI3.Helpers;
@@ -59,7 +60,7 @@ public sealed partial class MultiTabPage : Page
     {
         if (e.AddedItems.Count == 0 || e.AddedItems[0] is null)
         {
-            ContentFrame.Navigate(typeof(Page));
+            ContentFrame.Navigate(typeof(Page), null, new SuppressNavigationTransitionInfo());
             return;
         }
 

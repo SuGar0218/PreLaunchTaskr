@@ -39,7 +39,41 @@
 
             <StackPanel>
                 <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="关于此应用" />
-                <Image MaxHeight="360" Source="/Assets/PreLaunchTaskrBannerSmallText.png" />
+
+                <Image
+                    x:Name="BannerImage"
+                    MaxHeight="360"
+                    Source="/Assets/PreLaunchTaskrBannerSmallText.png"
+                    Tapped="BannerImage_Tapped">
+
+                    <Image.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuFlyoutSubItem IsEnabled="True" Text="与君初相识">
+                                <MenuFlyoutItem IsEnabled="True" Text="犹如故人归" />
+                            </MenuFlyoutSubItem>
+
+                            <MenuFlyoutSubItem IsEnabled="True" Text="有朋自远方来">
+                                <MenuFlyoutItem IsEnabled="True" Text="不亦乐乎" />
+                            </MenuFlyoutSubItem>
+
+                            <MenuFlyoutSubItem IsEnabled="True" Text="青，取之于蓝">
+                                <MenuFlyoutItem IsEnabled="True" Text="而青于蓝" />
+                            </MenuFlyoutSubItem>
+
+                            <MenuFlyoutSubItem IsEnabled="True" Text="剑阁峥嵘而崔嵬">
+                                <MenuFlyoutItem IsEnabled="True" Text="一夫当关，万夫莫开" />
+                            </MenuFlyoutSubItem>
+
+                            <MenuFlyoutSubItem IsEnabled="True" Text="千门万户曈曈日">
+                                <MenuFlyoutItem IsEnabled="True" Text="总把新桃换旧符" />
+                            </MenuFlyoutSubItem>
+
+                            <MenuFlyoutSubItem IsEnabled="True" Text="休对故人思故国">
+                                <MenuFlyoutItem IsEnabled="True" Text="且将新火试新茶" />
+                            </MenuFlyoutSubItem>
+                        </MenuFlyout>
+                    </Image.ContextFlyout>
+                </Image>
             </StackPanel>
 
             <Expander IsExpanded="False">
@@ -67,26 +101,28 @@
             </Expander>
 
             <Expander Header="Segoe Fluent 图标字体" IsExpanded="False">
-                <StackPanel>
+                <StackPanel Spacing="16">
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="{x:Bind AboutFontIcon}" />
 
-                    <my:IconHyperlinkButton
-                        Padding="8"
-                        NavigateUri="https://learn.microsoft.com/zh-cn/windows/apps/design/style/segoe-fluent-icons-font"
-                        Text="了解 Segoe Fluent 图标字体">
-                        <my:IconHyperlinkButton.IconSource>
-                            <SymbolIconSource Symbol="Go" />
-                        </my:IconHyperlinkButton.IconSource>
-                    </my:IconHyperlinkButton>
+                    <StackPanel>
+                        <my:IconHyperlinkButton
+                            Padding="8"
+                            NavigateUri="https://learn.microsoft.com/zh-cn/windows/apps/design/style/segoe-fluent-icons-font"
+                            Text="了解 Segoe Fluent 图标字体">
+                            <my:IconHyperlinkButton.IconSource>
+                                <SymbolIconSource Symbol="Go" />
+                            </my:IconHyperlinkButton.IconSource>
+                        </my:IconHyperlinkButton>
 
-                    <my:IconHyperlinkButton
-                        Padding="8"
-                        NavigateUri="https://aka.ms/SegoeFluentIcons"
-                        Text="下载 Segoe Fluent 图标字体">
-                        <my:IconHyperlinkButton.IconSource>
-                            <SymbolIconSource Symbol="Go" />
-                        </my:IconHyperlinkButton.IconSource>
-                    </my:IconHyperlinkButton>
+                        <my:IconHyperlinkButton
+                            Padding="8"
+                            NavigateUri="https://aka.ms/SegoeFluentIcons"
+                            Text="下载 Segoe Fluent 图标字体">
+                            <my:IconHyperlinkButton.IconSource>
+                                <SymbolIconSource Symbol="Go" />
+                            </my:IconHyperlinkButton.IconSource>
+                        </my:IconHyperlinkButton>
+                    </StackPanel>
                 </StackPanel>
             </Expander>
 
@@ -103,8 +139,17 @@
 
                     <my:IconHyperlinkButton
                         Padding="8"
+                        NavigateUri="https://github.com/microsoft/WindowsAppSDK"
+                        Text="Windows App SDK">
+                        <my:IconHyperlinkButton.IconSource>
+                            <SymbolIconSource Symbol="Go" />
+                        </my:IconHyperlinkButton.IconSource>
+                    </my:IconHyperlinkButton>
+
+                    <my:IconHyperlinkButton
+                        Padding="8"
                         NavigateUri="https://github.com/microsoft/microsoft-ui-xaml"
-                        Text="WinUI 3">
+                        Text="Microsoft.UI.Xaml">
                         <my:IconHyperlinkButton.IconSource>
                             <SymbolIconSource Symbol="Go" />
                         </my:IconHyperlinkButton.IconSource>
@@ -132,6 +177,15 @@
                         Padding="8"
                         NavigateUri="https://github.com/microsoft/CsWin32"
                         Text="CsWin32">
+                        <my:IconHyperlinkButton.IconSource>
+                            <SymbolIconSource Symbol="Go" />
+                        </my:IconHyperlinkButton.IconSource>
+                    </my:IconHyperlinkButton>
+
+                    <my:IconHyperlinkButton
+                        Padding="8"
+                        NavigateUri="https://www.nuget.org/packages/Microsoft.Data.Sqlite/"
+                        Text="Microsoft.Data.Sqlite">
                         <my:IconHyperlinkButton.IconSource>
                             <SymbolIconSource Symbol="Go" />
                         </my:IconHyperlinkButton.IconSource>

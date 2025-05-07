@@ -29,6 +29,7 @@
     <None Remove="Controls\IconHyperlinkButton.xaml" />
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AttachArgumentPage.xaml" />
+    <None Remove="Views\BannerPage.xaml" />
     <None Remove="Views\BlockArgumentPage.xaml" />
     <None Remove="Views\EnvironmentVariablePage.xaml" />
     <None Remove="Views\InstalledPackagedProgramListPage.xaml" />
@@ -99,6 +100,9 @@
     <None Update="readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\BannerPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\SettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

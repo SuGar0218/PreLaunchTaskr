@@ -1,5 +1,8 @@
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Navigation;
 
+using System;
 using System.IO;
 using System.Text;
 
@@ -25,6 +28,36 @@ public sealed partial class AboutPage : Page
     {
         get => aboutFontIcon;
     }
+
+    protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+    {
+        ConnectedAnimationService
+            .GetForCurrentView()
+            .PrepareToAnimate("forwardAnimation", BannerImage);
+
+        base.OnNavigatingFrom(e);
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+
+        ConnectedAnimationService
+            .GetForCurrentView()
+            .GetAnimation("backAnimation")?
+            .TryStart(BannerImage);
+    }
+
+    private void BannerImage_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+    {
+        int r = random.Next();
+        if (r % 10 == 0 || r % 10 == 1)
+        {
+            Frame.Navigate(typeof(BannerPage), null, new SuppressNavigationTransitionInfo());
+        }
+    }
+
+    private static readonly Random random = new();
 
     private static string readme = null!;
 
