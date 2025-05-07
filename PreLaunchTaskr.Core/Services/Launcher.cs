@@ -215,8 +215,17 @@ public class Launcher
                     }
                 }
             }
-            taskProcess.Start();
-            taskProcess.WaitForExit();
+            try
+            {
+                if (!taskProcess.Start())
+                    continue;
+
+                taskProcess.WaitForExit();
+            }
+            catch (Exception)
+            {
+                continue;
+            }
         }
 
         // 带上处理后的启动参数、专属环境变量，去启动程序

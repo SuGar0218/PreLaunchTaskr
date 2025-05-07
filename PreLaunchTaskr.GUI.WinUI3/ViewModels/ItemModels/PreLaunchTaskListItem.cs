@@ -71,7 +71,7 @@ public class PreLaunchTaskListItem : IPreLaunchTaskListItem
         if (preLaunchTask.Id == -1)
             return false;
 
-        return App.Current.Configurator.RemoveAttachedArgument(preLaunchTask.Id);
+        return App.Current.Configurator.RemovePreLaunchTask(preLaunchTask.Id);
     }
 
     private readonly PreLaunchTask preLaunchTask;

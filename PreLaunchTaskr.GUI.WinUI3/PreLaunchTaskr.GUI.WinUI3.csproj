@@ -15,6 +15,12 @@
 	  <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Services\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Services\**" />
+    <Page Remove="Services\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Remove="Assets\DefaultProgramIcon.png" />
     <Content Remove="Assets\PreLaunchTaskrBannerSmallText.png" />
     <Content Remove="Assets\PreLaunchTaskrTitle.jpg" />
@@ -159,10 +165,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dao\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -185,4 +187,7 @@
     <AssemblyVersion>1.4.2</AssemblyVersion>
     <FileVersion>1.4.2</FileVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <PRIResource Remove="Services\**" />
+  </ItemGroup>
 </Project>

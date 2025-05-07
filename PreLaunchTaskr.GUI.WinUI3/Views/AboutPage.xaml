@@ -35,7 +35,9 @@
             Margin="36,0"
             Spacing="16">
 
-            <StackPanel Margin="0,36,0,0">
+            <Border Height="20" />
+
+            <StackPanel>
                 <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="关于此应用" />
                 <Image MaxHeight="360" Source="/Assets/PreLaunchTaskrBannerSmallText.png" />
             </StackPanel>
@@ -66,9 +68,7 @@
 
             <Expander Header="Segoe Fluent 图标字体" IsExpanded="False">
                 <StackPanel>
-                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="随着 Windows 11 的发布，符号图标字体已从 Segoe MDL2 Assets 替换为 Segoe Fluent Icons 字体。" />
-
-                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="在 Windows 10 电脑上可能部分图标不能正常显示，例如显示为一个矩形框。如有需要可以下载，然后在右键菜单中为所有用户安装。" />
+                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="{x:Bind AboutFontIcon}" />
 
                     <my:IconHyperlinkButton
                         Padding="8"
@@ -138,6 +138,8 @@
                     </my:IconHyperlinkButton>
                 </StackPanel>
             </Expander>
+
+            <Border Height="20" />
         </StackPanel>
     </ScrollView>
 </Page>

@@ -6,16 +6,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Dao\Implementations\**" />
+    <Compile Remove="Dao\Interfaces\**" />
+    <EmbeddedResource Remove="Dao\Implementations\**" />
+    <EmbeddedResource Remove="Dao\Interfaces\**" />
+    <None Remove="Dao\Implementations\**" />
+    <None Remove="Dao\Interfaces\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PreLaunchTaskr.Common\PreLaunchTaskr.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Dao\Interfaces\" />
-    <Folder Include="Dao\Implementations\" />
   </ItemGroup>
 
 </Project>
