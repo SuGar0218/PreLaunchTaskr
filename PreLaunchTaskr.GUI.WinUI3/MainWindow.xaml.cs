@@ -111,7 +111,7 @@ public sealed partial class MainWindow : Window
 
     private void Window_Closed(object o, WindowEventArgs e)
     {
-        AppWindow.Hide();
+        AppWindow.Hide();  // 先隐藏再关闭，否则关闭动画中能看到窗口变成空白
         desktopAcrylicController?.RemoveAllSystemBackdropTargets();
         desktopAcrylicController?.Dispose();
     }

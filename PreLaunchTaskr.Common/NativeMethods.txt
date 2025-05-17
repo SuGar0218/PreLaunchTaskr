@@ -4,3 +4,9 @@ SHOpenFolderAndSelectItems
 CoInitialize
 CoUninitialize
 ILFree
+CreateProcess
+ResumeThread
+SuspendThread
+DebugActiveProcessStop
+CloseHandle
+GetPebAddress 
