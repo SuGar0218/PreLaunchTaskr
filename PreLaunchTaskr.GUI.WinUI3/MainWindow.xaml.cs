@@ -1,6 +1,7 @@
 using Microsoft.UI;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -28,6 +29,8 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
         AppWindow.TitleBar.ButtonHoverBackgroundColor = Color.FromArgb(32, 128, 128, 128);
         AppWindow.TitleBar.ButtonPressedBackgroundColor = Color.FromArgb(16, 128, 128, 128);
+        OverlappedPresenter presenter = (OverlappedPresenter) AppWindow.Presenter;
+        presenter.IsMaximizable = false;
 #if DEBUG
         if (false)
 #else
@@ -98,7 +101,7 @@ public sealed partial class MainWindow : Window
     private void Frame_Loaded(object sender, RoutedEventArgs e)
     {
         Frame frame = (Frame) sender;
-        frame.Navigate(typeof(MultiTabPage), null);
+        frame.Navigate(typeof(MultiTabPage));
 
         double scale = frame.XamlRoot.RasterizationScale;
         AppWindow.Resize(new Windows.Graphics.SizeInt32((int) (3 * NavigationViewOpenPaneLength * scale), (int) (720 * scale)));
@@ -108,6 +111,7 @@ public sealed partial class MainWindow : Window
 
     private void Window_Closed(object o, WindowEventArgs e)
     {
+        AppWindow.Hide();
         desktopAcrylicController?.RemoveAllSystemBackdropTargets();
         desktopAcrylicController?.Dispose();
     }
