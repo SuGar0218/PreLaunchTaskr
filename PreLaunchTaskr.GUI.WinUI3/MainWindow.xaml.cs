@@ -25,6 +25,8 @@ public sealed partial class MainWindow : Window
 {
     public MainWindow()
     {
+        //ContentDialogWindow window = new();
+        //window.Activate();
         InitializeComponent();
         ExtendsContentIntoTitleBar = true;
         AppWindow.TitleBar.ButtonHoverBackgroundColor = Color.FromArgb(32, 128, 128, 128);

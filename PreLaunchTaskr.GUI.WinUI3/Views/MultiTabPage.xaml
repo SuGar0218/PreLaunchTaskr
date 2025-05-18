@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:PreLaunchTaskr.GUI.WinUI3.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:my="using:PreLaunchTaskr.GUI.WinUI3.Controls"
     xmlns:vm="using:PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
@@ -34,48 +35,50 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TabView
+        <my:TitleBarTabView
             x:Name="TabStrip"
             Grid.Row="0"
             Padding="0,8,0,0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
+            AutoHide="True"
             CanDrag="False"
             CanDragTabs="False"
             CanReorderTabs="False"
             IsAddTabButtonVisible="False"
-            SelectedIndex="{x:Bind viewModel.CurrentTabIndex, Mode=TwoWay}"
+            OwnerWindow="{x:Bind app:App.Current.MainWindow}"
+            SelectedIndex="{x:Bind CurrentTabIndex, Mode=TwoWay}"
             SelectionChanged="TabStrip_SelectionChanged"
             SizeChanged="TabStrip_SizeChanged"
             TabCloseRequested="TabStrip_TabCloseRequested"
             TabItemsChanged="TabStrip_TabItemsChanged"
-            TabItemsSource="{x:Bind viewModel.TabStripItems}">
+            TabItemsSource="{x:Bind TabStripItems}">
 
-            <TabView.TabStripHeader>
+            <my:TitleBarTabView.TabStripHeader>
                 <Image
                     Height="20"
                     Margin="14,8,10,0"
                     VerticalAlignment="Center"
                     Source="/Assets/PreLaunchTaskrNewIcon.png" />
-            </TabView.TabStripHeader>
+            </my:TitleBarTabView.TabStripHeader>
 
-            <TabView.TabStripFooter>
+            <!--<my:TitleBarTabView.TabStripFooter>
                 <Border
                     x:Name="TabStripFooterSpace"
                     Grid.Column="1"
                     x:FieldModifier="private"
                     SizeChanged="TabStripFooterSpace_SizeChanged" />
-            </TabView.TabStripFooter>
+            </my:TitleBarTabView.TabStripFooter>-->
 
-            <TabView.TabItemTemplate>
+            <my:TitleBarTabView.TabItemTemplate>
                 <DataTemplate x:DataType="vm:TabStripItem">
                     <TabViewItem
                         Header="{x:Bind Header}"
                         IconSource="{x:Bind Icon}"
                         IsClosable="{x:Bind Closeable}" />
                 </DataTemplate>
-            </TabView.TabItemTemplate>
-        </TabView>
+            </my:TitleBarTabView.TabItemTemplate>
+        </my:TitleBarTabView>
 
         <Frame
             x:Name="ContentFrame"

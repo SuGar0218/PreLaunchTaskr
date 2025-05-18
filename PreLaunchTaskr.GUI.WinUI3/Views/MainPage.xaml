@@ -192,7 +192,9 @@
         </Border>-->
 
         <my:MyGrid
+            x:Name="TitleBarArea"
             Grid.Row="0"
+            x:FieldModifier="private"
             ContentHorizontalAlignment="Left"
             ContentVerticalAlignment="Center">
 
@@ -214,7 +216,10 @@
                 </Button.KeyboardAccelerators>
             </Button>
 
-            <MenuBar Grid.Column="1">
+            <MenuBar
+                x:Name="MainMenuBar"
+                Grid.Column="1"
+                x:FieldModifier="private">
                 <MenuBarItem Title="添加程序" AccessKey="F1">
                     <MenuBarItem.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F1" />

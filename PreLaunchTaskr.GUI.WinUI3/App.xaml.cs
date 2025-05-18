@@ -3,6 +3,7 @@
 using PreLaunchTaskr.Core;
 using PreLaunchTaskr.Core.Services;
 using PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
+using PreLaunchTaskr.GUI.WinUI3.Views;
 
 using System;
 using System.Diagnostics;
@@ -21,12 +22,11 @@ namespace PreLaunchTaskr.GUI.WinUI3;
 /// </summary>
 public partial class App : Application
 {
-    public static string DisplayVersion =>
+    public static string DisplayVersion = "1.4.7"
 #if DEBUG
-        "1.4.6 DEBUG";
-#else
-        "1.4.6";
+        + " DEBUG"
 #endif
+        ;
 
     /// <summary>
     /// Initializes the singleton application object.
@@ -59,7 +59,7 @@ public partial class App : Application
 
     public MainWindow MainWindow => mainWindow;
 
-    public MultiTabViewModel MultiTab { get; set; } = null!;
+    public MultiTabPage MultiTab { get; set; } = null!;
 
     public static string BaseDirectory { get; } = Path.GetFullPath(".");
 

@@ -11,11 +11,23 @@ namespace PreLaunchTaskr.GUI.WinUI3.Helpers;
 
 public class TitleBarPassthroughHelper
 {
-    public TitleBarPassthroughHelper(Window window)
+    public static TitleBarPassthroughHelper For(Window window)
+    {
+        if (!cacheForWindow.TryGetValue(window, out TitleBarPassthroughHelper? instance))
+        {
+            instance = new TitleBarPassthroughHelper(window);
+            cacheForWindow.Add(window, instance);
+        }
+        return instance;
+    }
+
+    private static readonly Dictionary<Window, TitleBarPassthroughHelper> cacheForWindow = new();
+
+    private TitleBarPassthroughHelper(Window window)
     {
         this.window = window;
         // System.Runtime.InteropServices.COMException
-        // The WinUI Desktop Window object has already been closed.”
+        // The WinUI Desktop Window object has already been closed.
         // this.scale = window.Content.XamlRoot.RasterizationScale;
     }
 
@@ -24,39 +36,38 @@ public class TitleBarPassthroughHelper
 
     public void Passthrough(TabView tabView)
     {
-        this.scale = window.Content.XamlRoot.RasterizationScale;
-        if (tabView.TabItems.Count > 0)
+        if (tabView.TabItems.Count == 0)
+            return;
+
+        scale = window.Content.XamlRoot.RasterizationScale;
+        double passthroughWidth = 0.0;
+        for (int i = 0; i < tabView.TabItems.Count; i++)
         {
-            scale = window.Content.XamlRoot.RasterizationScale;
-            double passthroughWidth = 0.0;
-            //double passthroughHeight = 0.0;
-            for (int i = 0; i < tabView.TabItems.Count; i++)
-            {
-                FrameworkElement tab = (FrameworkElement) tabView.ContainerFromIndex(i);
-                if (tab is null)
-                    continue;
-                passthroughWidth += tab.ActualWidth;
-                //passthroughHeight = tab.ActualHeight;
-            }
-            if (tabView.IsAddTabButtonVisible)
-            {
-                passthroughWidth = passthroughWidth
-                    + (double) Application.Current.Resources["TabViewItemAddButtonWidth"]
-                    + ((Thickness) Application.Current.Resources["TabViewItemAddButtonContainerPadding"]).Left
-                    + ((Thickness) Application.Current.Resources["TabViewItemAddButtonContainerPadding"]).Right;
-            }
-            FrameworkElement firstTab = (FrameworkElement) tabView.ContainerFromIndex(0);
-            Point position = firstTab.TransformToVisual(window.Content).TransformPoint(new());
-            Rect rect = tabView.TransformToVisual(null).TransformBounds(new Rect(
-                x: position.X,
-                y: position.Y,
-                width: passthroughWidth,
-                height: firstTab.ActualHeight
-            ));
-            InputNonClientPointerSource
-                .GetForWindowId(window.AppWindow.Id)
-                .SetRegionRects(NonClientRegionKind.Passthrough, [GetPixelRectInt32(rect, scale)]);
+            FrameworkElement? tab = (FrameworkElement) tabView.ContainerFromIndex(i) ?? tabView.TabItems[0] as FrameworkElement;
+            if (tab is null)
+                continue;
+            passthroughWidth += tab.ActualWidth;
         }
+        if (passthroughWidth == 0.0)
+            return;
+        if (tabView.IsAddTabButtonVisible)
+        {
+            passthroughWidth = passthroughWidth
+                + (double) Application.Current.Resources["TabViewItemAddButtonWidth"]
+                + ((Thickness) Application.Current.Resources["TabViewItemAddButtonContainerPadding"]).Left
+                + ((Thickness) Application.Current.Resources["TabViewItemAddButtonContainerPadding"]).Right;
+        }
+        FrameworkElement firstTab = (FrameworkElement) tabView.ContainerFromIndex(0);
+        Point position = firstTab.TransformToVisual(window.Content).TransformPoint(new());
+        Rect rect = tabView.TransformToVisual(null).TransformBounds(new Rect(
+            x: position.X,
+            y: position.Y,
+            width: passthroughWidth,
+            height: firstTab.ActualHeight
+        ));
+        InputNonClientPointerSource
+            .GetForWindowId(window.AppWindow.Id)
+            .SetRegionRects(NonClientRegionKind.Passthrough, [GetPixelRectInt32(rect, scale)]);
     }
 
     public void Passthrough(FrameworkElement element)
@@ -69,7 +80,7 @@ public class TitleBarPassthroughHelper
 
     public void Passthrough(IList<FrameworkElement> elements)
     {
-        this.scale = window.Content.XamlRoot.RasterizationScale;
+        scale = window.Content.XamlRoot.RasterizationScale;
         RectInt32[] rects = new RectInt32[elements.Count];
         int count = 0;
         foreach (var element in elements)
@@ -80,6 +91,13 @@ public class TitleBarPassthroughHelper
         InputNonClientPointerSource
             .GetForWindowId(window.AppWindow.Id)
             .SetRegionRects(NonClientRegionKind.Passthrough, rects);
+    }
+
+    public void ResetPassthrough()
+    {
+        InputNonClientPointerSource
+            .GetForWindowId(window.AppWindow.Id)
+            .ClearRegionRects(NonClientRegionKind.Passthrough);
     }
 
     private RectInt32 GetUIElementPixelRectInt32(FrameworkElement element)

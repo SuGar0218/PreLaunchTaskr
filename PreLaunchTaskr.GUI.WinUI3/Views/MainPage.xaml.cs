@@ -38,6 +38,11 @@ public sealed partial class MainPage : Page
 
         Navigation.ExpandedModeThresholdWidth = Math.E * Navigation.OpenPaneLength;
         this.viewModel = viewModel;
+        App.Current.MultiTab.TabStripHidden += (o, e) =>
+        {
+            App.Current.MainWindow.SetTitleBar(TitleBarArea);
+            titleBarPassthroughHelper.Passthrough(TitleBarToggleButton);
+        };
     }
 
     private MainViewModel? viewModel;
@@ -53,7 +58,7 @@ public sealed partial class MainPage : Page
         base.OnNavigatedTo(e);
     }
 
-    private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = new(App.Current.MainWindow);
+    private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = TitleBarPassthroughHelper.For(App.Current.MainWindow);
 
     //private void ShowAddProgramMenu(object sender, object _)
     //{

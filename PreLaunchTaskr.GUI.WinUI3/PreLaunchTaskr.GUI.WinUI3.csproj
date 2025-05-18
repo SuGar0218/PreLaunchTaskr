@@ -31,6 +31,7 @@
     <None Remove="Views\AttachArgumentPage.xaml" />
     <None Remove="Views\BannerPage.xaml" />
     <None Remove="Views\BlockArgumentPage.xaml" />
+    <None Remove="Views\ContentDialogWindow.xaml" />
     <None Remove="Views\EnvironmentVariablePage.xaml" />
     <None Remove="Views\InstalledPackagedProgramListPage.xaml" />
     <None Remove="Views\InstalledProgramListPage.xaml" />
@@ -100,6 +101,9 @@
     <None Update="readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\ContentDialogWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\BannerPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

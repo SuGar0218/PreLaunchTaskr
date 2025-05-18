@@ -1,3 +1,5 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -13,6 +15,7 @@ using PreLaunchTaskr.GUI.WinUI3.ViewModels.PageModels;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -27,21 +30,110 @@ public sealed partial class MultiTabPage : Page
     public MultiTabPage()
     {
         InitializeComponent();
-        App.Current.MultiTab = viewModel;
+
+        TabStripShown += (o, e) =>
+        {
+            TabStrip.UpdateTitleBar();
+        };
+
+        App.Current.MultiTab = this;
     }
 
-    private readonly MultiTabViewModel viewModel = new();
+    public Visibility TabStripVisibility => TabStrip.Visibility;
+
+    public event EventHandler? TabStripShown;
+    public event EventHandler? TabStripHidden;
+
+    public Action<FrameworkElement>? PassthroughAlternativeTitleBar
+    {
+        get => TabStrip.PassthroughAlternativeTitleBar;
+        set => TabStrip.PassthroughAlternativeTitleBar = value;
+    }
+
+    public ObservableCollection<TabStripItem> TabStripItems { get; } = [];
+
+    public int CurrentTabIndex
+    {
+        get => TabStrip.SelectedIndex;
+        set => TabStrip.SelectedIndex = value;
+    }
+
+    public TabStripItem? CurrentTabItem
+    {
+        get => (TabStripItem?) TabStrip.SelectedItem;
+        set => TabStrip.SelectedItem = value;
+    }
+
+    public void AddTabStripItem(TabStripItem item, bool select = true)
+    {
+        TabStripItems.Add(item);
+        if (select)
+        {
+            CurrentTabIndex = TabStripItems.Count - 1;
+            CurrentTabItem = item;
+        }
+    }
+
+    public void RemoveTabStripItem(TabStripItem item)
+    {
+        int index = TabStripItems.IndexOf(item);
+        if (index == CurrentTabIndex)
+        {
+            CurrentTabIndex--;
+            CurrentTabItem = CurrentTabIndex < 0 ? null : TabStripItems[CurrentTabIndex];
+        }
+        TabStripItems.RemoveAt(index);
+    }
+
+    /// <summary>
+    /// 时间复杂度至少为 O(n)
+    /// </summary>
+    /// <param name="item">尝试添加的标签页项</param>
+    /// <param name="areSame">判断两个标签页项相同的方法</param>
+    /// <returns>是否添加成功</returns>
+    public bool TryAddUniqueTabStripItem(TabStripItem item, Func<TabStripItem, TabStripItem, bool> areSame, bool select = true)
+    {
+        int i = 0;
+        foreach (TabStripItem existed in TabStripItems)
+        {
+            if (areSame(item, existed))
+            {
+                if (select)
+                {
+                    CurrentTabIndex = i;
+                    CurrentTabItem = existed;
+                }
+                return false;
+            }
+            i++;
+        }
+
+        AddTabStripItem(item, select);
+        return true;
+    }
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        TabStripFooterSpace.MinWidth = App.Current.MainWindow.AppWindow.TitleBar.RightInset / XamlRoot.RasterizationScale;
+        //TabStripFooterSpace.MinWidth = App.Current.MainWindow.AppWindow.TitleBar.RightInset / XamlRoot.RasterizationScale;
         App.Current.MainWindow.SetTitleBar(TabStrip);
-        viewModel.AddTabStripItem(new TabStripItem(
+        AddTabStripItem(new TabStripItem(
             nameof(PreLaunchTaskr),
             new SymbolIconSource { Symbol = Symbol.Home },
             closeable: false,
             typeof(MainPage),
             new MainViewModel()));
+
+        ContentFrame.SizeChanged += (o, e) =>
+        {
+            if (e.NewSize.Height > e.PreviousSize.Height)
+            {
+                TabStripHidden?.Invoke(this, EventArgs.Empty);
+            }
+            else if (e.NewSize.Height < e.PreviousSize.Height)
+            {
+                TabStripShown?.Invoke(this, EventArgs.Empty);
+            }
+        };
     }
 
     /// <summary>
@@ -69,7 +161,7 @@ public sealed partial class MultiTabPage : Page
         ContentFrame.BackStack.Clear();
     }
 
-    private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = new(App.Current.MainWindow);
+    private readonly TitleBarPassthroughHelper titleBarPassthroughHelper = TitleBarPassthroughHelper.For(App.Current.MainWindow);
 
     // TabView.SizeChanged 会先于 TabView.TabStripFooter 内的 SizeChanged 发生
 
@@ -99,6 +191,6 @@ public sealed partial class MultiTabPage : Page
     private void TabStrip_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
     {
         //sender.TabItems.Remove(args.Tab);  // 绑定了 ItemsSource，不能使用这个
-        viewModel.RemoveTabStripItem((TabStripItem) args.Item);
+        RemoveTabStripItem((TabStripItem) args.Item);
     }
 }
