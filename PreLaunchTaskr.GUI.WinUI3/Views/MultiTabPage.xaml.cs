@@ -117,7 +117,8 @@ public sealed partial class MultiTabPage : Page
         //TabStripFooterSpace.MinWidth = App.Current.MainWindow.AppWindow.TitleBar.RightInset / XamlRoot.RasterizationScale;
         App.Current.MainWindow.SetTitleBar(TabStrip);
         AddTabStripItem(new TabStripItem(
-            nameof(PreLaunchTaskr),
+            //nameof(PreLaunchTaskr),
+            string.Empty,
             new SymbolIconSource { Symbol = Symbol.Home },
             closeable: false,
             typeof(MainPage),
@@ -192,5 +193,13 @@ public sealed partial class MultiTabPage : Page
     {
         //sender.TabItems.Remove(args.Tab);  // 绑定了 ItemsSource，不能使用这个
         RemoveTabStripItem((TabStripItem) args.Item);
+    }
+
+    private void ShowContextMenuOnTapped(object sender, TappedRoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement self)
+            return;
+
+        self.ContextFlyout?.ShowAt(self);
     }
 }

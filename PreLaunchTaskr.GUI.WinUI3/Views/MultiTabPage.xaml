@@ -14,10 +14,11 @@
 
     <Page.Resources>
         <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="LayerOnMicaBaseAltFillColorDefault" />
-        <!--<Thickness x:Key="TabViewItemHeaderIconMargin">4,0,4,0</Thickness>
-        <Thickness x:Key="TabViewItemHeaderPadding">4,3,4,3</Thickness>
-        <Thickness x:Key="TabViewSelectedItemHeaderPadding">5,3,5,4</Thickness>
-        <Thickness x:Key="TabViewItemHeaderCloseMargin">4,0,4,0</Thickness>-->
+        <Thickness x:Key="TabViewHeaderPadding">0,0,0,0</Thickness>
+        <Thickness x:Key="TabViewItemHeaderIconMargin">8,0,8,0</Thickness>
+        <Thickness x:Key="TabViewItemHeaderPadding">0,0,0,0</Thickness>
+        <Thickness x:Key="TabViewSelectedItemHeaderPadding">1,0,1,0</Thickness>
+        <Thickness x:Key="TabViewItemHeaderCloseMargin">4,0,4,0</Thickness>
         <StaticResource x:Key="TabViewItemHeaderCloseButtonWidth" ResourceKey="TabViewItemAddButtonHeight" />
 
         <Style TargetType="TabViewListView">
@@ -52,23 +53,23 @@
             SizeChanged="TabStrip_SizeChanged"
             TabCloseRequested="TabStrip_TabCloseRequested"
             TabItemsChanged="TabStrip_TabItemsChanged"
-            TabItemsSource="{x:Bind TabStripItems}">
+            TabItemsSource="{x:Bind TabStripItems}"
+            TabWidthMode="SizeToContent">
 
             <my:TitleBarTabView.TabStripHeader>
-                <Image
-                    Height="20"
-                    Margin="14,8,10,0"
-                    VerticalAlignment="Center"
-                    Source="/Assets/PreLaunchTaskrNewIcon.png" />
+                <my:MyStackPanel
+                    Margin="14,8,8,0"
+                    ContentVerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Image
+                        Height="20"
+                        VerticalAlignment="Center"
+                        Source="/Assets/PreLaunchTaskrNewIcon.png"
+                        Tapped="ShowContextMenuOnTapped" />
+                    <!--<TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="PreLaunchTaskr" />-->
+                </my:MyStackPanel>
             </my:TitleBarTabView.TabStripHeader>
-
-            <!--<my:TitleBarTabView.TabStripFooter>
-                <Border
-                    x:Name="TabStripFooterSpace"
-                    Grid.Column="1"
-                    x:FieldModifier="private"
-                    SizeChanged="TabStripFooterSpace_SizeChanged" />
-            </my:TitleBarTabView.TabStripFooter>-->
 
             <my:TitleBarTabView.TabItemTemplate>
                 <DataTemplate x:DataType="vm:TabStripItem">

@@ -14,8 +14,7 @@ public partial class MyGrid : Grid
     {
         foreach (UIElement element in Children)
         {
-            FrameworkElement? frameworkElement = element as FrameworkElement;
-            if (frameworkElement is not null)
+            if (element is FrameworkElement frameworkElement)
             {
                 frameworkElement.HorizontalAlignment = ContentHorizontalAlignment;
                 frameworkElement.VerticalAlignment = ContentVerticalAlignment;

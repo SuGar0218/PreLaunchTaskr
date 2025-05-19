@@ -22,8 +22,8 @@
         <!--<SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent" />-->
         <!--<SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent" />-->
         <!--<CornerRadius x:Key="NavigationViewContentGridCornerRadius">0</CornerRadius>-->
-        <x:Double x:Key="AppBarThemeMinHeight">0</x:Double>
         <!--<Thickness x:Key="MenuBarItemMargin">4,0,4,0</Thickness>-->
+        <Thickness x:Key="AppBarButtonTextLabelOnRightMargin">8,0,12,0</Thickness>
 
         <!--  NavigationMenuItemTemplate  -->
         <DataTemplate x:Key="ProgramListDataTemplate" x:DataType="vm:ProgramListItem">
@@ -206,8 +206,8 @@
 
             <Button
                 x:Name="TitleBarToggleButton"
-                Grid.Row="0"
-                Height="30"
+                Grid.Column="0"
+                Height="36"
                 x:FieldModifier="private"
                 Click="{x:Bind ToggleNavigationMenuPane}"
                 Style="{ThemeResource TitleBarPaneToggleButtonStyle}">
@@ -216,10 +216,143 @@
                 </Button.KeyboardAccelerators>
             </Button>
 
+            <!--<CommandBar Grid.Column="1" DefaultLabelPosition="Right">
+                <AppBarButton Icon="Add" Label="添加程序">
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F1" />
+                    </AppBarButton.KeyboardAccelerators>
+
+                    <AppBarButton.Flyout>
+                        <MenuFlyout Placement="Bottom">
+                            <MenuFlyoutItem Click="{x:Bind SelectProgramFromFile}" Text="从文件管理器选取">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xEC50;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem Click="{x:Bind SelectInstalledProgram}" Text="从已安装的应用程序中选取">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE71D;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem Click="{x:Bind InputProgramPath}" Text="输入或粘贴路径">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="Paste" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem Click="{x:Bind ShowDragToAddGuide}" Text="把文件拖拽进来">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="TouchPointer" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+
+                <AppBarButton Icon="Remove" Label="移除程序">
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F2" />
+                    </AppBarButton.KeyboardAccelerators>
+
+                    <AppBarButton.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutSubItem
+                                Foreground="Red"
+                                IsEnabled="{x:Bind helper:XamlHelper.IsNotNull(viewModel.SelectedItem), Mode=OneWay}"
+                                Text="移除选中项">
+
+                                <MenuFlyoutSubItem.Icon>
+                                    <SymbolIcon Symbol="Delete" />
+                                </MenuFlyoutSubItem.Icon>
+
+                                <MenuFlyoutItem
+                                    Click="RemoveSelectedItem"
+                                    Foreground="Red"
+                                    Text="确定移除选中项">
+                                    <MenuFlyoutItem.Icon>
+                                        <SymbolIcon Symbol="Delete" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+
+                                <MenuFlyoutItem IsEnabled="False" Text="也可以在列表项上右键">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE946;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyoutSubItem>
+
+                            <MenuFlyoutSubItem Foreground="Red" Text="移除全部">
+                                <MenuFlyoutSubItem.Icon>
+                                    <SymbolIcon Symbol="Delete" />
+                                </MenuFlyoutSubItem.Icon>
+                                <MenuFlyoutItem
+                                    Click="RemoveAllItems"
+                                    Foreground="Red"
+                                    Text="全部关闭，确定移除全部">
+                                    <MenuFlyoutItem.Icon>
+                                        <SymbolIcon Symbol="Delete" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyoutSubItem>
+                        </MenuFlyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+
+                <AppBarButton Label="批量开关">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE71D;" />
+                    </AppBarButton.Icon>
+
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F3" />
+                    </AppBarButton.KeyboardAccelerators>
+
+                    <AppBarButton.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Click="EnableAll" Text="全部启用">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xF19F;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Click="DisableAll" Text="全部关闭">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xF19E;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+
+                <AppBarButton Label="其他…" Icon="More">
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F4" />
+                    </AppBarButton.KeyboardAccelerators>
+
+                    <AppBarButton.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Click="{x:Bind ShowAboutProgramPage}" Text="关于此应用">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="Emoji2" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem Click="{x:Bind LoadProgramList}" Text="刷新">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="Refresh" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+            </CommandBar>-->
+
             <MenuBar
                 x:Name="MainMenuBar"
                 Grid.Column="1"
                 x:FieldModifier="private">
+
                 <MenuBarItem Title="添加程序" AccessKey="F1">
                     <MenuBarItem.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F1" />
@@ -227,14 +360,12 @@
 
                     <MenuFlyoutItem Click="{x:Bind SelectProgramFromFile}" Text="从文件管理器选取">
                         <MenuFlyoutItem.Icon>
-                            <!--  FileExplorer  -->
                             <FontIcon Glyph="&#xEC50;" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
 
                     <MenuFlyoutItem Click="{x:Bind SelectInstalledProgram}" Text="从已安装的应用程序中选取">
                         <MenuFlyoutItem.Icon>
-                            <!--  AllApps  -->
                             <FontIcon Glyph="&#xE71D;" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
@@ -277,7 +408,6 @@
 
                         <MenuFlyoutItem IsEnabled="False" Text="也可以在列表项上右键">
                             <MenuFlyoutItem.Icon>
-                                <!--  Info  -->
                                 <FontIcon Glyph="&#xE946;" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
@@ -305,13 +435,11 @@
 
                     <MenuFlyoutItem Click="EnableAll" Text="全部启用">
                         <MenuFlyoutItem.Icon>
-                            <!--  ToggleRight ToggleSwitch ON  -->
                             <FontIcon Glyph="&#xF19F;" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
                     <MenuFlyoutItem Click="DisableAll" Text="全部关闭">
                         <MenuFlyoutItem.Icon>
-                            <!--  ToggleLeft ToggleSwitch OFF  -->
                             <FontIcon Glyph="&#xF19E;" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
@@ -342,10 +470,6 @@
                 AnimatedIcon.State="Pressed"
                 Click="{x:Bind GoToSettingsPage}"
                 Style="{ThemeResource CommandBarFlyoutEllipsisButtonStyle}">
-
-            -->
-            <!--  设置图标  -->
-            <!--
                 <FontIcon
                     AnimatedIcon.State="Pressed"
                     FontSize="{ThemeResource InfoBarIconFontSize}"

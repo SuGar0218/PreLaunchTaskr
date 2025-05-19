@@ -38,11 +38,17 @@ public sealed partial class MainPage : Page
 
         Navigation.ExpandedModeThresholdWidth = Math.E * Navigation.OpenPaneLength;
         this.viewModel = viewModel;
+
         App.Current.MultiTab.TabStripHidden += (o, e) =>
         {
             App.Current.MainWindow.SetTitleBar(TitleBarArea);
             titleBarPassthroughHelper.Passthrough(TitleBarToggleButton);
+            //App.Current.MainWindow.AppWindow.TitleBar.PreferredHeightOption = Microsoft.UI.Windowing.TitleBarHeightOption.Tall;
         };
+        //App.Current.MultiTab.TabStripShown += (o, e) =>
+        //{
+        //    App.Current.MainWindow.AppWindow.TitleBar.PreferredHeightOption = Microsoft.UI.Windowing.TitleBarHeightOption.Standard;
+        //};
     }
 
     private MainViewModel? viewModel;
@@ -395,5 +401,13 @@ public sealed partial class MainPage : Page
     private void ToggleSwitch_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         isUserToggled = true;
+    }
+
+    private void ShowContextMenuOnTapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+    {
+        if (sender is FrameworkElement frameworkElement)
+        {
+            frameworkElement.ContextFlyout?.ShowAt(frameworkElement);
+        }
     }
 }
