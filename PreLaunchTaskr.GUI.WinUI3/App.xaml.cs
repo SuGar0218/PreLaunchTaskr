@@ -22,7 +22,7 @@ namespace PreLaunchTaskr.GUI.WinUI3;
 /// </summary>
 public partial class App : Application
 {
-    public static string DisplayVersion = "1.4.8"
+    public static string DisplayVersion = "1.4.9"
 #if DEBUG
         + " DEBUG"
 #endif

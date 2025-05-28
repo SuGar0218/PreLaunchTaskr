@@ -66,7 +66,15 @@
                         Text="{x:Bind Argument, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
-                        <Button Background="Transparent" BorderThickness="0">
+                        <ToggleButton
+                            Content="RegEx"
+                            IsChecked="{x:Bind IsRegex, Mode=TwoWay}"
+                            ToolTipService.ToolTip="是否启用正则表达式" />
+
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Style="{StaticResource MyEllipsisButtonStyle}">
                             <SymbolIcon Symbol="More" />
                             <Button.Flyout>
                                 <MenuFlyout>
@@ -80,7 +88,10 @@
                             </Button.Flyout>
                         </Button>
 
-                        <Button Background="Transparent" BorderThickness="0">
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Style="{StaticResource MyEllipsisButtonStyle}">
                             <SymbolIcon Symbol="Delete" />
                             <Button.Flyout>
                                 <MenuFlyout>

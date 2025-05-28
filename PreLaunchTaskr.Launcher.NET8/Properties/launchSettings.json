@@ -2,7 +2,7 @@
   "profiles": {
     "PreLaunchTaskr.Launcher.NET8": {
       "commandName": "Project",
-      "commandLineArgs": "\"D:\\Program Files\\JianyingPro\\JianyingPro.exe\""
+      "commandLineArgs": "D:\\_temp\\ShowProcessStartInfo.exe\r\n1\r\n2\r\n3\r\nfuck"
     }
   }
 }

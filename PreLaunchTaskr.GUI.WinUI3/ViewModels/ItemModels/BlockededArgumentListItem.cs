@@ -1,9 +1,11 @@
-﻿using PreLaunchTaskr.Core.Entities;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.GUI.Common.AbstractViewModels.ItemModels;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 
-public class BlockedArgumentListItem : IBlockedArgumentListItem
+public class BlockedArgumentListItem : ObservableObject, IBlockedArgumentListItem
 {
     public BlockedArgumentListItem(BlockedArgument argument)
     {
@@ -31,19 +33,21 @@ public class BlockedArgumentListItem : IBlockedArgumentListItem
 
             argument.Enabled = value;
             changed = true;
+            OnPropertyChanged(nameof(Enabled));
         }
     }
 
     public bool IsRegex
     {
-        get => argument.Enabled;
+        get => argument.IsRegex;
         set
         {
-            if (argument.Enabled == value)
+            if (argument.IsRegex == value)
                 return;
 
-            argument.Enabled = value;
+            argument.IsRegex = value;
             changed = true;
+            OnPropertyChanged(nameof(IsRegex));
         }
     }
 

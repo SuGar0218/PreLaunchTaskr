@@ -132,7 +132,7 @@ public class Launcher
 
         // 对原参数剔除后先不加入 StartInfo 启动参数，要在所有参数前附加我们自己的参数，避免造成其他影响。
         // 例如：Edge 浏览器，--single-argument 后的参数不会再被空格分成多个参数。
-        List<string> afterBlock = new();  // 如果没有设置屏蔽参数，则这个列表为空。
+        List<string> afterBlock = new();
         IList<BlockedArgument> blockedArguments = argumentRepository.ListEnabledBlockedArgumentsByProgram(programInfo.Id, true);
         foreach (BlockedArgument blockedArgument in blockedArguments)
         {
@@ -165,7 +165,7 @@ public class Launcher
             programStartInfo.ArgumentList.Add(attachedArgument.Argument);
         }
 
-        if (afterBlock.Count == 0)
+        if (blockedArguments.Count == 0)
         {
             programStartInfo.ArgumentList.AddAll(originArgs);
         }

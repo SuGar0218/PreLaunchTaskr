@@ -67,7 +67,10 @@
                         Text="{x:Bind Argument, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
-                        <Button Background="Transparent" BorderThickness="0">
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Style="{StaticResource MyEllipsisButtonStyle}">
                             <SymbolIcon Symbol="More" />
                             <Button.Flyout>
                                 <MenuFlyout>
@@ -79,7 +82,10 @@
                             </Button.Flyout>
                         </Button>
 
-                        <Button Background="Transparent" BorderThickness="0">
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Style="{StaticResource MyEllipsisButtonStyle}">
                             <SymbolIcon Symbol="Delete" />
                             <Button.Flyout>
                                 <MenuFlyout>
