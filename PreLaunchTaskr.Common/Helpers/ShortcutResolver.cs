@@ -21,14 +21,14 @@ public static class ShortcutResolver
         HasIconLocation = 0x00000040,
         IsUnicode = 0x00000080,
         ForceNoLinkInfo = 0x00000100,
-        HasExpString = 0x00000200, // Often referred to as HasEnvironmentVariableDataBlock
+        HasExpString = 0x00000200,
         RunInSeparateProcess = 0x00000400,
-        Reserved0 = 0x00000800, // Not used
+        Reserved0 = 0x00000800,
         HasDarwinID = 0x00001000,
         RunAsUser = 0x00002000,
         HasExpIcon = 0x00004000,
         NoPidlAlias = 0x00008000,
-        Reserved1 = 0x00010000, // Not used
+        Reserved1 = 0x00010000,
         RunWithShimLayer = 0x00020000,
         ForceNoLinkTrack = 0x00040000,
         EnableTargetMetadata = 0x00080000,
@@ -48,251 +48,348 @@ public static class ShortcutResolver
         CommonNetworkRelativeLinkAndPathSuffix = 0x00000002
     }
 
-    // EnvironmentVariableDataBlock signature
     private const uint ENV_VAR_SIG = 0xA0000003;
+    private const uint ITEM_ID_EXTENSION_SIGNATURE_BEEF0004 = 0xBEEF0004; 
 
     public static string GetPathFromShortcut(string shortcutPath)
     {
         if (string.IsNullOrEmpty(shortcutPath))
             throw new ArgumentNullException(nameof(shortcutPath));
-        if (!File.Exists(shortcutPath))
-            throw new FileNotFoundException("Shortcut file not found.", shortcutPath);
-        if (!Path.GetExtension(shortcutPath).Equals(".lnk", StringComparison.OrdinalIgnoreCase))
+
+        string resolvedShortcutPath = Environment.ExpandEnvironmentVariables(shortcutPath);
+
+        if (!File.Exists(resolvedShortcutPath))
+            throw new FileNotFoundException("Shortcut file not found.", resolvedShortcutPath);
+        if (!Path.GetExtension(resolvedShortcutPath).Equals(".lnk", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("File is not a .lnk file.", nameof(shortcutPath));
 
-        using (FileStream fs = new FileStream(shortcutPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-        using (BinaryReader reader = new BinaryReader(fs, Encoding.Default)) // Default encoding for ANSI strings
+        using (FileStream fs = new FileStream(resolvedShortcutPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+        using (BinaryReader reader = new BinaryReader(fs, Encoding.Default)) 
         {
-            // --- ShellLinkHeader (76 bytes) ---
-            // HeaderSize (4 bytes): Must be 0x0000004C
+            // --- ShellLinkHeader ---
             uint headerSize = reader.ReadUInt32();
             if (headerSize != 0x4C)
                 throw new FormatException("Invalid LNK file: Incorrect header size.");
 
-            // LinkCLSID (16 bytes): Must be {00021401-0000-0000-C000-000000000046}
             Guid linkClsid = new Guid(reader.ReadBytes(16));
             if (linkClsid != new Guid("00021401-0000-0000-C000-000000000046"))
                 throw new FormatException("Invalid LNK file: Incorrect CLSID.");
 
-            // LinkFlags (4 bytes)
             LinkFlags linkFlags = (LinkFlags)reader.ReadUInt32();
-
-            // FileAttributes (4 bytes) - Attributes of the target
-            // CreationTime (8 bytes) - FILETIME of target
-            // AccessTime (8 bytes) - FILETIME of target
-            // WriteTime (8 bytes) - FILETIME of target
-            // FileSize (4 bytes) - Size of target
-            // IconIndex (4 bytes) - Icon index for target
-            // ShowCommand (4 bytes) - e.g., SW_SHOWNORMAL
-            // HotKey (2 bytes)
-            // Reserved1 (2 bytes)
-            // Reserved2 (4 bytes)
-            // Reserved3 (4 bytes)
-            fs.Seek(4 + 8 + 8 + 8 + 4 + 4 + 4 + 2 + 2 + 4 + 4, SeekOrigin.Current); // Skip these 40 bytes
+            fs.Seek(52, SeekOrigin.Current); // Skip rest of header (FileAttributes to Reserved3)
 
             string targetPath = null;
             string relativePathString = null;
             string workingDirectoryString = null;
+            string lastNameFromPidl = null;
 
-            // --- LinkTargetIDList (optional) ---
+            // --- LinkTargetIDList ---
             if ((linkFlags & LinkFlags.HasLinkTargetIDList) != 0)
             {
+                long idListStartPos = fs.Position;
+                if (idListStartPos + 2 > fs.Length) throw new FormatException("Invalid LNK: Unexpected EOF reading IDList size.");
                 ushort idListSize = reader.ReadUInt16();
-                // For simplicity, we are skipping the actual parsing of IDList.
-                // It can be complex, and LinkInfo often provides the path more directly for file/folder targets.
-                fs.Seek(idListSize, SeekOrigin.Current);
+
+                if (idListSize > 0)
+                {
+                    if (idListStartPos + 2 + idListSize <= fs.Length)
+                    {
+                        lastNameFromPidl = ExtractLastNameFromItemIDList(reader, idListSize);
+                        // Ensure reader is at the end of IDList block
+                        fs.Seek(idListStartPos + 2 + idListSize, SeekOrigin.Begin);
+                    }
+                    else 
+                    {
+                        throw new FormatException("Invalid LNK: IDList size exceeds file length.");
+                    }
+                }
             }
 
-            // --- LinkInfo (optional, but usually present if HasLinkInfo is set) ---
-            long linkInfoStartOffset = -1;
-            if ((linkFlags & LinkFlags.HasLinkInfo) != 0)
+            // --- LinkInfo ---
+            if ((linkFlags & LinkFlags.HasLinkInfo) != 0 && (linkFlags & LinkFlags.ForceNoLinkInfo) == 0)
             {
-                linkInfoStartOffset = fs.Position;
+                long linkInfoStartOffset = fs.Position;
+                if (linkInfoStartOffset + 4 > fs.Length) throw new FormatException("Invalid LNK: Unexpected EOF reading LinkInfo size.");
                 uint linkInfoSize = reader.ReadUInt32();
-                uint linkInfoHeaderSize = reader.ReadUInt32(); // Should be >= 0x1C (28)
-                LinkInfoFlags linkInfoFlags = (LinkInfoFlags)reader.ReadUInt32();
-                uint volumeIdOffset = reader.ReadUInt32();
-                uint localBasePathOffset = reader.ReadUInt32();
-                uint commonNetworkRelativeLinkOffset = reader.ReadUInt32();
-                uint commonPathSuffixOffset = reader.ReadUInt32();
-                
-                uint localBasePathOffsetUnicode = 0;
-                uint commonPathSuffixOffsetUnicode = 0;
 
-                if (linkInfoHeaderSize >= 0x24) // 36 bytes, means Unicode offsets are present
+                if (linkInfoSize >= 28) // Minimum size for LinkInfo header (LinkInfoSize to CommonPathSuffixOffset)
                 {
-                    localBasePathOffsetUnicode = reader.ReadUInt32();
-                    commonPathSuffixOffsetUnicode = reader.ReadUInt32();
-                }
-
-                // Extract LocalBasePath
-                if ((linkInfoFlags & LinkInfoFlags.VolumeIDAndLocalBasePath) != 0)
-                {
-                    if (localBasePathOffsetUnicode > 0 && linkInfoStartOffset + localBasePathOffsetUnicode < linkInfoStartOffset + linkInfoSize)
+                    if (linkInfoStartOffset + linkInfoSize <= fs.Length)
                     {
-                        fs.Seek(linkInfoStartOffset + localBasePathOffsetUnicode, SeekOrigin.Begin);
-                        targetPath = ReadNullTerminatedUnicodeString(reader);
-                    }
-                    else if (localBasePathOffset > 0 && linkInfoStartOffset + localBasePathOffset < linkInfoStartOffset + linkInfoSize)
-                    {
-                        fs.Seek(linkInfoStartOffset + localBasePathOffset, SeekOrigin.Begin);
-                        targetPath = ReadNullTerminatedAnsiString(reader);
-                    }
-                }
+                        uint linkInfoHeaderSize = reader.ReadUInt32(); 
+                        if (linkInfoHeaderSize < 28) throw new FormatException("Invalid LNK: LinkInfo header size too small for mandatory fields.");
 
-                // Extract CommonNetworkRelativeLink and CommonPathSuffix (if LocalBasePath wasn't found or if preferred)
-                if (string.IsNullOrEmpty(targetPath) && (linkInfoFlags & LinkInfoFlags.CommonNetworkRelativeLinkAndPathSuffix) != 0)
-                {
-                    // According to MS-SHLLINK, CommonNetworkRelativeLink contains a CommonNetworkRelativeLink structure.
-                    // The PathSuffix is appended to the DeviceName from that structure.
-                    // This is more complex, for now, we prioritize LocalBasePath which often holds the full UNC path too.
-                    // A simple concatenation (if both offsets are valid):
-                    string networkPart = null;
-                    string suffixPart = null;
-
-                    if (commonNetworkRelativeLinkOffset > 0 && linkInfoStartOffset + commonNetworkRelativeLinkOffset < linkInfoStartOffset + linkInfoSize)
-                    {
-                        fs.Seek(linkInfoStartOffset + commonNetworkRelativeLinkOffset, SeekOrigin.Begin);
-                        // The CommonNetworkRelativeLink structure itself contains more offsets.
-                        // For a simplified approach, let's assume it might directly point to a string for some cases or we read what's there.
-                        // This part requires deeper parsing of CommonNetworkRelativeLink structure.
-                        // A robust parser would read the CommonNetworkRelativeLink structure, then its DeviceName.
-                        // For now, let's try to read a string if available there, assuming it's just the path.
-                        // THIS IS A SIMPLIFICATION and might not work for all network links.
-                        // True parsing would involve reading CommonNetworkRelativeLink.NetworkProviderType and then
-                        // the strings based on whether NetNameOffset > 0x14 and DeviceNameOffset > 0x14.
+                        LinkInfoFlags linkInfoFlagsVal = (LinkInfoFlags)reader.ReadUInt32();
+                        // These next 4 offsets are within the first 28 bytes of LinkInfo block (after LinkInfoSize and LinkInfoHeaderSize)
+                        uint volumeIdOffset = reader.ReadUInt32();
+                        uint localBasePathOffset = reader.ReadUInt32();
+                        uint commonNetworkRelativeLinkOffset = reader.ReadUInt32();
+                        uint commonPathSuffixOffset = reader.ReadUInt32();
                         
-                        // For now, if LocalBasePath failed, this is a fallback, let's assume the string is right there.
-                        // This part is tricky because CommonNetworkRelativeLinkOffset points to a structure, not directly a string.
-                        // Let's assume for now that if LocalBasePath is empty, this might be a simple UNC.
-                        // fs.Seek(linkInfoStartOffset + commonNetworkRelativeLinkOffset, SeekOrigin.Begin);
-                        // networkPart = ReadNullTerminatedAnsiString(reader); // Or Unicode if available
+                        uint localBasePathOffsetUnicode = 0;
+
+                        if (linkInfoHeaderSize >= 0x24) // Header is 36 bytes or more, includes Unicode offsets
+                        {
+                            // We've read 28 bytes of the LinkInfo block's content (4 for LinkInfoHeaderSize, 24 for flags and first 4 offsets).
+                            // The next 8 bytes (for Unicode offsets) should be present if linkInfoHeaderSize >= 36 (0x24).
+                            // Check if enough bytes remain in the *file stream* for these.
+                            if (fs.Position + 8 > fs.Length) throw new FormatException("Invalid LNK: Unexpected EOF reading LinkInfo Unicode offsets.");
+                            localBasePathOffsetUnicode = reader.ReadUInt32();
+                            fs.Seek(4, SeekOrigin.Current); // Skip CommonPathSuffixOffsetUnicode as it's not used for path construction here
+                        }
+
+                        if ((linkInfoFlagsVal & LinkInfoFlags.VolumeIDAndLocalBasePath) != 0)
+                        {
+                            // Prioritize Unicode path
+                            if (localBasePathOffsetUnicode > 0 && 
+                                localBasePathOffsetUnicode < linkInfoSize && // Offset must be within LinkInfo block data
+                                linkInfoStartOffset + localBasePathOffsetUnicode < fs.Length) // Read must be within file bounds
+                            {
+                                fs.Seek(linkInfoStartOffset + localBasePathOffsetUnicode, SeekOrigin.Begin);
+                                targetPath = ReadNullTerminatedUnicodeString(reader);
+                            }
+                            // Fallback to ANSI path
+                            else if (localBasePathOffset > 0 &&
+                                     localBasePathOffset < linkInfoSize &&
+                                     linkInfoStartOffset + localBasePathOffset < fs.Length)
+                            {
+                                fs.Seek(linkInfoStartOffset + localBasePathOffset, SeekOrigin.Begin);
+                                targetPath = ReadNullTerminatedAnsiString(reader);
+                            }
+                        }
+                        // Ensure reader is positioned at the end of the LinkInfo block
+                        fs.Seek(linkInfoStartOffset + linkInfoSize, SeekOrigin.Begin);
                     }
-                    
-                    // Suffix part is more straightforward
-                    if (commonPathSuffixOffset > 0 && linkInfoStartOffset + commonPathSuffixOffset < linkInfoStartOffset + linkInfoSize)
+                    else 
                     {
-                       fs.Seek(linkInfoStartOffset + commonPathSuffixOffset, SeekOrigin.Begin);
-                       suffixPart = ReadNullTerminatedAnsiString(reader); // Or Unicode. MS-SHLLINK implies these are null-terminated.
+                        throw new FormatException("Invalid LNK file: LinkInfo size exceeds file length.");
                     }
-                    
-                    // if (!string.IsNullOrEmpty(networkPart) && !string.IsNullOrEmpty(suffixPart))
-                    // {
-                    //    targetPath = Path.Combine(networkPart, suffixPart); // Path.Combine might not be right for UNC parts.
-                    // } else if (!string.IsNullOrEmpty(networkPart)) {
-                    //    targetPath = networkPart;
-                    // }
-
-                    // Correct path to ensure we are at the end of LinkInfo block
-                    fs.Seek(linkInfoStartOffset + linkInfoSize, SeekOrigin.Begin);
                 }
-                else
+                else if (linkInfoSize > 0) // LinkInfoSize is non-zero but too small for mandatory header
                 {
-                    // Ensure we are at the end of LinkInfo block if we didn't seek for network paths
-                     fs.Seek(linkInfoStartOffset + linkInfoSize, SeekOrigin.Begin);
+                     throw new FormatException("Invalid LNK file: LinkInfo block size is too small.");
                 }
             }
 
-
-            // --- StringData (Name, RelativePath, WorkingDirectory, Arguments, IconLocation) ---
-            // These are length-prefixed strings.
+            // --- StringData ---
             bool isUnicode = (linkFlags & LinkFlags.IsUnicode) != 0;
-
-            if ((linkFlags & LinkFlags.HasName) != 0)
-            {
-                // Skip Name string for path extraction
-                ReadLengthPrefixedString(reader, isUnicode);
-            }
-
-            if ((linkFlags & LinkFlags.HasRelativePath) != 0)
-            {
-                relativePathString = ReadLengthPrefixedString(reader, isUnicode);
-            }
-
-            if ((linkFlags & LinkFlags.HasWorkingDirectory) != 0)
-            {
-                workingDirectoryString = ReadLengthPrefixedString(reader, isUnicode);
-            }
-
-            if ((linkFlags & LinkFlags.HasArguments) != 0)
-            {
-                // Skip Arguments string
-                ReadLengthPrefixedString(reader, isUnicode);
-            }
-
-            if ((linkFlags & LinkFlags.HasIconLocation) != 0)
-            {
-                // Skip IconLocation string
-                ReadLengthPrefixedString(reader, isUnicode);
-            }
+            if ((linkFlags & LinkFlags.HasName) != 0) ReadLengthPrefixedString(reader, isUnicode);
+            if ((linkFlags & LinkFlags.HasRelativePath) != 0) relativePathString = ReadLengthPrefixedString(reader, isUnicode);
+            if ((linkFlags & LinkFlags.HasWorkingDirectory) != 0) workingDirectoryString = ReadLengthPrefixedString(reader, isUnicode);
+            if ((linkFlags & LinkFlags.HasArguments) != 0) ReadLengthPrefixedString(reader, isUnicode); 
+            if ((linkFlags & LinkFlags.HasIconLocation) != 0) ReadLengthPrefixedString(reader, isUnicode);
             
             // --- ExtraData ---
-            // Look for EnvironmentVariableDataBlock if HasExpString is set
-            // And only if we haven't found a good path yet, or if PreferEnvironmentPath is set.
-            // PreferEnvironmentPath is not directly checked here, but if HasExpString is set, it's a good candidate.
-
-            string envPath = null;
             if ((linkFlags & LinkFlags.HasExpString) != 0)
             {
-                while (fs.Position < fs.Length)
+                string envBlockPath = null;
+                while (fs.Position <= fs.Length - 8) // Min 8 bytes for BlockSize & BlockSignature
                 {
+                    long currentBlockHeaderPos = fs.Position;
                     uint blockSize = reader.ReadUInt32();
-                    if (blockSize < 4) break; // Terminal block or error
+
+                    if (blockSize == 0) break; // Terminal block (MS-SHLLINK 2.5)
+                    if (blockSize < 8) throw new FormatException("Invalid LNK: ExtraData block size too small."); 
 
                     uint blockSignature = reader.ReadUInt32();
-                    long nextBlockPos = fs.Position + blockSize - 8; // -8 for size and sig already read
-
-                    if (blockSignature == ENV_VAR_SIG) // EnvironmentVariableDataBlock
-                    {
-                        // TargetAnsi (260 bytes, fixed size buffer, null-terminated)
-                        byte[] targetAnsiBytes = reader.ReadBytes(260);
-                        string ansiPath = Encoding.Default.GetString(targetAnsiBytes).Split('\0')[0];
-
-                        // TargetUnicode (520 bytes, fixed size buffer, null-terminated)
-                        byte[] targetUnicodeBytes = reader.ReadBytes(520);
-                        string unicodePath = Encoding.Unicode.GetString(targetUnicodeBytes).Split('\0')[0];
-                        
-                        envPath = !string.IsNullOrEmpty(unicodePath) ? unicodePath : ansiPath;
-                        if (!string.IsNullOrEmpty(envPath))
-                        {
-                             // Environment path often takes precedence or is the primary one for some shortcuts
-                            targetPath = Environment.ExpandEnvironmentVariables(envPath);
-                        }
-                        break; // Found it, no need to parse further ExtraData blocks for path
-                    }
                     
-                    if (nextBlockPos > fs.Length) break; // Avoid overruns
-                    fs.Seek(nextBlockPos, SeekOrigin.Begin);
+                    long nextBlockHeaderPos = currentBlockHeaderPos + blockSize;
+                    if (nextBlockHeaderPos > fs.Length || nextBlockHeaderPos <= currentBlockHeaderPos)
+                        throw new FormatException("Invalid LNK: ExtraData block size causes invalid seek or goes beyond EOF.");
+
+                    if (blockSignature == ENV_VAR_SIG)
+                    {
+                        // EnvironmentVariableDataBlock (MS-SHLLINK 2.5.4)
+                        // Data: TargetAnsi (260) + TargetUnicode (520) = 780 bytes
+                        // Total BlockSize must be at least 8 (header) + 780 (data) = 788 bytes
+                        if (blockSize >= (260 + 520 + 8)) 
+                        {
+                            // Check if there's enough data *within this block's declared size* for the paths
+                            if (fs.Position + 260 + 520 <= nextBlockHeaderPos) 
+                            {
+                                byte[] targetAnsiBytes = reader.ReadBytes(260);
+                                string ansiPath = Encoding.Default.GetString(targetAnsiBytes).Split('\0')[0];
+                                byte[] targetUnicodeBytes = reader.ReadBytes(520);
+                                string unicodePath = Encoding.Unicode.GetString(targetUnicodeBytes).Split('\0')[0];
+                                envBlockPath = !string.IsNullOrEmpty(unicodePath) ? unicodePath : ansiPath;
+                            } 
+                            // else: Block claims to be ENV_VAR_SIG and large enough overall, but not enough data remaining up to nextBlockHeaderPos. Malformed.
+                        }
+                        // else: ENV_VAR_SIG found, but block size is too small for its defined content. Malformed.
+
+                        if (!string.IsNullOrEmpty(envBlockPath))
+                        {
+                            targetPath = Environment.ExpandEnvironmentVariables(envBlockPath);
+                        }
+                        fs.Seek(nextBlockHeaderPos, SeekOrigin.Begin);
+                        break; // Found and processed (or attempted to process) ENV_VAR_SIG block
+                    }
+                    else
+                    {
+                        fs.Seek(nextBlockHeaderPos, SeekOrigin.Begin); // Skip to next block
+                    }
                 }
             }
 
-            // If LinkInfo didn't provide an absolute path, and we have a relative path, try to resolve it.
+            // --- Path Resolution Logic ---
+            // Priority: 1. EnvVar, 2. LinkInfo, 3. PIDL+WorkingDir, 4. RelativePath+WorkingDir
+
+            if (string.IsNullOrEmpty(targetPath) && !string.IsNullOrEmpty(lastNameFromPidl))
+            {
+                string basePathForPidl = !string.IsNullOrEmpty(workingDirectoryString)
+                    ? workingDirectoryString
+                    : Path.GetDirectoryName(resolvedShortcutPath); 
+
+                if (!string.IsNullOrEmpty(basePathForPidl))
+                {
+                    basePathForPidl = Environment.ExpandEnvironmentVariables(basePathForPidl);
+                    targetPath = Path.Combine(basePathForPidl, lastNameFromPidl);
+                }
+                else 
+                {
+                    // Should not happen if resolvedShortcutPath is valid, but as a fallback:
+                    targetPath = lastNameFromPidl; // Treat as relative to current dir if no base path
+                }
+            }
+
             if (string.IsNullOrEmpty(targetPath) && !string.IsNullOrEmpty(relativePathString))
             {
-                if (!string.IsNullOrEmpty(workingDirectoryString))
+                string basePathForRelative = !string.IsNullOrEmpty(workingDirectoryString)
+                    ? workingDirectoryString
+                    : Path.GetDirectoryName(resolvedShortcutPath);
+
+                if (!string.IsNullOrEmpty(basePathForRelative))
                 {
-                    // Relative to working directory
-                    targetPath = Path.Combine(workingDirectoryString, relativePathString);
+                     basePathForRelative = Environment.ExpandEnvironmentVariables(basePathForRelative);
+                     targetPath = Path.Combine(basePathForRelative, relativePathString);
                 }
                 else
                 {
-                    // Relative to the LNK file's directory
-                    targetPath = Path.Combine(Path.GetDirectoryName(shortcutPath), relativePathString);
+                    targetPath = relativePathString;
                 }
-                targetPath = Path.GetFullPath(targetPath); // Normalize
+            }
+            
+            // Final normalization and environment variable expansion on the combined path
+            if (!string.IsNullOrEmpty(targetPath))
+            {
+                try
+                {
+                    // Expand vars first, then get full path
+                    targetPath = Environment.ExpandEnvironmentVariables(targetPath);
+                    targetPath = Path.GetFullPath(targetPath);
+                }
+                catch (Exception) // ArgumentException, PathTooLongException, NotSupportedException etc.
+                {
+                    // Path could not be normalized or is invalid. Keep the combined path as is.
+                    // Caller might need to handle this potentially problematic path.
+                }
             }
 
             return targetPath;
         }
     }
 
+    private static string ExtractLastNameFromItemIDList(BinaryReader reader, ushort idListSize)
+    {
+        string lastName = null; 
+        long idListStartStreamPos = reader.BaseStream.Position; // Position in the main file stream
+        long idListEndStreamPos = idListStartStreamPos + idListSize;
+        
+        while(reader.BaseStream.Position + 2 <= idListEndStreamPos) // Ensure can read ItemIDSize (2 bytes)
+        {
+            ushort itemIDSize = reader.ReadUInt16();
+            if (itemIDSize == 0) break; // End of IDList (Terminal ItemID)
+            if (itemIDSize < 2) throw new FormatException("Invalid LNK: ItemID size too small."); 
+
+            long currentItemIDDataStartPos = reader.BaseStream.Position;
+            // Calculate where the data for this ItemID ends in the main stream.
+            // This is also where the next ItemID's size field would start if this wasn't the last one.
+            long currentItemIDDataEndPos = currentItemIDDataStartPos + itemIDSize - 2; 
+
+            if (currentItemIDDataEndPos > idListEndStreamPos) 
+                throw new FormatException("Invalid LNK: ItemID size exceeds remaining IDList length.");
+
+            byte[] itemData = reader.ReadBytes(itemIDSize - 2); // Read ItemID.Data from main stream
+            
+            using (MemoryStream msItem = new MemoryStream(itemData))
+            using (BinaryReader brItem = new BinaryReader(msItem, Encoding.Default)) // Default for ANSI parts
+            {
+                string currentItemName = null; 
+                string initialAnsiName = null; 
+
+                // Heuristic 1: Try reading a primary name (often short name, ANSI) from start of ItemID.Data
+                if (brItem.BaseStream.Length > 0)
+                {
+                    brItem.BaseStream.Position = 0; // Ensure position is at start of MemoryStream
+                    initialAnsiName = ReadNullTerminatedAnsiString(brItem);
+                    if (!string.IsNullOrEmpty(initialAnsiName))
+                    {
+                        currentItemName = initialAnsiName;
+                    }
+                }
+                
+                // Heuristic 2: Attempt to find and parse 0xBEEF0004 extension block
+                const int extBlockOffsetInData = 0x0E; // Typical offset of extension block within ItemID.Data
+                if (itemData.Length >= extBlockOffsetInData + 4) // Enough space to reach offset and read 4-byte signature
+                {
+                    brItem.BaseStream.Position = extBlockOffsetInData; // Seek to potential start of signature in MemoryStream
+                    uint extSignature = brItem.ReadUInt32(); // Read the 4-byte signature
+
+                    if (extSignature == ITEM_ID_EXTENSION_SIGNATURE_BEEF0004)
+                    {
+                        string longNameFromExt = null;
+                        string shortNameFromExt = null;
+
+                        // Try to read Long Unicode Name from extension block (MS-SHLLINK 2.2.2.1)
+                        const int longNameOffsetInExtBlock = 0x1C; // Offset from start of extension block
+                        long absLongNameOffsetInItemData = extBlockOffsetInData + longNameOffsetInExtBlock;
+                        if (absLongNameOffsetInItemData < itemData.Length) // Check if offset is within itemData bounds
+                        {
+                            brItem.BaseStream.Position = absLongNameOffsetInItemData;
+                            longNameFromExt = ReadNullTerminatedUnicodeString(brItem);
+                        }
+                        
+                        // Try to read Short ANSI Name from extension block
+                        const int shortNameOffsetInExtBlock = 0x0E; // Offset from start of extension block
+                        long absShortNameOffsetInItemData = extBlockOffsetInData + shortNameOffsetInExtBlock;
+                        if (absShortNameOffsetInItemData < itemData.Length)
+                        {
+                             brItem.BaseStream.Position = absShortNameOffsetInItemData;
+                             shortNameFromExt = ReadNullTerminatedAnsiString(brItem);
+                        }
+
+                        // Apply priority: Long Unicode > Short ANSI from Ext > Initial ANSI guess
+                        if (!string.IsNullOrEmpty(longNameFromExt))
+                        {
+                            currentItemName = longNameFromExt;
+                        }
+                        else if (!string.IsNullOrEmpty(shortNameFromExt))
+                        {
+                            currentItemName = shortNameFromExt;
+                        }
+                        // If both from extension block are null/empty, currentItemName retains initialAnsiName (if any)
+                    }
+                } 
+                
+                if (!string.IsNullOrEmpty(currentItemName))
+                {
+                    lastName = currentItemName; // Update with name from this (potentially last) ItemID
+                }
+            }
+            // Crucial: Position the main file stream reader to the end of the current ItemID's data
+            reader.BaseStream.Seek(currentItemIDDataEndPos, SeekOrigin.Begin);
+        }
+        return lastName;
+    }
+
     private static string ReadNullTerminatedAnsiString(BinaryReader reader)
     {
         var sb = new StringBuilder();
         byte b;
-        while ((b = reader.ReadByte()) != 0)
+        // Loop while not at end of stream and byte read is not null terminator
+        while (reader.BaseStream.Position < reader.BaseStream.Length && (b = reader.ReadByte()) != 0)
         {
-            sb.Append((char)b); // Assumes system default ANSI codepage
+            sb.Append((char)b);
         }
         return sb.ToString();
     }
@@ -300,34 +397,31 @@ public static class ShortcutResolver
     private static string ReadNullTerminatedUnicodeString(BinaryReader reader)
     {
         var sb = new StringBuilder();
-        char c;
-        while (true)
+        // Loop while there are at least 2 bytes left to read for a char or null terminator
+        while (reader.BaseStream.Position + 1 < reader.BaseStream.Length) 
         {
             byte b1 = reader.ReadByte();
             byte b2 = reader.ReadByte();
-            if (b1 == 0 && b2 == 0) break;
-            c = (char)((b2 << 8) | b1); // UTF-16 LE
-            sb.Append(c);
+            if (b1 == 0 && b2 == 0) break; // Null terminator (U+0000)
+            sb.Append((char)((b2 << 8) | b1)); // UTF-16 LE
         }
         return sb.ToString();
     }
 
     private static string ReadLengthPrefixedString(BinaryReader reader, bool isUnicode)
     {
-        // CountCharacters (2 bytes) - Number of characters in the string.
+        if (reader.BaseStream.Position + 2 > reader.BaseStream.Length) // Check for length field
+             throw new FormatException("Invalid LNK: Unexpected EOF reading string length.");
+        
         ushort charCount = reader.ReadUInt16();
         if (charCount == 0) return string.Empty;
 
-        byte[] buffer;
-        if (isUnicode)
-        {
-            buffer = reader.ReadBytes(charCount * 2);
-            return Encoding.Unicode.GetString(buffer);
-        }
-        else
-        {
-            buffer = reader.ReadBytes(charCount);
-            return Encoding.Default.GetString(buffer); // System's default ANSI code page
-        }
+        int bytesToRead = isUnicode ? charCount * 2 : charCount;
+        if (reader.BaseStream.Position + bytesToRead > reader.BaseStream.Length) // Check for string data
+            throw new FormatException("Invalid LNK: Unexpected EOF reading string data, or string length exceeds available data.");
+
+        byte[] buffer = reader.ReadBytes(bytesToRead);
+        
+        return isUnicode ? Encoding.Unicode.GetString(buffer) : Encoding.Default.GetString(buffer);
     }
 }
