@@ -109,42 +109,75 @@
                 Orientation="Horizontal"
                 Spacing="8">
 
-                <DropDownButton>
-                    <TextBlock Text="启动" />
+                <Button Style="{StaticResource MyEllipsisButtonStyle}">
+                    <SymbolIcon Symbol="More" />
 
-                    <DropDownButton.Flyout>
+                    <Button.Flyout>
                         <MenuFlyout Placement="Bottom">
+                            <MenuFlyoutItem Click="CopyFilePath_Click" Text="复制程序所在路径">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="Copy" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
                             <MenuFlyoutItem
-                                Click="Launch_Click"
-                                DataContext="{x:Bind viewModel.ProgramListItem}"
-                                Text="启动">
+                                Click="GoToFilePath_Click"
+                                DataContext="{x:Bind}"
+                                Text="打开程序所在位置">
                                 <MenuFlyoutItem.Icon>
                                     <SymbolIcon Symbol="Go" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
 
-                            <MenuFlyoutItem
-                                Click="LaunchAsAdmin_Click"
-                                DataContext="{x:Bind viewModel.ProgramListItem}"
-                                Text="以管理员身份启动">
-                                <MenuFlyoutItem.Icon>
-                                    <SymbolIcon Symbol="Admin" />
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
+                            <MenuFlyoutSubItem Text="启动">
+                                <MenuFlyoutSubItem.Icon>
+                                    <SymbolIcon Symbol="Play" />
+                                </MenuFlyoutSubItem.Icon>
 
-                            <MenuFlyoutItem IsEnabled="False" Text="是否按配置启动与此应用的开关有关">
-                                <MenuFlyoutItem.Icon>
-                                    <!--  Info  -->
-                                    <FontIcon Glyph="&#xE946;" />
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
+                                <MenuFlyoutItem
+                                    Click="Launch_Click"
+                                    DataContext="{x:Bind viewModel.ProgramListItem}"
+                                    Text="启动">
+                                    <MenuFlyoutItem.Icon>
+                                        <SymbolIcon Symbol="Play" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+
+                                <MenuFlyoutItem
+                                    Click="LaunchAsAdmin_Click"
+                                    DataContext="{x:Bind viewModel.ProgramListItem}"
+                                    Text="以管理员身份启动">
+                                    <MenuFlyoutItem.Icon>
+                                        <SymbolIcon Symbol="Admin" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+
+                                <MenuFlyoutItem IsEnabled="False" Text="是否按配置启动与此应用的开关有关">
+                                    <MenuFlyoutItem.Icon>
+                                        <!--  Info  -->
+                                        <FontIcon Glyph="&#xE946;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyoutSubItem>
+
+                            <!--<MenuFlyoutSubItem Text="移除" Foreground="Red">
+                                <MenuFlyoutSubItem.Icon>
+                                    <SymbolIcon Symbol="Delete" />
+                                </MenuFlyoutSubItem.Icon>
+
+                                <MenuFlyoutItem Text="确认移除" Foreground="Red" Click="MenuFlyoutItem_Click">
+                                    <MenuFlyoutItem.Icon>
+                                        <SymbolIcon Symbol="Delete" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyoutSubItem>-->
                         </MenuFlyout>
-                    </DropDownButton.Flyout>
-                </DropDownButton>
+                    </Button.Flyout>
+                </Button>
 
                 <Button
                     Click="{x:Bind viewModel.SaveChanges}"
-                    Content="立即应用设置"
+                    Content="应用设置"
                     Style="{ThemeResource AccentButtonStyle}" />
             </StackPanel>
         </my:MyGrid>

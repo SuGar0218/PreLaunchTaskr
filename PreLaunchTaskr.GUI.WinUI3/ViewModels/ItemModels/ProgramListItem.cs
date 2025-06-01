@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 using PreLaunchTaskr.Common;
+using PreLaunchTaskr.Common.Helpers;
 using PreLaunchTaskr.Core;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.GUI.Common.AbstractViewModels.ItemModels;
@@ -10,6 +11,7 @@ using PreLaunchTaskr.GUI.WinUI3.Utils;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
@@ -19,25 +21,9 @@ public partial class ProgramListItem : ObservableObject, IProgramListItem<Bitmap
     public ProgramListItem(ProgramInfo programInfo)
     {
         ProgramInfo = programInfo;
-        Name = GetProgramNameFromPath(programInfo.Path)!;
+        Name = FileDescriber.Describe(programInfo.Path)!;
         Icon = IconBitmapImageReader.ReadAssociated(programInfo.Path) ?? defaultProgramIcon;
         changed = false;
-    }
-
-    private static string GetProgramNameFromPath(string path)
-    {
-        if (System.IO.File.Exists(path) && System.IO.Path.GetExtension(path).ToLowerInvariant() == ".exe")
-        {
-            var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
-            
-            // 优先使用FileDescription，如果为空则使用ProductName，最后使用文件名
-            if (!string.IsNullOrWhiteSpace(info.FileDescription))
-                return info.FileDescription;
-
-            if (!string.IsNullOrWhiteSpace(info.ProductName))
-                return info.ProductName;
-        }
-        return System.IO.Path.GetFileName(path);
     }
     
     public int Id => ProgramInfo.Id;

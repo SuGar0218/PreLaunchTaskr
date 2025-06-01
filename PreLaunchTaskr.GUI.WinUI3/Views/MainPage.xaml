@@ -48,13 +48,18 @@
                         <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" ToolTipService.ToolTip="{x:Bind Path}">
-                        <TextBlock Text="{x:Bind Name}" TextWrapping="NoWrap" />
+                    <StackPanel Grid.Column="0">
+                        <TextBlock
+                            Text="{x:Bind Name}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap"
+                            ToolTipService.ToolTip="{x:Bind Name}" />
                         <TextBlock
                             Opacity="0.5"
                             Text="{x:Bind Path}"
                             TextTrimming="CharacterEllipsis"
-                            TextWrapping="NoWrap" />
+                            TextWrapping="NoWrap"
+                            ToolTipService.ToolTip="{x:Bind Path}" />
                     </StackPanel>
 
                     <ToggleSwitch
