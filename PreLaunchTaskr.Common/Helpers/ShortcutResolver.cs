@@ -51,7 +51,7 @@ public static class ShortcutResolver
     private const uint ENV_VAR_SIG = 0xA0000003;
     private const uint ITEM_ID_EXTENSION_SIGNATURE_BEEF0004 = 0xBEEF0004; 
 
-    public static string GetPathFromShortcut(string shortcutPath)
+    public static string? GetPathFromShortcut(string shortcutPath)
     {
         if (string.IsNullOrEmpty(shortcutPath))
             throw new ArgumentNullException(nameof(shortcutPath));
@@ -63,8 +63,8 @@ public static class ShortcutResolver
         if (!Path.GetExtension(resolvedShortcutPath).Equals(".lnk", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("File is not a .lnk file.", nameof(shortcutPath));
 
-        using (FileStream fs = new FileStream(resolvedShortcutPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-        using (BinaryReader reader = new BinaryReader(fs, Encoding.Default)) 
+        using (FileStream fs = new(resolvedShortcutPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+        using (BinaryReader reader = new(fs, Encoding.Default)) 
         {
             // --- ShellLinkHeader ---
             uint headerSize = reader.ReadUInt32();
@@ -78,10 +78,10 @@ public static class ShortcutResolver
             LinkFlags linkFlags = (LinkFlags)reader.ReadUInt32();
             fs.Seek(52, SeekOrigin.Current); // Skip rest of header (FileAttributes to Reserved3)
 
-            string targetPath = null;
-            string relativePathString = null;
-            string workingDirectoryString = null;
-            string lastNameFromPidl = null;
+            string? targetPath = null;
+            string? relativePathString = null;
+            string? workingDirectoryString = null;
+            string? lastNameFromPidl = null;
 
             // --- LinkTargetIDList ---
             if ((linkFlags & LinkFlags.HasLinkTargetIDList) != 0)
@@ -182,7 +182,7 @@ public static class ShortcutResolver
             // --- ExtraData ---
             if ((linkFlags & LinkFlags.HasExpString) != 0)
             {
-                string envBlockPath = null;
+                string? envBlockPath = null;
                 while (fs.Position <= fs.Length - 8) // Min 8 bytes for BlockSize & BlockSignature
                 {
                     long currentBlockHeaderPos = fs.Position;
@@ -236,7 +236,7 @@ public static class ShortcutResolver
 
             if (string.IsNullOrEmpty(targetPath) && !string.IsNullOrEmpty(lastNameFromPidl))
             {
-                string basePathForPidl = !string.IsNullOrEmpty(workingDirectoryString)
+                string? basePathForPidl = !string.IsNullOrEmpty(workingDirectoryString)
                     ? workingDirectoryString
                     : Path.GetDirectoryName(resolvedShortcutPath); 
 
@@ -254,7 +254,7 @@ public static class ShortcutResolver
 
             if (string.IsNullOrEmpty(targetPath) && !string.IsNullOrEmpty(relativePathString))
             {
-                string basePathForRelative = !string.IsNullOrEmpty(workingDirectoryString)
+                string? basePathForRelative = !string.IsNullOrEmpty(workingDirectoryString)
                     ? workingDirectoryString
                     : Path.GetDirectoryName(resolvedShortcutPath);
 
@@ -289,9 +289,9 @@ public static class ShortcutResolver
         }
     }
 
-    private static string ExtractLastNameFromItemIDList(BinaryReader reader, ushort idListSize)
+    private static string? ExtractLastNameFromItemIDList(BinaryReader reader, ushort idListSize)
     {
-        string lastName = null; 
+        string? lastName = null; 
         long idListStartStreamPos = reader.BaseStream.Position; // Position in the main file stream
         long idListEndStreamPos = idListStartStreamPos + idListSize;
         
@@ -314,8 +314,8 @@ public static class ShortcutResolver
             using (MemoryStream msItem = new MemoryStream(itemData))
             using (BinaryReader brItem = new BinaryReader(msItem, Encoding.Default)) // Default for ANSI parts
             {
-                string currentItemName = null; 
-                string initialAnsiName = null; 
+                string? currentItemName = null; 
+                string? initialAnsiName = null; 
 
                 // Heuristic 1: Try reading a primary name (often short name, ANSI) from start of ItemID.Data
                 if (brItem.BaseStream.Length > 0)
@@ -337,8 +337,8 @@ public static class ShortcutResolver
 
                     if (extSignature == ITEM_ID_EXTENSION_SIGNATURE_BEEF0004)
                     {
-                        string longNameFromExt = null;
-                        string shortNameFromExt = null;
+                        string? longNameFromExt = null;
+                        string? shortNameFromExt = null;
 
                         // Try to read Long Unicode Name from extension block (MS-SHLLINK 2.2.2.1)
                         const int longNameOffsetInExtBlock = 0x1C; // Offset from start of extension block

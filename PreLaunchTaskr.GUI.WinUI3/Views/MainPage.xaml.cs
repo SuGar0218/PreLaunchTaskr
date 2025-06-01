@@ -250,8 +250,8 @@ public sealed partial class MainPage : Page
             List<string> unsupportedFileNames = [];
             foreach (IStorageItem item in items)
             {
-                string targetPath;
-                string targetName;
+                string? targetPath;
+                string? targetName;
 
                 string extension = Path.GetExtension(item.Name).ToLowerInvariant();
                 
@@ -260,13 +260,18 @@ public sealed partial class MainPage : Page
                     try
                     {
                         targetPath = ShortcutResolver.GetPathFromShortcut(item.Path);
-                        targetName = Path.GetFileName(targetPath);
                     }
                     catch (Exception)
                     {
                         unsupportedFileNames.Add(item.Path);
                         continue;
                     }
+                    if (string.IsNullOrWhiteSpace(targetPath))
+                    {
+                        unsupportedFileNames.Add(item.Path);
+                        continue;
+                    }
+                    targetName = Path.GetFileName(targetPath);
                 }
                 else if (extension == ".exe")
                 {
@@ -279,7 +284,7 @@ public sealed partial class MainPage : Page
                     continue;
                 }
                 
-                if (Path.GetExtension(targetName).ToLowerInvariant() == ".exe")
+                if (Path.GetExtension(targetName)?.ToLowerInvariant() == ".exe")
                 {
                     if (!viewModel!.AddProgram(targetName, targetPath))
                     {
