@@ -297,7 +297,7 @@ public sealed partial class MainPage : Page
             }
             if (unsupportedFileNames.Count > 0)
             {
-                await this.MessageBox($"以下文件因文件类型不支持而未被添加：\n{new StringBuilder().AppendJoin('\n', unsupportedFileNames)}", "只能添加 exe 类型的文件");
+                await this.MessageBox($"以下文件因文件类型不支持或快捷方式解析失败而未被添加：\n{new StringBuilder().AppendJoin('\n', unsupportedFileNames)}", "只能添加 exe 和部分 dll 类型的文件");
             }
         }
     }
