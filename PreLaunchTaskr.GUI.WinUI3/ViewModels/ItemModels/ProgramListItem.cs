@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 using Microsoft.UI.Xaml.Media.Imaging;
 
@@ -19,11 +19,27 @@ public partial class ProgramListItem : ObservableObject, IProgramListItem<Bitmap
     public ProgramListItem(ProgramInfo programInfo)
     {
         ProgramInfo = programInfo;
-        Name = System.IO.Path.GetFileName(programInfo.Path)!;
+        Name = GetProgramNameFromPath(programInfo.Path)!;
         Icon = IconBitmapImageReader.ReadAssociated(programInfo.Path) ?? defaultProgramIcon;
         changed = false;
     }
 
+    private static string GetProgramNameFromPath(string path)
+    {
+        if (System.IO.File.Exists(path) && System.IO.Path.GetExtension(path).ToLowerInvariant() == ".exe")
+        {
+            var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
+            
+            // 优先使用FileDescription，如果为空则使用ProductName，最后使用文件名
+            if (!string.IsNullOrWhiteSpace(info.FileDescription))
+                return info.FileDescription;
+
+            if (!string.IsNullOrWhiteSpace(info.ProductName))
+                return info.ProductName;
+        }
+        return System.IO.Path.GetFileName(path);
+    }
+    
     public int Id => ProgramInfo.Id;
 
     public string Name { get; init; }

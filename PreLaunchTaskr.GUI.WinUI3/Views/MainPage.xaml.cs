@@ -250,9 +250,38 @@ public sealed partial class MainPage : Page
             List<string> unsupportedFileNames = [];
             foreach (IStorageItem item in items)
             {
-                if (Path.GetExtension(item.Name) == ".exe")
+                string targetPath;
+                string targetName;
+
+                string extension = Path.GetExtension(item.Name).ToLowerInvariant();
+                
+                if (extension == ".lnk")
                 {
-                    if (! viewModel!.AddProgram(item.Name, item.Path))
+                    try
+                    {
+                        targetPath = ShortcutResolver.GetPathFromShortcut(item.Path);
+                        targetName = Path.GetFileName(targetPath);
+                    }
+                    catch (Exception)
+                    {
+                        unsupportedFileNames.Add(item.Path);
+                        continue;
+                    }
+                }
+                else if (extension == ".exe")
+                {
+                    targetPath = item.Path;
+                    targetName = item.Name;
+                }
+                else
+                {
+                    unsupportedFileNames.Add(item.Path);
+                    continue;
+                }
+                
+                if (Path.GetExtension(targetName).ToLowerInvariant() == ".exe")
+                {
+                    if (!viewModel!.AddProgram(targetName, targetPath))
                     {
                         duplicatedFileNames.Add(item.Path);
                     }
