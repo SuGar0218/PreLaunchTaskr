@@ -444,4 +444,14 @@ public sealed partial class MainPage : Page
             frameworkElement.ContextFlyout?.ShowAt(frameworkElement);
         }
     }
+
+    private void PropertySizer_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        PaneWidthSizer.Opacity = 1.0;
+    }
+
+    private void PropertySizer_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        PaneWidthSizer.Opacity = 0.0;
+    }
 }

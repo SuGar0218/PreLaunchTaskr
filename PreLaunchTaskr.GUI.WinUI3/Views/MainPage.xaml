@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+    xmlns:community="using:CommunityToolkit.WinUI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helper="using:PreLaunchTaskr.GUI.WinUI3.Helpers"
     xmlns:local="using:PreLaunchTaskr.GUI.WinUI3.Views"
@@ -521,10 +522,21 @@
                 </my:MyStackPanel>
             </NavigationView.PaneFooter>-->
 
-            <Frame
-                x:Name="ContentFrame"
-                x:FieldModifier="private"
-                IsNavigationStackEnabled="False" />
+            <Grid>
+                <Frame
+                    x:Name="ContentFrame"
+                    x:FieldModifier="private"
+                    IsNavigationStackEnabled="False" />
+
+                <community:PropertySizer
+                    x:Name="PaneWidthSizer"
+                    HorizontalAlignment="Left"
+                    Binding="{x:Bind Navigation.OpenPaneLength, Mode=TwoWay}"
+                    Opacity="0"
+                    PointerEntered="PropertySizer_PointerEntered"
+                    PointerExited="PropertySizer_PointerExited"
+                    Visibility="{x:Bind Navigation.IsPaneOpen, Mode=OneWay}" />
+            </Grid>
         </NavigationView>
     </Grid>
 </Page>
