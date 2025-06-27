@@ -445,13 +445,13 @@ public sealed partial class MainPage : Page
         }
     }
 
-    private void PropertySizer_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void PaneWidthSizer_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
-        PaneWidthSizer.Opacity = 1.0;
+       PaneWidthSizer.Opacity = 1.0;
     }
 
-    private void PropertySizer_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void PaneWidthSizer_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
-        PaneWidthSizer.Opacity = 0.0;
+       PaneWidthSizer.Opacity = 0.0;
     }
 }

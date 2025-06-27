@@ -14,7 +14,6 @@
     Loaded="Page_Loaded"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
-
     <Page.Resources>
         <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="LayerOnMicaBaseAltFillColorDefaultBrush" />
         <!--<StaticResource x:Key="NavigationViewContentBackground" ResourceKey="NavigationViewExpandedPaneBackground" />-->
@@ -533,9 +532,13 @@
                     HorizontalAlignment="Left"
                     Binding="{x:Bind Navigation.OpenPaneLength, Mode=TwoWay}"
                     Opacity="0"
-                    PointerEntered="PropertySizer_PointerEntered"
-                    PointerExited="PropertySizer_PointerExited"
-                    Visibility="{x:Bind Navigation.IsPaneOpen, Mode=OneWay}" />
+                    PointerEntered="PaneWidthSizer_PointerEntered"
+                    PointerExited="PaneWidthSizer_PointerExited"
+                    Visibility="{x:Bind Navigation.IsPaneOpen, Mode=OneWay}">
+                    <community:PropertySizer.OpacityTransition>
+                        <ScalarTransition />
+                    </community:PropertySizer.OpacityTransition>
+                </community:PropertySizer>
             </Grid>
         </NavigationView>
     </Grid>
