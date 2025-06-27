@@ -109,4 +109,9 @@ public sealed partial class ProgramConfigPage : Page
     {
         WindowsHelper.OpenPathInExplorer(viewModel.Path);
     }
+
+    private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
 }

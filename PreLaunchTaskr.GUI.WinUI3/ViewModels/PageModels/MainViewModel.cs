@@ -1,17 +1,19 @@
-﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 using PreLaunchTaskr.Common;
+using PreLaunchTaskr.Common.Helpers;
 using PreLaunchTaskr.Core;
 using PreLaunchTaskr.Core.Entities;
 using PreLaunchTaskr.GUI.Common.AbstractViewModels.PageModels;
 using PreLaunchTaskr.GUI.WinUI3.ViewModels.ItemModels;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,6 +74,12 @@ public partial class MainViewModel : ObservableObject, IMainViewModel<ProgramLis
         nameCache.Add(newProgramListItem.Name, newProgramListItem);
         return true;
     }
+
+    //public bool AddProgram(string path)
+    //{
+    //    string name = FileDescriber.Describe(path);
+    //    return AddProgram(name, path);
+    //}
 
     public bool RemoveProgram(ProgramListItem item)
     {

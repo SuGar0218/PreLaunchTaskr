@@ -83,10 +83,10 @@ public sealed partial class MainPage : Page
         if (string.IsNullOrWhiteSpace(path))
             return;
 
-        string filename = Path.GetFileName(path);
-        if (! viewModel!.AddProgram(filename, path))
+        string name = FileDescriber.Describe(path);
+        if (! viewModel!.AddProgram(name, path))
         {
-            await ShowFileNameExistedMessageBox(filename);
+            await ShowFileNameExistedMessageBox(name);
         }
     }
 
@@ -105,10 +105,12 @@ public sealed partial class MainPage : Page
             return;
         }
 
-        string name = Path.GetFileName(path);
+        string name = FileDescriber.Describe(path);
 
         if (! viewModel!.AddProgram(name, path))
+        {
             await ShowFileNameExistedMessageBox(name);
+        }
     }
 
     private async void SelectInstalledProgram()
@@ -161,10 +163,11 @@ public sealed partial class MainPage : Page
         if (string.IsNullOrWhiteSpace(path))
             return;
 
-        string filename = Path.GetFileName(path);
-        if (! viewModel!.AddProgram(filename, path))
+        string name = FileDescriber.Describe(path);
+
+        if (! viewModel!.AddProgram(name, path))
         {
-            await ShowFileNameExistedMessageBox(filename);
+            await ShowFileNameExistedMessageBox(name);
         }
     }
 
@@ -286,7 +289,7 @@ public sealed partial class MainPage : Page
                 
                 if (Path.GetExtension(targetName)?.ToLowerInvariant() == ".exe")
                 {
-                    if (!viewModel!.AddProgram(targetName, targetPath))
+                    if (!viewModel!.AddProgram(FileDescriber.Describe(targetPath), targetPath))
                     {
                         duplicatedFileNames.Add(item.Path);
                     }
